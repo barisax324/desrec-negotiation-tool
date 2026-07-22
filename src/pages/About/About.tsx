@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function About() {
+function about() {
   return (
     <main>
       <h1>About This Tool</h1>
@@ -17,4 +17,4 @@ function About() {
   );
 }
 
-export default About;
+export default about;

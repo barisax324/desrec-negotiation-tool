@@ -1,20 +1,44 @@
 import { Link } from "react-router-dom";
+import negotiationData from "../../Data/negotiation.json";
+import type { NegotiationTemplate } from "../../types/negotiation";
+import MainLayout from "../../layouts/MainLayout";
+import questionrenderer from "../../components/QuestionRenderer/QuestionRenderer";
 
 function Start() {
+  const negotiation = negotiationData as NegotiationTemplate;
+
   return (
-    <main>
-      <h1>Start a Negotiation</h1>
+    <MainLayout>
+      <h2>Start a Negotiation</h2>
+
+      <p>{negotiation.description}</p>
 
       <p>
-        Create a private negotiation for you and another participant.
+        This template currently contains{" "}
+        <strong>{negotiation.sections.length} sections</strong>.
       </p>
 
-      <button type="button">Create Negotiation</button>
+      <div>
+  {negotiation.sections.map((section) => (
+    <section key={section.id}>
+      <h3>{section.title}</h3>
+
+      <p>{section.description}</p>
+
+      {section.questions.map((question) => (
+        <questionrenderer
+          key={question.id}
+          question={question}
+        />
+      ))}
+    </section>
+  ))}
+</div>
 
       <p>
         <Link to="/">Return home</Link>
       </p>
-    </main>
+    </MainLayout>
   );
 }
 

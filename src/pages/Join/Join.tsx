@@ -1,16 +1,19 @@
 import { Link } from "react-router-dom";
+import MainLayout from "../../layouts/MainLayout";
 
 function Join() {
   return (
-    <main>
-      <h1>Join a Negotiation</h1>
-
-      <p>Use the private participant link that was shared with you.</p>
+    <MainLayout>
+      <h2>Join a Negotiation</h2>
 
       <p>
-        <Link to="/">Return home</Link>
+        Use the private participant link that was shared with you.
       </p>
-    </main>
+
+      <p>
+        <Link to="/">Return Home</Link>
+      </p>
+    </MainLayout>
   );
 }
 
