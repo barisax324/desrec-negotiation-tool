@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import negotiationData from "../../Data/negotiation.json";
 import type { NegotiationTemplate } from "../../types/negotiation";
 import MainLayout from "../../layouts/MainLayout";
-import questionrenderer from "../../components/QuestionRenderer/QuestionRenderer";
+import questionrenderer from "../../components/QuestionRenderer";
 
 function Start() {
   const negotiation = negotiationData as NegotiationTemplate;

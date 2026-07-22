@@ -1,4 +1,4 @@
-import type { NegotiationQuestion } from "../../types/negotiation";
+import type { NegotiationQuestion } from "../types/negotiation";
 
 interface Props {
   question: NegotiationQuestion;

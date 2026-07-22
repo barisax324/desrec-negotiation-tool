@@ -2,7 +2,6 @@
   "id": "desrec-standard-negotiation",
   "version": "1.0.0",
   "title": "DesREC Negotiation Tool",
-  "description": "A structured tool for two people to complete separately and compare together.",
   "sections": [
     {
       "id": "general",
@@ -13,19 +12,15 @@
           "id": "scene_intention",
           "type": "textarea",
           "title": "What are you hoping to get out of this scene?",
-          "description": "",
           "required": false,
-          "allowNotes": false,
-          "showInComparison": true
+          "allowNotes": false
         },
         {
           "id": "experience_level",
           "type": "singleSelect",
           "title": "How would you describe your experience level?",
-          "description": "",
           "required": false,
           "allowNotes": true,
-          "showInComparison": true,
           "options": [
             {
               "value": "new",
@@ -54,12 +49,11 @@
       "questions": [
         {
           "id": "safeword_system",
-          "type": "multiSelect",
+          "type": "checkboxGroup",
           "title": "Which communication or safeword systems would you like to use?",
           "description": "Choose every option that may apply.",
           "required": false,
           "allowNotes": true,
-          "showInComparison": true,
           "options": [
             {
               "value": "green_yellow_red",
@@ -88,176 +82,34 @@
     {
       "id": "activities",
       "title": "Activities and Interests",
-      "description": "Compare interests, limits, and areas that require more discussion.",
+      "description": "Compare interests, limits, and areas that need more discussion.",
       "questions": [
         {
           "id": "rope",
-          "type": "interestScale",
+          "type": "yesNoMaybe",
           "title": "Rope",
-          "description": "",
           "required": false,
-          "allowNotes": true,
-          "showInComparison": true,
-          "options": [
-            {
-              "value": "yes",
-              "label": "Yes"
-            },
-            {
-              "value": "maybe",
-              "label": "Maybe or discuss"
-            },
-            {
-              "value": "no",
-              "label": "No"
-            }
-          ]
+          "allowNotes": true
         },
         {
           "id": "impact",
-          "type": "interestScale",
+          "type": "yesNoMaybe",
           "title": "Impact play",
-          "description": "",
           "required": false,
-          "allowNotes": true,
-          "showInComparison": true,
-          "options": [
-            {
-              "value": "yes",
-              "label": "Yes"
-            },
-            {
-              "value": "maybe",
-              "label": "Maybe or discuss"
-            },
-            {
-              "value": "no",
-              "label": "No"
-            }
-          ]
+          "allowNotes": true
         },
         {
           "id": "medical_play_information",
-          "type": "info",
+          "type": "infoCard",
           "title": "Medical Play",
-          "description": "Medical play can involve additional health, sanitation, and risk considerations. Discuss the specific activity, experience levels, supplies, emergency planning, and any relevant health concerns before agreeing to proceed.",
-          "required": false,
-          "allowNotes": false,
-          "showInComparison": false
+          "description": "Medical play can involve additional health, sanitation, and risk considerations. Discuss the specific activity, experience levels, supplies, emergency planning, and any relevant health concerns before agreeing to proceed."
         },
         {
           "id": "medical_play",
-          "type": "interestScale",
+          "type": "yesNoMaybe",
           "title": "Medical play",
-          "description": "",
           "required": false,
-          "allowNotes": true,
-          "showInComparison": true,
-          "options": [
-            {
-              "value": "yes",
-              "label": "Yes"
-            },
-            {
-              "value": "maybe",
-              "label": "Maybe or discuss"
-            },
-            {
-              "value": "no",
-              "label": "No"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "health_and_safety",
-      "title": "Health and Safety",
-      "description": "Share information that could affect safety during or after the scene.",
-      "questions": [
-        {
-          "id": "relevant_health_information",
-          "type": "textarea",
-          "title": "Is there any health or safety information that should be discussed?",
-          "description": "Only share information that is relevant to safely planning this scene.",
-          "required": false,
-          "allowNotes": false,
-          "showInComparison": true
-        },
-        {
-          "id": "emergency_plan",
-          "type": "textarea",
-          "title": "Is there anything the other participant should know in an emergency?",
-          "description": "",
-          "required": false,
-          "allowNotes": false,
-          "showInComparison": true
-        }
-      ]
-    },
-    {
-      "id": "aftercare",
-      "title": "Aftercare",
-      "description": "Discuss what each person may want immediately after the scene and later.",
-      "questions": [
-        {
-          "id": "aftercare_preferences",
-          "type": "multiSelect",
-          "title": "Which forms of aftercare may be helpful?",
-          "description": "Choose every option that may apply.",
-          "required": false,
-          "allowNotes": true,
-          "showInComparison": true,
-          "options": [
-            {
-              "value": "water",
-              "label": "Water"
-            },
-            {
-              "value": "food",
-              "label": "Food or a snack"
-            },
-            {
-              "value": "physical_comfort",
-              "label": "Physical comfort"
-            },
-            {
-              "value": "quiet_space",
-              "label": "Quiet space"
-            },
-            {
-              "value": "verbal_reassurance",
-              "label": "Verbal reassurance"
-            },
-            {
-              "value": "space",
-              "label": "Time or space alone"
-            },
-            {
-              "value": "later_checkin",
-              "label": "A later check-in"
-            },
-            {
-              "value": "other",
-              "label": "Other"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "final_notes",
-      "title": "Final Notes",
-      "description": "Add anything that was not covered elsewhere.",
-      "questions": [
-        {
-          "id": "additional_information",
-          "type": "textarea",
-          "title": "Is there anything else you would like the other participant to know?",
-          "description": "",
-          "required": false,
-          "allowNotes": false,
-          "showInComparison": true
+          "allowNotes": true
         }
       ]
     }
