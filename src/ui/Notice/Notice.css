@@ -1,0 +1,124 @@
+.desrec-notice {
+  width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+
+  padding: var(--space-lg);
+
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+
+  border: 1px solid var(--color-border);
+  border-left-width: 0.3rem;
+  border-radius: var(--radius-md);
+}
+
+.desrec-notice--info {
+  background: var(--color-info-light);
+  border-color: var(--color-info);
+}
+
+.desrec-notice--success {
+  background: var(--color-success-light);
+  border-color: var(--color-success);
+}
+
+.desrec-notice--warning {
+  background: var(--color-warning-light);
+  border-color: var(--color-warning);
+}
+
+.desrec-notice--danger {
+  background: var(--color-danger-light);
+  border-color: var(--color-danger);
+}
+
+.desrec-notice--neutral {
+  background: var(--color-surface-muted);
+  border-color: var(--color-border-strong);
+}
+
+.desrec-notice-icon {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 1.5rem;
+  height: 1.5rem;
+
+  color: currentColor;
+}
+
+.desrec-notice-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.desrec-notice-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.desrec-notice-title {
+  margin: 0 0 var(--space-xs);
+
+  color: var(--color-text);
+
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.desrec-notice-message {
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+
+  overflow-wrap: anywhere;
+}
+
+.desrec-notice-message p {
+  margin: 0;
+}
+
+.desrec-notice-message p + p {
+  margin-top: var(--space-sm);
+}
+
+.desrec-notice-message ul,
+.desrec-notice-message ol {
+  margin:
+    var(--space-sm)
+    0
+    0;
+  padding-left: var(--space-lg);
+}
+
+.desrec-notice-actions {
+  margin-top: var(--space-md);
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+@media (max-width: 600px) {
+  .desrec-notice {
+    padding: var(--space-md);
+  }
+
+  .desrec-notice-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .desrec-notice-actions .desrec-button {
+    width: 100%;
+  }
+}

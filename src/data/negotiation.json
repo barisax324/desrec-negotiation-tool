@@ -6,37 +6,35 @@
     {
       "id": "general",
       "title": "General",
-      "description": "Start with the basic context and intentions for the scene.",
+      "description": "Basic information and goals for this negotiation.",
       "questions": [
         {
           "id": "scene_intention",
           "type": "textarea",
           "title": "What are you hoping to get out of this scene?",
-          "required": false,
           "allowNotes": false
         },
         {
           "id": "experience_level",
           "type": "singleSelect",
-          "title": "How would you describe your experience level?",
-          "required": false,
-          "allowNotes": true,
+          "title": "Experience Level",
+          "allowNotes": false,
           "options": [
             {
               "value": "new",
-              "label": "New or limited experience"
+              "label": "New"
             },
             {
               "value": "some",
-              "label": "Some experience"
+              "label": "Some Experience"
             },
             {
               "value": "experienced",
               "label": "Experienced"
             },
             {
-              "value": "very_experienced",
-              "label": "Very experienced"
+              "value": "advanced",
+              "label": "Advanced"
             }
           ]
         }
@@ -45,35 +43,29 @@
     {
       "id": "communication",
       "title": "Communication",
-      "description": "Discuss communication, check-ins, and ways to pause or stop.",
+      "description": "Discuss communication, check-ins, and scene management.",
       "questions": [
         {
-          "id": "safeword_system",
+          "id": "safewords",
           "type": "checkboxGroup",
-          "title": "Which communication or safeword systems would you like to use?",
-          "description": "Choose every option that may apply.",
-          "required": false,
+          "title": "Communication Methods",
           "allowNotes": true,
           "options": [
             {
               "value": "green_yellow_red",
-              "label": "Green, yellow, and red"
+              "label": "Green / Yellow / Red"
             },
             {
               "value": "plain_language",
-              "label": "Plain language"
+              "label": "Plain Language"
             },
             {
-              "value": "nonverbal_signal",
-              "label": "Nonverbal signal"
+              "value": "nonverbal",
+              "label": "Nonverbal Signals"
             },
             {
-              "value": "regular_checkins",
-              "label": "Regular check-ins"
-            },
-            {
-              "value": "other",
-              "label": "Other"
+              "value": "checkins",
+              "label": "Regular Check-ins"
             }
           ]
         }
@@ -81,34 +73,31 @@
     },
     {
       "id": "activities",
-      "title": "Activities and Interests",
-      "description": "Compare interests, limits, and areas that need more discussion.",
+      "title": "Activities",
+      "description": "Discuss activities you are interested in for this scene.",
       "questions": [
         {
           "id": "rope",
-          "type": "yesNoMaybe",
+          "type": "interest",
           "title": "Rope",
-          "required": false,
           "allowNotes": true
         },
         {
           "id": "impact",
-          "type": "yesNoMaybe",
-          "title": "Impact play",
-          "required": false,
+          "type": "interest",
+          "title": "Impact Play",
           "allowNotes": true
         },
         {
-          "id": "medical_play_information",
+          "id": "medical_info",
           "type": "infoCard",
           "title": "Medical Play",
-          "description": "Medical play can involve additional health, sanitation, and risk considerations. Discuss the specific activity, experience levels, supplies, emergency planning, and any relevant health concerns before agreeing to proceed."
+          "description": "Medical play may involve additional health, sanitation, and safety considerations. Make sure you discuss experience, equipment, risks, and emergency planning before engaging."
         },
         {
           "id": "medical_play",
-          "type": "yesNoMaybe",
-          "title": "Medical play",
-          "required": false,
+          "type": "interest",
+          "title": "Medical Play",
           "allowNotes": true
         }
       ]

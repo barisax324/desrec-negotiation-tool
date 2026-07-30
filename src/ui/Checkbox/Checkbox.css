@@ -1,0 +1,68 @@
+.desrec-checkbox-group {
+  width: 100%;
+}
+
+.desrec-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+
+  cursor: pointer;
+
+  user-select: none;
+}
+
+.desrec-checkbox {
+  margin-top: .15rem;
+
+  width: 1.15rem;
+  height: 1.15rem;
+
+  accent-color: var(--color-primary);
+
+  cursor: pointer;
+
+  flex-shrink: 0;
+}
+
+.desrec-checkbox:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.desrec-checkbox--error {
+  outline: 2px solid var(--color-danger);
+}
+
+.desrec-checkbox-text {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+
+  flex: 1;
+}
+
+.desrec-checkbox-title {
+  color: var(--color-text);
+
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+}
+
+.desrec-checkbox-description {
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-sm);
+
+  line-height: var(--line-height-relaxed);
+}
+
+.desrec-checkbox-error {
+  margin-left: calc(1.15rem + var(--space-md));
+
+  margin-top: var(--space-xs);
+
+  color: var(--color-danger);
+
+  font-size: var(--font-size-xs);
+}

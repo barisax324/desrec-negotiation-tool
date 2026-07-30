@@ -1,0 +1,105 @@
+.experience-options {
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.experience-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border-color, #d7dce5);
+  border-radius: 0.875rem;
+  background: var(--surface-color, #ffffff);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.experience-card:hover {
+  border-color: var(--primary-color, #4567a9);
+  transform: translateY(-1px);
+}
+
+.experience-card:focus-visible {
+  outline: 3px solid
+    color-mix(
+      in srgb,
+      var(--primary-color, #4567a9) 30%,
+      transparent
+    );
+  outline-offset: 2px;
+}
+
+.experience-card--selected {
+  border-color: var(--primary-color, #4567a9);
+  background: color-mix(
+    in srgb,
+    var(--primary-color, #4567a9) 8%,
+    white
+  );
+  box-shadow: 0 0 0 1px
+    var(--primary-color, #4567a9);
+}
+
+.experience-card__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.experience-card__title {
+  font-weight: 700;
+}
+
+.experience-card__description {
+  color: var(--muted-text-color, #5f6673);
+  font-size: 0.925rem;
+  line-height: 1.45;
+}
+
+.experience-card__indicator {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border-color, #aeb6c4);
+  border-radius: 50%;
+}
+
+.experience-card--selected
+  .experience-card__indicator {
+  border-color: var(--primary-color, #4567a9);
+}
+
+.experience-card__indicator-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--primary-color, #4567a9);
+}
+
+.experience-note {
+  margin: 1rem 0 0;
+  color: var(--muted-text-color, #5f6673);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.experience-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}

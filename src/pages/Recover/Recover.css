@@ -1,0 +1,183 @@
+.recover-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(
+      circle at 15% 15%,
+      rgba(199, 132, 71, 0.2),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(105, 76, 131, 0.22),
+      transparent 36%
+    ),
+    linear-gradient(145deg, #17121d 0%, #24192c 52%, #15111a 100%);
+}
+
+.recover-card {
+  width: min(100%, 560px);
+  padding: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  background: rgba(27, 21, 33, 0.9);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+  color: #f8f3fa;
+  backdrop-filter: blur(18px);
+}
+
+.recover-back-link {
+  display: inline-flex;
+  margin-bottom: 28px;
+  color: #d9c8e4;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.recover-back-link:hover {
+  color: #ffffff;
+}
+
+.recover-heading {
+  margin-bottom: 28px;
+}
+
+.recover-eyebrow {
+  margin: 0 0 8px;
+  color: #d5a069;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.recover-heading h1 {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 7vw, 3rem);
+  line-height: 1.05;
+}
+
+.recover-heading > p:last-child {
+  margin: 0;
+  color: #cfc5d4;
+  line-height: 1.6;
+}
+
+.recover-form {
+  display: grid;
+  gap: 12px;
+}
+
+.recover-form label {
+  font-weight: 700;
+}
+
+.recover-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+  font: inherit;
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.recover-form input::placeholder {
+  color: #8f8494;
+  letter-spacing: normal;
+}
+
+.recover-form input:focus {
+  border-color: #d5a069;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 4px rgba(213, 160, 105, 0.15);
+}
+
+.recover-form input[aria-invalid="true"] {
+  border-color: #ef8f8f;
+}
+
+.recover-help {
+  margin: 0;
+  color: #a99fad;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.recover-error {
+  padding: 12px 14px;
+  border: 1px solid rgba(239, 143, 143, 0.35);
+  border-radius: 12px;
+  background: rgba(143, 43, 43, 0.18);
+  color: #ffc3c3;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.recover-submit {
+  width: 100%;
+  margin-top: 8px;
+  padding: 16px 20px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #c98549, #a65f42);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.recover-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(166, 95, 66, 0.3);
+}
+
+.recover-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.recover-privacy-note {
+  margin-top: 28px;
+  padding: 18px;
+  border: 1px solid rgba(213, 160, 105, 0.2);
+  border-radius: 16px;
+  background: rgba(213, 160, 105, 0.07);
+}
+
+.recover-privacy-note h2 {
+  margin: 0 0 7px;
+  font-size: 1rem;
+}
+
+.recover-privacy-note p {
+  margin: 0;
+  color: #c8becd;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+  .recover-page {
+    padding: 18px 14px;
+  }
+
+  .recover-card {
+    padding: 26px 20px;
+    border-radius: 20px;
+  }
+}

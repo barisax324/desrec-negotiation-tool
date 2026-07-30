@@ -2,6 +2,7 @@ export type QuestionType =
   | "text"
   | "textarea"
   | "yesNoMaybe"
+  | "interest"
   | "singleSelect"
   | "checkboxGroup"
   | "infoCard";
@@ -34,3 +35,5 @@ export interface NegotiationTemplate {
   title: string;
   sections: NegotiationSection[];
 }
+
+export type AnswerValue = string | string[] | null;

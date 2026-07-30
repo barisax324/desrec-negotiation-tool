@@ -1,0 +1,346 @@
+.about-you {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.about-you-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.about-you-section-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.about-you-section-heading > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.about-you-section-heading h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 1.1rem;
+  line-height: 1.35;
+}
+
+.about-you-section-heading p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.about-you-optional,
+.about-you-required {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.45rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.about-you-optional {
+  background: var(--color-surface-secondary);
+  color: var(--color-text-secondary);
+}
+
+.about-you-required {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.about-you-nickname-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.4rem;
+  padding: 0 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.8rem;
+  background: var(--color-surface);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.about-you-nickname-field:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.about-you-input-icon {
+  flex: 0 0 auto;
+  color: var(--color-text-secondary);
+  font-size: 1.15rem;
+}
+
+.about-you-nickname-field input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+.about-you-nickname-field input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.about-you-helper-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.about-you-role-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.about-you-role-card {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 5rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  background: var(--color-surface);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 170ms ease,
+    background-color 170ms ease,
+    box-shadow 170ms ease,
+    transform 170ms ease;
+}
+
+.about-you-role-card:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.about-you-role-card:focus-visible {
+  outline: 3px solid var(--color-primary-soft);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+}
+
+.about-you-role-card:active {
+  transform: scale(0.995);
+}
+
+.about-you-role-card-selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.about-you-role-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.about-you-role-copy strong {
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.about-you-role-copy > span {
+  color: var(--color-text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.about-you-radio {
+  display: grid;
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  border: 2px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: var(--color-surface);
+  transition:
+    border-color 170ms ease,
+    background-color 170ms ease;
+}
+
+.about-you-radio span {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: transparent;
+  transform: scale(0);
+  transition:
+    background-color 170ms ease,
+    transform 170ms ease;
+}
+
+.about-you-role-card-selected .about-you-radio {
+  border-color: var(--color-primary);
+}
+
+.about-you-role-card-selected .about-you-radio span {
+  background: var(--color-primary);
+  transform: scale(1);
+}
+
+.about-you-other-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  background: var(--color-surface-secondary);
+  animation: about-you-reveal 180ms ease-out;
+}
+
+.about-you-other-field label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--color-text-primary);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.about-you-other-field label span {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.about-you-other-field input {
+  width: 100%;
+  min-height: 3rem;
+  box-sizing: border-box;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  outline: 0;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.about-you-other-field input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.about-you-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.about-you-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.about-you-continue-area {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+}
+
+.about-you-continue-area p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+@keyframes about-you-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 720px) {
+  .about-you-role-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .about-you-role-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .about-you {
+    gap: 1.6rem;
+  }
+
+  .about-you-role-card {
+    min-height: 4.75rem;
+    padding: 0.9rem;
+  }
+
+  .about-you-actions {
+    align-items: stretch;
+  }
+
+  .about-you-continue-area {
+    align-items: stretch;
+  }
+
+  .about-you-continue-area p {
+    text-align: right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-you-role-card,
+  .about-you-radio,
+  .about-you-radio span,
+  .about-you-nickname-field,
+  .about-you-other-field input {
+    transition: none;
+  }
+
+  .about-you-other-field {
+    animation: none;
+  }
+}

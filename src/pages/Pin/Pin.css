@@ -1,0 +1,346 @@
+:root {
+  --pin-background: #f8f5ef;
+  --pin-surface: #fffefa;
+  --pin-surface-soft: #f2eadf;
+  --pin-text: #28211d;
+  --pin-text-soft: #716861;
+  --pin-border: #ded7ce;
+  --pin-orange: #c95d32;
+  --pin-orange-dark: #a94825;
+  --pin-green: #4f8778;
+  --pin-dark: #26211d;
+  --pin-shadow: 0 5px 18px rgba(47, 37, 29, 0.11);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.pin-page {
+  min-height: 100vh;
+  color: var(--pin-text);
+  background: var(--pin-background);
+}
+
+.pin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 78px;
+  padding: 14px 20px;
+  color: #fffaf4;
+  background: var(--pin-dark);
+}
+
+.pin-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.pin-brand-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: #dc7249;
+  border: 1px solid #b85c39;
+  transform: rotate(45deg);
+  font-size: 1.35rem;
+}
+
+.pin-brand-text {
+  display: grid;
+  gap: 3px;
+}
+
+.pin-brand-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.pin-brand-label {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 4px 7px;
+  color: #dda06d;
+  border: 1px solid rgba(221, 160, 109, 0.4);
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  font-size: 0.61rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pin-brand-subtitle {
+  color: #c7beb5;
+  font-size: 0.72rem;
+}
+
+.pin-private-label {
+  padding: 8px 12px;
+  color: #9ed2c4;
+  border: 1px solid rgba(111, 174, 157, 0.35);
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pin-content {
+  width: min(100% - 28px, 680px);
+  margin: 0 auto;
+  padding: 76px 0 60px;
+}
+
+.pin-progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pin-cancel-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  color: var(--pin-text-soft);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.pin-cancel-button span {
+  color: var(--pin-orange);
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.pin-step-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--pin-orange);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.pin-progress-track {
+  height: 9px;
+  margin: 30px 0 36px;
+  overflow: hidden;
+  background: #e9e3da;
+  border-radius: 999px;
+}
+
+.pin-progress-fill {
+  width: 25%;
+  height: 100%;
+  background: var(--pin-orange);
+  border-radius: inherit;
+}
+
+.pin-card {
+  padding: 38px 28px 30px;
+  background: var(--pin-surface);
+  border: 1px solid var(--pin-border);
+  border-radius: 25px;
+  box-shadow: var(--pin-shadow);
+}
+
+.pin-card-step {
+  margin: 0 0 12px;
+  color: var(--pin-orange);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pin-card h1 {
+  max-width: 520px;
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 7vw, 2.8rem);
+  line-height: 1.05;
+}
+
+.pin-description {
+  margin: 18px 0 0;
+  color: var(--pin-text-soft);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.pin-notice {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  margin: 24px 0;
+  padding: 16px;
+  color: #4f4a44;
+  background: #eef5f1;
+  border: 1px solid #d2e4dc;
+  border-radius: 12px;
+}
+
+.pin-notice-icon {
+  color: var(--pin-green);
+  font-weight: 800;
+}
+
+.pin-notice p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.pin-field {
+  display: grid;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.pin-field > span {
+  font-weight: 800;
+}
+
+.pin-field input {
+  width: 100%;
+  min-height: 60px;
+  padding: 14px 16px;
+  color: var(--pin-text);
+  background: #fbf8f2;
+  border: 2px solid #d7cec3;
+  border-radius: 14px;
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.pin-field input:focus {
+  border-color: var(--pin-orange);
+  box-shadow: 0 0 0 4px rgba(201, 93, 50, 0.12);
+}
+
+.pin-field input::placeholder {
+  color: #a39a91;
+}
+
+.pin-field small {
+  color: var(--pin-text-soft);
+  font-size: 0.76rem;
+  font-style: italic;
+}
+
+.pin-checkbox-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 11px;
+  margin-top: 24px;
+  color: var(--pin-text-soft);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.pin-checkbox-row input {
+  width: 19px;
+  height: 19px;
+  margin-top: 2px;
+  accent-color: var(--pin-orange);
+}
+
+.pin-error {
+  margin-top: 20px;
+  padding: 13px 15px;
+  color: #8d281e;
+  background: #fff0ec;
+  border: 1px solid #ebc2b8;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.pin-continue-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  width: 100%;
+  min-height: 58px;
+  margin-top: 28px;
+  padding: 14px 18px;
+  color: white;
+  background: var(--pin-orange);
+  border: 1px solid var(--pin-orange);
+  border-radius: 13px;
+  box-shadow: 0 7px 15px rgba(201, 93, 50, 0.2);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.pin-continue-button:hover {
+  background: var(--pin-orange-dark);
+}
+
+.pin-security-note {
+  margin: 18px auto 0;
+  color: var(--pin-text-soft);
+  font-size: 0.73rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 540px) {
+  .pin-topbar {
+    min-height: 68px;
+    padding: 11px 14px;
+  }
+
+  .pin-brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .pin-brand-title {
+    font-size: 0.95rem;
+  }
+
+  .pin-brand-subtitle {
+    font-size: 0.6rem;
+  }
+
+  .pin-brand-label {
+    margin-left: 5px;
+    font-size: 0.51rem;
+  }
+
+  .pin-private-label {
+    padding: 7px 9px;
+    font-size: 0.68rem;
+  }
+
+  .pin-content {
+    padding-top: 58px;
+  }
+
+  .pin-card {
+    padding: 30px 20px 24px;
+    border-radius: 21px;
+  }
+}

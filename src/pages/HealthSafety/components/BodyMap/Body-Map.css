@@ -1,0 +1,348 @@
+.health-body-map {
+  margin-top: 1.5rem;
+}
+
+.health-body-map h3 {
+  margin: 0 0 0.5rem;
+}
+
+.body-map-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(150px, 285px));
+  align-items: start;
+  justify-content: center;
+
+  gap: clamp(0.75rem, 4vw, 3rem);
+  margin-top: 1.5rem;
+}
+
+.body-figure {
+  min-width: 0;
+  text-align: center;
+}
+
+.body-figure-title {
+  margin: 0 0 0.65rem;
+
+  color: var(--text-primary, #26374d);
+
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.body-figure-svg {
+  display: block;
+
+  width: auto;
+  max-width: 100%;
+  height: min(68vh, 680px);
+  margin-inline: auto;
+
+  overflow: visible;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.body-figure-base,
+.body-figure-line-art {
+  pointer-events: none;
+}
+
+.body-figure-line-art {
+  display: block;
+  opacity: 1;
+}
+
+/*
+  This sits above the page but below the orbit.
+  It softens the body map so the wheel becomes the focus.
+*/
+.body-map-focus-overlay {
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+  padding: 0;
+
+  border: 0;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(10, 20, 34, 0.28),
+      rgba(5, 12, 24, 0.56)
+    );
+
+  backdrop-filter:
+    blur(7px)
+    brightness(0.72)
+    saturate(0.78);
+
+  -webkit-backdrop-filter:
+    blur(7px)
+    brightness(0.72)
+    saturate(0.78);
+
+  cursor: default;
+
+  animation: body-map-overlay-in 180ms ease-out;
+}
+
+@keyframes body-map-overlay-in {
+  from {
+    opacity: 0;
+    backdrop-filter:
+      blur(0)
+      brightness(1)
+      saturate(1);
+
+    -webkit-backdrop-filter:
+      blur(0)
+      brightness(1)
+      saturate(1);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 680px) {
+  .body-map-container {
+    grid-template-columns: repeat(2, minmax(125px, 1fr));
+    gap: 0.35rem;
+  }
+
+  .body-figure-title {
+    font-size: 0.88rem;
+  }
+
+  .body-figure-svg {
+    width: 100%;
+    height: auto;
+    max-height: 560px;
+  }
+
+  .body-map-focus-overlay {
+    backdrop-filter:
+      blur(6px)
+      brightness(0.66)
+      saturate(0.75);
+
+    -webkit-backdrop-filter:
+      blur(6px)
+      brightness(0.66)
+      saturate(0.75);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .body-map-focus-overlay {
+    animation: none;
+  }
+}
+
+.body-map-notes {
+  width: min(100%, 760px);
+  margin: 2.5rem auto 0;
+}
+
+.body-map-notes > h3 {
+  margin: 0 0 0.35rem;
+}
+
+.body-map-notes > p {
+  margin: 0;
+  color: var(--text-secondary, #667085);
+}
+
+.body-map-notes-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.body-note-card {
+  padding: 1rem;
+
+  border: 1px solid rgba(38, 55, 77, 0.12);
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  box-shadow:
+    0 10px 30px rgba(38, 55, 77, 0.06);
+
+  animation: body-note-in 200ms ease-out;
+}
+
+.body-note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.body-note-header strong {
+  color: var(--text-primary, #26374d);
+  font-size: 1rem;
+}
+
+.status-pill {
+  flex: 0 0 auto;
+
+  padding: 0.3rem 0.7rem;
+
+  border-radius: 999px;
+
+  color: #ffffff;
+
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.status-fine {
+  background: #4f9f82;
+}
+
+.status-ask-first {
+  background: #e4a93b;
+}
+
+.status-sensitive {
+  background: #4f8fe8;
+}
+
+.status-avoid {
+  background: #d65353;
+}
+
+.status-medical-consideration {
+  background: #9b5fd1;
+}
+
+.body-note-label {
+  display: block;
+  margin-bottom: 0.5rem;
+
+  color: var(--text-primary, #26374d);
+
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.body-note-card textarea {
+  display: block;
+
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 105px;
+  padding: 0.8rem 0.9rem;
+
+  border: 1px solid rgba(38, 55, 77, 0.2);
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: var(--text-primary, #26374d);
+
+  font: inherit;
+  line-height: 1.45;
+
+  resize: vertical;
+}
+
+.body-note-card textarea:focus {
+  border-color: #4f8fe8;
+  outline: 3px solid rgba(79, 143, 232, 0.16);
+}
+
+.note-counter {
+  margin-top: 0.35rem;
+
+  color: var(--text-secondary, #7d8794);
+
+  font-size: 0.8rem;
+  text-align: right;
+}
+
+@keyframes body-note-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 680px) {
+  .body-note-header {
+    align-items: flex-start;
+  }
+
+  .status-pill {
+    font-size: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .body-note-card {
+    animation: none;
+  }
+}
+.body-map-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 28px;
+}
+
+.body-map-continue-button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 12px;
+  background: #4f8fe8;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.94rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(79, 143, 232, 0.22);
+  transition:
+    transform 140ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.body-map-continue-button:hover {
+  background: #427fce;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(79, 143, 232, 0.26);
+}
+
+.body-map-continue-button:focus-visible {
+  outline: 3px solid rgba(79, 143, 232, 0.3);
+  outline-offset: 3px;
+}
+
+@media (max-width: 620px) {
+  .body-map-actions {
+    justify-content: stretch;
+  }
+
+  .body-map-continue-button {
+    width: 100%;
+  }
+}

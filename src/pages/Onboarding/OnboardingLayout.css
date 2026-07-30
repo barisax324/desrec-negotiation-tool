@@ -1,0 +1,6 @@
+.desrec-onboarding-step {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}

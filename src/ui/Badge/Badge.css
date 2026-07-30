@@ -1,0 +1,63 @@
+.desrec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+
+  border-radius: var(--radius-round);
+
+  font-weight: var(--font-weight-semibold);
+
+  white-space: nowrap;
+
+  user-select: none;
+}
+
+.desrec-badge--small {
+  padding: .2rem .6rem;
+  font-size: var(--font-size-xs);
+}
+
+.desrec-badge--medium {
+  padding: .35rem .85rem;
+  font-size: var(--font-size-sm);
+}
+
+.desrec-badge-icon {
+  display: flex;
+  align-items: center;
+}
+
+.desrec-badge--primary {
+  color: white;
+  background: var(--color-primary);
+}
+
+.desrec-badge--secondary {
+  color: var(--color-secondary);
+  background: var(--color-secondary-light);
+}
+
+.desrec-badge--success {
+  color: var(--color-success);
+  background: var(--color-success-light);
+}
+
+.desrec-badge--warning {
+  color: var(--color-warning);
+  background: var(--color-warning-light);
+}
+
+.desrec-badge--danger {
+  color: var(--color-danger);
+  background: var(--color-danger-light);
+}
+
+.desrec-badge--info {
+  color: var(--color-info);
+  background: var(--color-info-light);
+}
+
+.desrec-badge--neutral {
+  color: var(--color-text-secondary);
+  background: var(--color-background-alt);
+}

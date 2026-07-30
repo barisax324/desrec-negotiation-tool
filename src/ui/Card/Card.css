@@ -1,0 +1,88 @@
+.desrec-card {
+  width: 100%;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.desrec-card--padding-none {
+  padding: 0;
+}
+
+.desrec-card--padding-small {
+  padding: var(--space-md);
+}
+
+.desrec-card--padding-medium {
+  padding: var(--space-lg);
+}
+
+.desrec-card--padding-large {
+  padding: var(--space-xl);
+}
+
+.desrec-card--elevated {
+  box-shadow: var(--shadow-medium);
+}
+
+.desrec-card--default {
+  background: var(--color-surface);
+}
+
+.desrec-card--muted {
+  background: var(--color-surface-muted);
+}
+
+.desrec-card--outlined {
+  background: transparent;
+  border-color: var(--color-border-strong);
+}
+
+.desrec-card--success {
+  background: var(--color-success-light);
+  border-color: color-mix(
+    in srgb,
+    var(--color-success) 30%,
+    var(--color-border)
+  );
+}
+
+.desrec-card--warning {
+  background: var(--color-warning-light);
+  border-color: color-mix(
+    in srgb,
+    var(--color-warning) 30%,
+    var(--color-border)
+  );
+}
+
+.desrec-card--danger {
+  background: var(--color-danger-light);
+  border-color: color-mix(
+    in srgb,
+    var(--color-danger) 30%,
+    var(--color-border)
+  );
+}
+
+.desrec-card h1,
+.desrec-card h2,
+.desrec-card h3,
+.desrec-card p {
+  overflow-wrap: anywhere;
+}
+
+.desrec-card > :first-child {
+  margin-top: 0;
+}
+
+.desrec-card > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .desrec-card--padding-large {
+    padding: var(--space-lg);
+  }
+}

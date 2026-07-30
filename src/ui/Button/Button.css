@@ -1,0 +1,103 @@
+.desrec-button {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: var(--space-sm);
+
+  padding: .9rem 1.4rem;
+
+  border-radius: var(--radius-md);
+
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.desrec-button:hover {
+  transform: translateY(-1px);
+}
+
+.desrec-button:active {
+  transform: translateY(0);
+}
+
+.desrec-button:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.desrec-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.desrec-button--full {
+  width: 100%;
+}
+
+.desrec-button--primary {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.desrec-button--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.desrec-button--secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.desrec-button--secondary:hover:not(:disabled) {
+  background: var(--color-background-alt);
+}
+
+.desrec-button--ghost {
+  background: transparent;
+  color: var(--color-primary);
+}
+
+.desrec-button--ghost:hover:not(:disabled) {
+  background: var(--color-primary-light);
+}
+
+.desrec-button--danger {
+  background: var(--color-danger);
+  color: white;
+}
+
+.desrec-button--danger:hover:not(:disabled) {
+  filter: brightness(.95);
+}
+
+.desrec-button-spinner {
+  width: 18px;
+  height: 18px;
+
+  border: 2px solid rgba(255,255,255,.35);
+  border-top-color: white;
+
+  border-radius: 50%;
+
+  animation: desrec-spin .8s linear infinite;
+}
+
+@keyframes desrec-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

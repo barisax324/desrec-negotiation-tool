@@ -1,0 +1,217 @@
+.body-region {
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.body-region-hit,
+.body-region-marker-hit {
+  cursor: pointer;
+}
+
+.body-region-marker-hit {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.body-region--active .body-region-marker,
+.body-region--active .body-region-status-bloom {
+  opacity: 0;
+  transform: scale(0.25);
+}
+
+.body-region--active .body-region-tooltip {
+  opacity: 0;
+}
+
+.body-region-status-bloom {
+  fill: var(--marker-color);
+  opacity: 0.46;
+  pointer-events: none;
+
+  filter: blur(7px);
+
+  transform-box: fill-box;
+  transform-origin: center;
+
+  animation: body-region-bloom-in 220ms ease-out;
+}
+
+.body-region-marker {
+  pointer-events: none;
+
+  transform-box: fill-box;
+  transform-origin: center;
+
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.body-region-marker-halo {
+  fill: rgba(236, 245, 252, 0.46);
+  stroke: rgba(48, 80, 111, 0.12);
+  stroke-width: 2;
+
+  opacity: 0.72;
+
+  transition:
+    fill 160ms ease,
+    opacity 160ms ease,
+    stroke 160ms ease;
+}
+
+.body-region-marker-ring {
+  fill: rgba(255, 255, 255, 0.76);
+  stroke: rgba(54, 91, 126, 0.58);
+  stroke-width: 3.5;
+
+  filter: drop-shadow(0 3px 5px rgba(25, 51, 76, 0.18));
+
+  transition:
+    fill 160ms ease,
+    stroke 160ms ease,
+    stroke-width 160ms ease;
+}
+
+.body-region-marker-core {
+  fill: rgba(54, 91, 126, 0.64);
+
+  transition:
+    fill 160ms ease,
+    transform 160ms ease;
+}
+
+.body-region--selected .body-region-marker-halo {
+  fill: color-mix(
+    in srgb,
+    var(--marker-color) 22%,
+    transparent
+  );
+
+  stroke: color-mix(
+    in srgb,
+    var(--marker-color) 54%,
+    transparent
+  );
+}
+
+.body-region--selected .body-region-marker-ring {
+  fill: color-mix(
+    in srgb,
+    var(--marker-color) 17%,
+    white
+  );
+
+  stroke: var(--marker-color);
+}
+
+.body-region--selected .body-region-marker-core {
+  fill: var(--marker-color);
+}
+
+.body-region-tooltip {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.body-region-tooltip-background {
+  fill: rgba(34, 53, 73, 0.97);
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 2;
+
+  filter: drop-shadow(
+    0 7px 12px rgba(22, 39, 56, 0.28)
+  );
+}
+
+.body-region-tooltip-text {
+  fill: #ffffff;
+
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: 0.1px;
+}
+
+.body-region:hover .body-region-marker,
+.body-region:focus-visible .body-region-marker,
+.body-region:focus .body-region-marker {
+  transform: scale(1.15);
+}
+
+.body-region:hover .body-region-marker-halo,
+.body-region:focus-visible .body-region-marker-halo,
+.body-region:focus .body-region-marker-halo {
+  fill: rgba(226, 240, 252, 0.9);
+  stroke: rgba(55, 99, 141, 0.38);
+  opacity: 1;
+}
+
+.body-region:hover .body-region-marker-ring,
+.body-region:focus-visible .body-region-marker-ring,
+.body-region:focus .body-region-marker-ring {
+  fill: rgba(255, 255, 255, 0.98);
+  stroke: rgba(48, 91, 132, 0.92);
+  stroke-width: 4.5;
+}
+
+.body-region:hover .body-region-marker-core,
+.body-region:focus-visible .body-region-marker-core,
+.body-region:focus .body-region-marker-core {
+  fill: rgba(48, 91, 132, 0.95);
+  transform: scale(1.2);
+}
+
+
+.body-region:hover .body-region-tooltip,
+.body-region:focus-visible .body-region-tooltip,
+.body-region:focus .body-region-tooltip {
+  opacity: 1;
+}
+
+.body-region:focus-visible .body-region-hit {
+  stroke: rgba(79, 126, 180, 0.52);
+  stroke-width: 7;
+}
+
+@keyframes body-region-bloom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+
+  to {
+    opacity: 0.46;
+    transform: scale(1);
+  }
+}
+
+@media (hover: none) {
+  .body-region:hover .body-region-hover-outline {
+    stroke: transparent;
+    opacity: 0;
+  }
+
+  .body-region-tooltip-text {
+    font-size: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .body-region-marker,
+  .body-region-marker-halo,
+  .body-region-marker-ring,
+  .body-region-marker-core,
+  .body-region-tooltip,
+  .body-region-hover-outline,
+  .body-region-status-bloom {
+    animation: none;
+    transition: none;
+  }
+}

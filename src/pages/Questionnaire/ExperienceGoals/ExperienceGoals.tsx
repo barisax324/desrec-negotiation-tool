@@ -1,0 +1,357 @@
+import { useState } from "react";
+import Button from "../../../ui/Button";
+import PageLayout from "../../../ui/PageLayout";
+import "./ExperienceGoals.css";
+
+export type ExperienceGoal =
+  | "emotional-connection"
+  | "relaxed"
+  | "skill-building"
+  | "high-protocol"
+  | "catharsis"
+  | "playful"
+  | "sensual"
+  | "meditative"
+  | "aftercare-focused"
+  | "beautiful"
+  | "controlled"
+  | "dominant"
+  | "submissive"
+  | "energetic"
+  | "overwhelmed"
+  | "serious"
+  | "unsure";
+
+export interface ExperienceGoalsData {
+  goals: ExperienceGoal[];
+  customGoals: string[];
+  notes: string;
+}
+
+interface ExperienceGoalsProps {
+  data: ExperienceGoalsData;
+  updateData: (
+    updates: Partial<ExperienceGoalsData>,
+  ) => void;
+  next: () => void;
+  back: () => void;
+}
+
+interface GoalOption {
+  value: ExperienceGoal;
+  label: string;
+}
+
+const GOAL_OPTIONS: GoalOption[] = [
+  {
+    value: "emotional-connection",
+    label: "Emotional Connection & Intimacy",
+  },
+  {
+    value: "relaxed",
+    label: "Relaxed & Low Pressure",
+  },
+  {
+    value: "skill-building",
+    label: "Skill Building & Exploration",
+  },
+  {
+    value: "high-protocol",
+    label: "High Protocol & Formal Roles",
+  },
+  {
+    value: "catharsis",
+    label: "Stress Relief & Emotional Catharsis",
+  },
+  {
+    value: "playful",
+    label: "Playful Fun & Laughter",
+  },
+  {
+    value: "sensual",
+    label: "Sensual Exploration",
+  },
+  {
+    value: "meditative",
+    label: "Meditative & Flow State",
+  },
+  {
+    value: "aftercare-focused",
+    label: "Aftercare & Recovery Focused",
+  },
+  {
+    value: "beautiful",
+    label: "Beautiful & Aesthetic",
+  },
+  {
+    value: "controlled",
+    label: "Controlled",
+  },
+  {
+    value: "dominant",
+    label: "Dominant",
+  },
+  {
+    value: "submissive",
+    label: "Submissive",
+  },
+  {
+    value: "energetic",
+    label: "Energetic & Intense",
+  },
+  {
+    value: "overwhelmed",
+    label: "Overwhelmed",
+  },
+  {
+    value: "serious",
+    label: "Serious & Intentional",
+  },
+  {
+    value: "unsure",
+    label: "Unsure / Open to Discussion",
+  },
+];
+
+function ExperienceGoals({
+  data,
+  updateData,
+  next,
+  back,
+}: ExperienceGoalsProps) {
+  const [showCustomGoal, setShowCustomGoal] =
+    useState(false);
+
+  const [customGoalInput, setCustomGoalInput] =
+    useState("");
+
+  const toggleGoal = (goal: ExperienceGoal) => {
+    const isSelected = data.goals.includes(goal);
+
+    updateData({
+      goals: isSelected
+        ? data.goals.filter(
+            (selectedGoal) => selectedGoal !== goal,
+          )
+        : [...data.goals, goal],
+    });
+  };
+
+  const addCustomGoal = () => {
+    const trimmedGoal = customGoalInput.trim();
+
+    if (!trimmedGoal) {
+      return;
+    }
+
+    if (
+      data.customGoals.some(
+        (goal) =>
+          goal.toLowerCase() ===
+          trimmedGoal.toLowerCase(),
+      )
+    ) {
+      setCustomGoalInput("");
+      return;
+    }
+
+    updateData({
+      customGoals: [
+        ...data.customGoals,
+        trimmedGoal,
+      ],
+    });
+
+    setCustomGoalInput("");
+    setShowCustomGoal(false);
+  };
+
+  const removeCustomGoal = (
+    goalToRemove: string,
+  ) => {
+    updateData({
+      customGoals: data.customGoals.filter(
+        (goal) => goal !== goalToRemove,
+      ),
+    });
+  };
+
+  const hasSelection =
+    data.goals.length > 0 ||
+    data.customGoals.length > 0;
+
+  return (
+    <PageLayout
+      title="Experience Goals"
+      subtitle="Select all that apply."
+    >
+      <section className="experience-goals-card">
+        <div className="experience-goals-heading">
+          <span className="experience-goals-eyebrow">
+            Desired vibe and intentions
+          </span>
+
+          <h2>
+            What kind of experience are you hoping
+            to create during our scene?
+          </h2>
+
+          <p>
+            Choose the words that best describe how
+            you would like the experience to feel.
+          </p>
+        </div>
+
+        <div
+          className="experience-goals-options"
+          aria-label="Experience goals"
+        >
+          {GOAL_OPTIONS.map((option) => {
+            const isSelected =
+              data.goals.includes(option.value);
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                className={`experience-goal-chip${
+                  isSelected
+                    ? " experience-goal-chip--selected"
+                    : ""
+                }`}
+                aria-pressed={isSelected}
+                onClick={() =>
+                  toggleGoal(option.value)
+                }
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {data.customGoals.length > 0 && (
+          <div className="experience-custom-goals">
+            {data.customGoals.map((goal) => (
+              <div
+                className="experience-custom-goal"
+                key={goal}
+              >
+                <span>{goal}</span>
+
+                <button
+                  type="button"
+                  aria-label={`Remove ${goal}`}
+                  onClick={() =>
+                    removeCustomGoal(goal)
+                  }
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!showCustomGoal ? (
+          <button
+            type="button"
+            className="experience-add-goal"
+            onClick={() =>
+              setShowCustomGoal(true)
+            }
+          >
+            <span aria-hidden="true">＋</span>
+            Add something else
+          </button>
+        ) : (
+          <div className="experience-custom-entry">
+            <label htmlFor="custom-experience-goal">
+              Add another experience goal
+            </label>
+
+            <div className="experience-custom-entry__controls">
+              <input
+                id="custom-experience-goal"
+                type="text"
+                value={customGoalInput}
+                placeholder="Enter your own goal"
+                autoFocus
+                onChange={(event) =>
+                  setCustomGoalInput(
+                    event.target.value,
+                  )
+                }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    addCustomGoal();
+                  }
+
+                  if (event.key === "Escape") {
+                    setCustomGoalInput("");
+                    setShowCustomGoal(false);
+                  }
+                }}
+              />
+
+              <Button
+                onClick={addCustomGoal}
+                disabled={
+                  !customGoalInput.trim()
+                }
+              >
+                Add
+              </Button>
+            </div>
+
+            <button
+              type="button"
+              className="experience-custom-cancel"
+              onClick={() => {
+                setCustomGoalInput("");
+                setShowCustomGoal(false);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
+        <div className="experience-goals-notes">
+          <label htmlFor="experience-goals-notes">
+            Anything you would like your partner to
+            know about these goals?
+          </label>
+
+          <textarea
+            id="experience-goals-notes"
+            value={data.notes}
+            placeholder="Optional notes"
+            rows={4}
+            onChange={(event) =>
+              updateData({
+                notes: event.target.value,
+              })
+            }
+          />
+        </div>
+
+        <div className="experience-goals-navigation">
+          <Button onClick={back}>
+            Back
+          </Button>
+
+          <Button
+            onClick={next}
+            disabled={!hasSelection}
+          >
+            Continue
+          </Button>
+        </div>
+      </section>
+    </PageLayout>
+  );
+}
+
+export default ExperienceGoals;
