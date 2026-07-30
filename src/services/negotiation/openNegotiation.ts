@@ -5,7 +5,10 @@ export interface OpenNegotiationResult {
   negotiationName: string | null;
   sceneDate: string | null;
   sceneDateUnknown: boolean;
-  retentionPeriod: "24-hours" | "7-days" | "30-days";
+  retentionPeriod:
+    | "24-hours"
+    | "7-days"
+    | "30-days";
   negotiationStatus: string;
   activatedAt: string | null;
   expiresAt: string | null;
@@ -14,23 +17,48 @@ export interface OpenNegotiationResult {
   completedAt: string | null;
 }
 
-export async function openNegotiation(
-  accessToken: string,
-): Promise<OpenNegotiationResult> {
-  const token = accessToken.trim();
+export type NegotiationAccessMode =
+  | "permanent"
+  | "recovery";
 
-  if (!token) {
-    throw new Error("Missing access token.");
+export async function openNegotiation(
+  credential: string,
+  accessMode: NegotiationAccessMode = "permanent",
+): Promise<OpenNegotiationResult> {
+  const cleanedCredential =
+    credential.trim();
+
+  if (!cleanedCredential) {
+    throw new Error(
+      accessMode === "recovery"
+        ? "Missing recovery token."
+        : "Missing access token.",
+    );
   }
 
-  const { data, error } = await supabase.rpc(
-    "open_negotiation",
-    {
-      p_access_token: token,
-    },
-  );
+  const { data, error } =
+    accessMode === "recovery"
+      ? await supabase.rpc(
+          "open_negotiation_with_recovery",
+          {
+            p_recovery_token:
+              cleanedCredential,
+          },
+        )
+      : await supabase.rpc(
+          "open_negotiation",
+          {
+            p_access_token:
+              cleanedCredential,
+          },
+        );
 
   if (error) {
+    console.error(
+      "Unable to open negotiation:",
+      error,
+    );
+
     throw new Error(error.message);
   }
 
@@ -42,18 +70,41 @@ export async function openNegotiation(
 
   const row = data[0];
 
+  const participantRole =
+    String(
+      row.participant_role,
+    ).toUpperCase();
+
+  if (
+    participantRole !== "A" &&
+    participantRole !== "B"
+  ) {
+    throw new Error(
+      "The participant role could not be determined.",
+    );
+  }
+
   return {
-    participantRole: row.participant_role,
-    negotiationName: row.negotiation_name,
-    sceneDate: row.scene_date,
-    sceneDateUnknown: row.scene_date_unknown,
-    retentionPeriod: row.retention_period,
-    negotiationStatus: row.negotiation_status,
-    activatedAt: row.activated_at,
-    expiresAt: row.expires_at,
-    responses: row.responses ?? {},
+    participantRole,
+    negotiationName:
+      row.negotiation_name ?? null,
+    sceneDate:
+      row.scene_date ?? null,
+    sceneDateUnknown:
+      Boolean(row.scene_date_unknown),
+    retentionPeriod:
+      row.retention_period,
+    negotiationStatus:
+      row.negotiation_status,
+    activatedAt:
+      row.activated_at ?? null,
+    expiresAt:
+      row.expires_at ?? null,
+    responses:
+      row.responses ?? {},
     responsesVersion:
       row.responses_version ?? 0,
-    completedAt: row.completed_at,
+    completedAt:
+      row.completed_at ?? null,
   };
 }

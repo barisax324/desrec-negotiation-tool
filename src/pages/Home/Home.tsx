@@ -5,7 +5,7 @@ function Home() {
   const navigate = useNavigate();
 
   function handleCreateNegotiation() {
-  navigate("/create-pin");
+  navigate("/negotiation-setup");
 }
 
 function handleJoinNegotiation() {

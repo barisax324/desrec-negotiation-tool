@@ -80,9 +80,6 @@ function ReviewNegotiation() {
     ? storedRetentionPeriod
     : "7-days";
 
-  const pendingPin =
-    sessionStorage.getItem("desrec.pendingPin") ?? "";
-
   const [acknowledgements, setAcknowledgements] =
     useState<Acknowledgements>({
       temporary: false,
@@ -146,13 +143,6 @@ function ReviewNegotiation() {
       return;
     }
 
-    if (!pendingPin) {
-      setError(
-        "Your recovery PIN could not be found. Please return to the first step and create a new PIN.",
-      );
-      return;
-    }
-
     if (!sceneDateUndecided && !sceneDate) {
       setError(
         "Your planned scene date could not be found. Please return to the negotiation details step.",
@@ -178,8 +168,12 @@ function ReviewNegotiation() {
           : sceneDate || null,
         sceneDateUnknown: sceneDateUndecided,
         retentionPeriod,
-        creatorPin: pendingPin,
       });
+
+      sessionStorage.setItem(
+  "desrec.creatorToken",
+  result.creatorToken,
+);
 
       sessionStorage.setItem(
         "desrec.negotiationId",
@@ -335,14 +329,6 @@ function ReviewNegotiation() {
                 </dd>
               </div>
 
-              <div className="review-detail-row">
-                <dt>Recovery PIN</dt>
-                <dd>
-                  {pendingPin
-                    ? "Created and hidden"
-                    : "Missing"}
-                </dd>
-              </div>
             </dl>
           </section>
 

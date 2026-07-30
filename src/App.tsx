@@ -1,5 +1,5 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
-
+import CreatePassword from "./pages/create-password/CreatePassword";
 import About from "./pages/About/About";
 import CommunicationPage, {
   type CommunicationFormData,
@@ -14,6 +14,7 @@ import Retention from "./pages/Retention/Retention";
 import ReviewNegotiation from "./pages/ReviewNegotiation/ReviewNegotiation";
 import SavePersonalLink from "./pages/SavePersonalLink/SavePersonalLink";
 import Start from "./pages/Start/Start";
+import AftercarePage from "./components/Aftercare/AftercarePage";
 
 function App() {
   const navigate = useNavigate();
@@ -26,12 +27,7 @@ function App() {
       JSON.stringify(communicationData),
     );
 
-    /*
-     * Aftercare & Follow-up will eventually be the next page.
-     * Until that page exists, this sends the user to the existing
-     * review page so the button does not lead to a broken route.
-     */
-    navigate("/review-negotiation");
+    navigate("/aftercare-follow-up");
   };
 
   return (
@@ -39,8 +35,8 @@ function App() {
       <Route path="/" element={<Home />} />
 
       <Route
-        path="/create-pin"
-        element={<Pin mode="create" />}
+        path="/create-password"
+        element={<CreatePassword />}
       />
 
       <Route
@@ -63,6 +59,22 @@ function App() {
         }
       />
 
+<Route
+  path="/aftercare-follow-up"
+  element={
+    <AftercarePage
+      onBack={() => navigate(-1)}
+      onContinue={(aftercareData) => {
+        sessionStorage.setItem(
+          "desrec-aftercare-follow-up",
+          JSON.stringify(aftercareData),
+        );
+
+        navigate("/deletion-preference");
+      }}
+    />
+  }
+/>
       <Route
         path="/deletion-preference"
         element={<Retention />}

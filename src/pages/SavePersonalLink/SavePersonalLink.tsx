@@ -36,6 +36,9 @@ function SavePersonalLink() {
     sessionStorage.getItem("desrec.retentionPeriod") ??
     "7-days";
 
+  const publicId =
+    sessionStorage.getItem("desrec.publicId") ?? "";
+
   const linksAreMissing =
     !links.personalLink || !links.invitationLink;
 
@@ -88,7 +91,7 @@ function SavePersonalLink() {
     }
   }
 
- function handleOpenNegotiation() {
+function handleContinueToPasswordSetup() {
   if (!confirmedSaved || linksAreMissing) {
     return;
   }
@@ -103,27 +106,7 @@ function SavePersonalLink() {
     "A",
   );
 
-  sessionStorage.setItem(
-    "desrec.requiresOnboarding",
-    "true",
-  );
-
-  try {
-    const personalUrl = new URL(links.personalLink);
-
-    navigate(
-      `${personalUrl.pathname}${personalUrl.search}`,
-      {
-        state: {
-          beginWithOnboarding: true,
-        },
-      },
-    );
-  } catch {
-    setCopyError(
-      "Your personal link is invalid. Please return to the review step and create the negotiation again.",
-    );
-  }
+  navigate("/create-password");
 }
 
   function handleBack() {
@@ -215,7 +198,7 @@ function SavePersonalLink() {
             ) : (
               <>Your negotiation is ready.</>
             )}{" "}
-            Save your personal link before continuing and send
+            Save your personal link and session ID before continuing and send
             the separate invitation link to your Scene Partner.
           </p>
 
@@ -368,19 +351,58 @@ function SavePersonalLink() {
             </div>
           </aside>
 
-          <aside className="save-link-recovery-notice">
-            <span aria-hidden="true">⌁</span>
+<aside className="save-link-recovery-notice">
+  <span aria-hidden="true">⌁</span>
 
-            <div>
-              <h2>Recovery PIN</h2>
+  <div>
+    <h2>Your Reference ID</h2>
 
-              <p>
-                Your personal link can be recovered using the
-                recovery PIN you created during setup. The PIN
-                itself is not displayed on this page.
-              </p>
-            </div>
-          </aside>
+    <p>
+      You will need this if you ever lose your personal link.
+    </p>
+
+    <div className="save-link-field-row">
+      <input
+        type="text"
+        value={publicId}
+        placeholder="Reference ID unavailable"
+        readOnly
+        aria-label="Negotiation Reference ID"
+        onFocus={(event) => {
+          event.currentTarget.select();
+        }}
+      />
+
+      <button
+        type="button"
+        className="save-link-copy-button"
+        disabled={!publicId}
+        onClick={() => {
+          void navigator.clipboard
+            .writeText(publicId)
+            .catch(() => {
+              setCopyError(
+                "The Reference ID could not be copied automatically. Select it and copy it manually.",
+              );
+            });
+        }}
+      >
+        Copy ID
+      </button>
+    </div>
+
+    <p>
+      After you create your password on the next page, you can
+      access your negotiation using either your personal link or
+      your Reference ID and password.
+    </p>
+
+    <p>
+      Your personal link or reference ID and password must be used together.
+      Neither one can recover the negotiation by itself.
+    </p>
+  </div>
+</aside>
 
           {copyError && (
             <div className="save-link-error" role="alert">
@@ -401,8 +423,7 @@ function SavePersonalLink() {
             <span className="save-link-custom-checkbox" />
 
             <span>
-              I have saved my personal link and saved or shared
-              my Scene Partner&apos;s invitation link.
+              I have saved my personal link and Reference ID, and saved or shared my Scene Partner&apos;s invitation link.
             </span>
           </label>
 
@@ -416,17 +437,15 @@ function SavePersonalLink() {
               Back
             </button>
 
-            <button
-              type="button"
-              className="save-link-open-button"
-              disabled={
-                !confirmedSaved || linksAreMissing
-              }
-              onClick={handleOpenNegotiation}
-            >
-              Open My Negotiation
-              <span aria-hidden="true">→</span>
-            </button>
+<button
+  type="button"
+  className="save-link-open-button"
+  disabled={!confirmedSaved || linksAreMissing}
+  onClick={handleContinueToPasswordSetup}
+>
+  Continue to Password Setup
+  <span aria-hidden="true">→</span>
+</button>
           </div>
 
           {!confirmedSaved && !linksAreMissing && (

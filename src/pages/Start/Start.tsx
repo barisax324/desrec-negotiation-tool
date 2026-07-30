@@ -54,10 +54,17 @@ function readStoredResponse(
   }
 }
 
-function Start() {
- 
- const [activityResponses, setActivityResponses] =
-  useState<ActivityResponses>({}); const [searchParams] = useSearchParams();
+interface StartProps {
+  participantRole?: "A" | "B";
+}
+
+function Start({
+  participantRole = "A",
+}: StartProps) {
+  const [searchParams] = useSearchParams();
+
+  const recoveryCredential =
+    searchParams.get("r")?.trim() ?? "";
 
   const [isLoading, setIsLoading] =
     useState(true);
@@ -68,35 +75,43 @@ function Start() {
   const [hasStarted, setHasStarted] =
     useState(false);
 
-const [page, setPage] =
-  useState<QuestionnairePage>(
-    "experience-goals",
-  );
-
-  const [experienceGoals, setExperienceGoals] =
-    useState<ExperienceGoalsData>(
-      DEFAULT_EXPERIENCE_GOALS,
+  const [page, setPage] =
+    useState<QuestionnairePage>(
+      "experience-goals",
     );
 
-const [
-  communicationResponses,
-  setCommunicationResponses,
-] = useState<CommunicationFormData | null>(null);
+  const [
+    experienceGoals,
+    setExperienceGoals,
+  ] = useState<ExperienceGoalsData>(
+    DEFAULT_EXPERIENCE_GOALS,
+  );
 
-const [
-  aftercareResponses,
-  setAftercareResponses,
-] = useState<AftercareResponses | null>(null);
+  const [
+    activityResponses,
+    setActivityResponses,
+  ] = useState<ActivityResponses>({});
 
-const [
-  healthSafetyResponses,
-  setHealthSafetyResponses,
-] = useState<HealthSafetyResponses | null>(
-  null,
-);
+  const [
+    healthSafetyResponses,
+    setHealthSafetyResponses,
+  ] = useState<HealthSafetyResponses | null>(
+    null,
+  );
 
-  const token =
-    searchParams.get("t")?.trim() ?? "";
+  const [
+    communicationResponses,
+    setCommunicationResponses,
+  ] = useState<CommunicationFormData | null>(
+    null,
+  );
+
+  const [
+    aftercareResponses,
+    setAftercareResponses,
+  ] = useState<AftercareResponses | null>(
+    null,
+  );
 
   useEffect(() => {
     let isCancelled = false;
@@ -105,9 +120,9 @@ const [
       setIsLoading(true);
       setLoadError("");
 
-      if (!token) {
+      if (!recoveryCredential) {
         setLoadError(
-          "This personal link is incomplete. Please use the full link created for this negotiation.",
+          "This link is incomplete. Please open your negotiation using your Personal Link and password, or your Reference ID and password.",
         );
 
         setIsLoading(false);
@@ -115,24 +130,28 @@ const [
       }
 
       try {
-        const result =
-          await openNegotiation(token);
+        const result = await openNegotiation(
+          recoveryCredential,
+          "recovery",
+        );
 
         if (isCancelled) {
           return;
         }
 
-        if (result.participantRole !== "A") {
+        if (
+          result.participantRole !== participantRole
+        ) {
           setLoadError(
-            "This link does not belong to Participant A.",
+            `This login does not belong to Participant ${participantRole}.`,
           );
 
           return;
         }
 
         sessionStorage.setItem(
-          "desrec.activeAccessToken",
-          token,
+          "desrec.activeRecoveryToken",
+          recoveryCredential,
         );
 
         sessionStorage.setItem(
@@ -161,42 +180,45 @@ const [
 
         const onboardingWasCompleted =
           sessionStorage.getItem(
-            `desrec.onboardingComplete.${token}`,
+            `desrec.onboardingComplete.${recoveryCredential}`,
           ) === "true";
 
         const savedExperienceGoals =
-          sessionStorage.getItem(
-            `desrec.experienceGoals.${token}`,
+          readStoredResponse(
+            `desrec.experienceGoals.${recoveryCredential}`,
           );
 
         if (savedExperienceGoals) {
-          try {
-            setExperienceGoals(
-              JSON.parse(
-                savedExperienceGoals,
-              ) as ExperienceGoalsData,
-            );
-          } catch {
-            setExperienceGoals(
-              DEFAULT_EXPERIENCE_GOALS,
-            );
-          }
+          setExperienceGoals(
+            savedExperienceGoals as ExperienceGoalsData,
+          );
+        }
+
+        const savedHealthSafety =
+          readStoredResponse(
+            `desrec.healthSafety.${recoveryCredential}`,
+          );
+
+        if (savedHealthSafety) {
+          setHealthSafetyResponses(
+            savedHealthSafety as HealthSafetyResponses,
+          );
         }
 
         const savedCommunication =
           readStoredResponse(
-            `desrec.communication.${token}`,
+            `desrec.communication.${recoveryCredential}`,
           );
 
-if (savedCommunication) {
-  setCommunicationResponses(
-    savedCommunication as CommunicationFormData,
-  );
-}
+        if (savedCommunication) {
+          setCommunicationResponses(
+            savedCommunication as CommunicationFormData,
+          );
+        }
 
         const savedAftercare =
           readStoredResponse(
-            `desrec.aftercare.${token}`,
+            `desrec.aftercare.${recoveryCredential}`,
           );
 
         if (savedAftercare) {
@@ -230,7 +252,10 @@ if (savedCommunication) {
     return () => {
       isCancelled = true;
     };
-  }, [token]);
+  }, [
+    participantRole,
+    recoveryCredential,
+  ]);
 
   function scrollToTop() {
     window.scrollTo({
@@ -239,23 +264,23 @@ if (savedCommunication) {
     });
   }
 
-function moveToPage(
-  nextPage: QuestionnairePage,
-) {
-  setPage(nextPage);
-  scrollToTop();
-}
+  function moveToPage(
+    nextPage: QuestionnairePage,
+  ) {
+    setPage(nextPage);
+    scrollToTop();
+  }
 
   function handleOnboardingComplete(
     onboardingData: OnboardingData,
   ) {
     sessionStorage.setItem(
-      `desrec.onboardingComplete.${token}`,
+      `desrec.onboardingComplete.${recoveryCredential}`,
       "true",
     );
 
     sessionStorage.setItem(
-      `desrec.onboardingData.${token}`,
+      `desrec.onboardingData.${recoveryCredential}`,
       JSON.stringify(onboardingData),
     );
 
@@ -273,7 +298,7 @@ function moveToPage(
       };
 
       sessionStorage.setItem(
-        `desrec.experienceGoals.${token}`,
+        `desrec.experienceGoals.${recoveryCredential}`,
         JSON.stringify(updatedData),
       );
 
@@ -292,7 +317,7 @@ function moveToPage(
         <h1>Opening your negotiation...</h1>
 
         <p>
-          Please wait while your private link is
+          Please wait while your private access is
           verified.
         </p>
       </main>
@@ -309,13 +334,13 @@ function moveToPage(
         <p>{loadError}</p>
 
         <p>
-          The link may be incomplete, invalid, or
+          Your login may be incomplete, invalid, or
           expired.
         </p>
 
         <p>
           <Link to="/recover">
-            Recover My Personal Link
+            Open My Negotiation
           </Link>
         </p>
 
@@ -347,45 +372,45 @@ function moveToPage(
     );
   }
 
-if (page === "activities") {
-  return (
-    <Activities
-      back={() =>
-        moveToPage("experience-goals")
-      }
-      next={(responses) => {
-        setActivityResponses(responses);
+  if (page === "activities") {
+    return (
+      <Activities
+        back={() =>
+          moveToPage("experience-goals")
+        }
+        next={(responses) => {
+          setActivityResponses(responses);
 
-        console.log(
-          "Activity responses:",
-          responses,
-        );
+          sessionStorage.setItem(
+            `desrec.activities.${recoveryCredential}`,
+            JSON.stringify(responses),
+          );
 
-        moveToPage("health-safety");
-      }}
-    />
-  );
-}
+          moveToPage("health-safety");
+        }}
+      />
+    );
+  }
 
   if (page === "health-safety") {
     return (
-<HealthSafety
-  back={() =>
-    moveToPage("activities")
-  }
-  next={(responses) => {
-    setHealthSafetyResponses(
-      responses,
-    );
+      <HealthSafety
+        back={() =>
+          moveToPage("activities")
+        }
+        next={(responses) => {
+          setHealthSafetyResponses(
+            responses,
+          );
 
-    sessionStorage.setItem(
-      `desrec.healthSafety.${token}`,
-      JSON.stringify(responses),
-    );
+          sessionStorage.setItem(
+            `desrec.healthSafety.${recoveryCredential}`,
+            JSON.stringify(responses),
+          );
 
-    moveToPage("communication");
-  }}
-/>
+          moveToPage("communication");
+        }}
+      />
     );
   }
 
@@ -401,7 +426,7 @@ if (page === "activities") {
           );
 
           sessionStorage.setItem(
-           "communicationResponses",
+            `desrec.communication.${recoveryCredential}`,
             JSON.stringify(responses),
           );
 
@@ -411,47 +436,52 @@ if (page === "activities") {
     );
   }
 
-if (page === "aftercare") {
-  return (
-    <AftercarePage
-      onBack={() =>
-        moveToPage("communication")
-      }
-onContinue={(
-  responses: AftercareResponses,
-) => {
-  setAftercareResponses(
-    responses,
-  );
+  if (page === "aftercare") {
+    return (
+      <AftercarePage
+        onBack={() =>
+          moveToPage("communication")
+        }
+        onContinue={(
+          responses: AftercareResponses,
+        ) => {
+          setAftercareResponses(
+            responses,
+          );
 
-  sessionStorage.setItem(
-    `desrec.aftercare.${token}`,
-    JSON.stringify(responses),
-  );
+          sessionStorage.setItem(
+            `desrec.aftercare.${recoveryCredential}`,
+            JSON.stringify(responses),
+          );
 
-  moveToPage("summary");
+          moveToPage("summary");
+        }}
+      />
+    );
+  }
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-}}
-    />
-  );
-}
+  if (page === "summary") {
+    return (
+      <SummaryPage
+        experienceGoals={experienceGoals}
+        activityResponses={activityResponses}
+        healthSafetyResponses={
+          healthSafetyResponses
+        }
+        communicationResponses={
+          communicationResponses
+        }
+        aftercareResponses={
+          aftercareResponses
+        }
+        onEditResponses={() =>
+          moveToPage("experience-goals")
+        }
+      />
+    );
+  }
 
-if (page === "summary") {
-  return (
-<SummaryPage
-  experienceGoals={experienceGoals}
-  activityResponses={activityResponses}
-  healthSafetyResponses={healthSafetyResponses}
-  communicationResponses={communicationResponses}
-  aftercareResponses={aftercareResponses}
-  onEditResponses={() => moveToPage("experience-goals")}/>  );
-}
-
-return null;
+  return null;
 }
 
 export default Start;

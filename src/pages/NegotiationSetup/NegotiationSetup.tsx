@@ -42,7 +42,7 @@ function NegotiationSetup() {
   }
 
   function handleBack() {
-    navigate("/create-pin");
+    navigate("/");
   }
 
   function handleCancel() {
