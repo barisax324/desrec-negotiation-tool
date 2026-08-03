@@ -39,6 +39,65 @@ function SelectableOptionGroup({
     });
   }
 
+  function renderNoteField(
+    option: SelectableOption,
+    mobile: boolean,
+  ) {
+    return (
+      <div
+        className={[
+          "health-selected-option",
+          mobile
+            ? "health-selected-option--mobile"
+            : "health-selected-option--desktop",
+        ].join(" ")}
+      >
+        <div className="health-selected-option-header">
+          <h4>{option.label}</h4>
+
+          <button
+            type="button"
+            className="health-remove-option"
+            onClick={() =>
+              toggleOption(option.id)
+            }
+            aria-label={`Remove ${option.label}`}
+          >
+            Remove
+          </button>
+        </div>
+
+        <label
+          htmlFor={
+            mobile
+              ? `health-option-mobile-${option.id}`
+              : `health-option-${option.id}`
+          }
+        >
+          {notesLabel}
+        </label>
+
+        <textarea
+          id={
+            mobile
+              ? `health-option-mobile-${option.id}`
+              : `health-option-${option.id}`
+          }
+          value={
+            responses[option.id]?.notes ?? ""
+          }
+          onChange={(event) =>
+            updateNotes(
+              option.id,
+              event.target.value,
+            )
+          }
+          placeholder="Add anything your partner should know."
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="health-option-group">
       <div className="health-option-chips">
@@ -50,31 +109,41 @@ function SelectableOptionGroup({
             response?.selected ?? false;
 
           return (
-            <button
+            <div
               key={option.id}
-              type="button"
-              className={[
-                "health-option-chip",
-                isSelected
-                  ? "health-option-chip--selected"
-                  : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              aria-pressed={isSelected}
-              onClick={() =>
-                toggleOption(option.id)
-              }
+              className="health-option-chip-wrapper"
             >
-              <span
-                className="health-option-chip-icon"
-                aria-hidden="true"
+              <button
+                type="button"
+                className={[
+                  "health-option-chip",
+                  isSelected
+                    ? "health-option-chip--selected"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                aria-pressed={isSelected}
+                onClick={() =>
+                  toggleOption(option.id)
+                }
               >
-                {isSelected ? "✓" : "+"}
-              </span>
+                <span
+                  className="health-option-chip-icon"
+                  aria-hidden="true"
+                >
+                  {isSelected ? "✓" : "+"}
+                </span>
 
-              <span>{option.label}</span>
-            </button>
+                <span>{option.label}</span>
+              </button>
+
+              {isSelected &&
+                renderNoteField(
+                  option,
+                  true,
+                )}
+            </div>
           );
         })}
       </div>
@@ -86,45 +155,11 @@ function SelectableOptionGroup({
               responses[option.id]?.selected,
           )
           .map((option) => (
-            <div
-              key={option.id}
-              className="health-selected-option"
-            >
-              <div className="health-selected-option-header">
-                <h4>{option.label}</h4>
-
-                <button
-                  type="button"
-                  className="health-remove-option"
-                  onClick={() =>
-                    toggleOption(option.id)
-                  }
-                  aria-label={`Remove ${option.label}`}
-                >
-                  Remove
-                </button>
-              </div>
-
-              <label
-                htmlFor={`health-option-${option.id}`}
-              >
-                {notesLabel}
-              </label>
-
-              <textarea
-                id={`health-option-${option.id}`}
-                value={
-                  responses[option.id]
-                    ?.notes ?? ""
-                }
-                onChange={(event) =>
-                  updateNotes(
-                    option.id,
-                    event.target.value,
-                  )
-                }
-                placeholder="Add anything your partner should know."
-              />
+            <div key={option.id}>
+              {renderNoteField(
+                option,
+                false,
+              )}
             </div>
           ))}
       </div>

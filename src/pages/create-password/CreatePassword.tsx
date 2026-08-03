@@ -1,6 +1,9 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 import { supabase } from "../../lib/supabase";
 
@@ -11,6 +14,7 @@ const PASSWORD_PATTERN =
 
 type PasswordSetupResult = {
   recovery_token: string;
+  personal_token: string;
   public_id: string;
   participant_role:
     | "a"
@@ -21,6 +25,7 @@ type PasswordSetupResult = {
 
 function CreatePassword() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [password, setPassword] =
     useState("");
@@ -50,15 +55,39 @@ function CreatePassword() {
     setCopyMessage,
   ] = useState("");
 
+  const participantFromUrl =
+    searchParams
+      .get("participant")
+      ?.toUpperCase();
+
+  const storedParticipantRole =
+    sessionStorage
+      .getItem(
+        "desrec.currentParticipantRole",
+      )
+      ?.toUpperCase();
+
+  const participantRole:
+    | "A"
+    | "B" =
+    participantFromUrl === "B" ||
+    storedParticipantRole === "B"
+      ? "B"
+      : "A";
+
   const referenceId =
     sessionStorage.getItem(
       "desrec.publicId",
     ) ?? "";
 
-  const creatorToken =
-    sessionStorage.getItem(
-      "desrec.creatorToken",
-    ) ?? "";
+  const setupToken =
+    participantRole === "B"
+      ? sessionStorage.getItem(
+          "desrec.pendingAccessToken",
+        ) ?? ""
+      : sessionStorage.getItem(
+          "desrec.creatorToken",
+        ) ?? "";
 
   const passwordIsValid =
     PASSWORD_PATTERN.test(password);
@@ -72,7 +101,7 @@ function CreatePassword() {
     passwordsMatch &&
     acknowledged &&
     !isSubmitting &&
-    Boolean(creatorToken) &&
+    Boolean(setupToken) &&
     Boolean(referenceId);
 
   async function handleCopyReferenceId() {
@@ -109,16 +138,18 @@ function CreatePassword() {
     setErrorMessage("");
     setCopyMessage("");
 
-    if (!creatorToken) {
+    if (!setupToken) {
       setErrorMessage(
-        "Your setup information is missing. Please return to the previous page and try again.",
+        participantRole === "B"
+          ? "Your invitation information is missing. Return to Open Negotiation and paste the invitation link again."
+          : "Your setup information is missing. Return to the previous page and try again.",
       );
       return;
     }
 
     if (!referenceId) {
       setErrorMessage(
-        "Your Reference ID is unavailable. Please return to the previous page and try again.",
+        "Your Reference ID is unavailable. Return to the previous page and try again.",
       );
       return;
     }
@@ -153,8 +184,7 @@ function CreatePassword() {
       } = await supabase.rpc(
         "set_participant_password",
         {
-          p_access_token:
-            creatorToken,
+          p_access_token: setupToken,
           p_password: password,
         },
       );
@@ -165,9 +195,7 @@ function CreatePassword() {
           error,
         );
 
-        throw new Error(
-          error.message,
-        );
+        throw new Error(error.message);
       }
 
       const result =
@@ -177,23 +205,38 @@ function CreatePassword() {
               | undefined)
           : undefined;
 
-      if (!result?.recovery_token) {
+      if (
+        !result?.recovery_token ||
+        !result.personal_token ||
+        !result.public_id
+      ) {
         throw new Error(
-          "Your password was saved, but the negotiation could not be opened.",
+          "Your password was saved, but your access information was not returned.",
         );
       }
 
-      const participantRole =
+      const returnedRole =
         result.participant_role.toUpperCase();
 
       if (
-        participantRole !== "A" &&
-        participantRole !== "B"
+        returnedRole !== "A" &&
+        returnedRole !== "B"
       ) {
         throw new Error(
-          "The participant role could not be determined.",
+          "The participant could not be identified.",
         );
       }
+
+      const personalPath =
+        returnedRole === "B"
+          ? "/join"
+          : "/start";
+
+      const personalLink =
+        `${window.location.origin}${personalPath}?t=` +
+        encodeURIComponent(
+          result.personal_token,
+        );
 
       sessionStorage.setItem(
         "desrec.passwordCreated",
@@ -207,7 +250,17 @@ function CreatePassword() {
 
       sessionStorage.setItem(
         "desrec.currentParticipantRole",
-        participantRole,
+        returnedRole,
+      );
+
+      sessionStorage.setItem(
+        "desrec.personalToken",
+        result.personal_token,
+      );
+
+      sessionStorage.setItem(
+        "desrec.personalLink",
+        personalLink,
       );
 
       sessionStorage.setItem(
@@ -215,15 +268,16 @@ function CreatePassword() {
         result.recovery_token,
       );
 
-      const destination =
-        participantRole === "B"
-          ? "/join"
-          : "/start";
+      sessionStorage.removeItem(
+        "desrec.pendingAccessToken",
+      );
+
+      sessionStorage.removeItem(
+        "desrec.firstTimeParticipant",
+      );
 
       navigate(
-        `${destination}?r=${encodeURIComponent(
-          result.recovery_token,
-        )}`,
+        `/save-personal-link?participant=${returnedRole}`,
         {
           replace: true,
         },
@@ -286,10 +340,10 @@ function CreatePassword() {
           </h2>
 
           <p>
-            Save this ID. If you lose your
-            Personal Link, you can use your
-            Reference ID and password together
-            to open your negotiation again.
+            Save this ID. You can use your
+            Personal Link or this Reference ID
+            together with your password when
+            returning to the negotiation.
           </p>
 
           <div className="create-password-reference-row">
@@ -375,8 +429,7 @@ function CreatePassword() {
                 {passwordIsValid
                   ? "✓"
                   : "✕"}{" "}
-                6 to 12 letters and
-                numbers
+                6 to 12 letters and numbers
               </p>
             )}
           </div>
@@ -444,12 +497,11 @@ function CreatePassword() {
             />
 
             <span>
-              I understand that my
-              password cannot be recovered
-              or reset. I need my
-              Reference ID and password
-              together if I lose my
-              Personal Link.
+              I understand that my password
+              cannot be recovered or reset. I
+              need my Personal Link or Reference
+              ID together with my password to
+              return.
             </span>
           </label>
 

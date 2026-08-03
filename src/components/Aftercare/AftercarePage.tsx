@@ -1,10 +1,11 @@
 import { useState } from "react";
-import "./AftercarePage.css";
 
 import {
   AFTERCARE_HELP_OPTIONS,
   FOLLOW_UP_OPTIONS,
 } from "./aftercareOptions";
+
+import "./AftercarePage.css";
 
 export interface AftercareResponses {
   helpfulItems: string[];
@@ -17,8 +18,17 @@ export interface AftercareResponses {
 }
 
 interface AftercarePageProps {
+  initialResponses?: AftercareResponses | null;
+
   onBack: () => void;
-  onContinue: (responses: AftercareResponses) => void;
+
+  onContinue: (
+    responses: AftercareResponses,
+  ) => void;
+
+  onSaveAndReturnToSummary?: (
+    responses: AftercareResponses,
+  ) => void;
 }
 
 const INITIAL_RESPONSES: AftercareResponses = {
@@ -32,11 +42,16 @@ const INITIAL_RESPONSES: AftercareResponses = {
 };
 
 function AftercarePage({
+  initialResponses,
   onBack,
   onContinue,
+  onSaveAndReturnToSummary,
 }: AftercarePageProps) {
   const [responses, setResponses] =
-    useState<AftercareResponses>(INITIAL_RESPONSES);
+    useState<AftercareResponses>(
+      initialResponses ??
+        INITIAL_RESPONSES,
+    );
 
   function updateResponses(
     updates: Partial<AftercareResponses>,
@@ -47,20 +62,31 @@ function AftercarePage({
     }));
   }
 
-  function toggleHelpfulItem(optionId: string) {
+  function toggleHelpfulItem(
+    optionId: string,
+  ) {
     setResponses((current) => {
       const isSelected =
-        current.helpfulItems.includes(optionId);
+        current.helpfulItems.includes(
+          optionId,
+        );
 
       return {
         ...current,
+
         helpfulItems: isSelected
           ? current.helpfulItems.filter(
-              (item) => item !== optionId,
+              (item) =>
+                item !== optionId,
             )
-          : [...current.helpfulItems, optionId],
+          : [
+              ...current.helpfulItems,
+              optionId,
+            ],
+
         helpfulItemsOther:
-          optionId === "other" && isSelected
+          optionId === "other" &&
+          isSelected
             ? ""
             : current.helpfulItemsOther,
       };
@@ -71,8 +97,16 @@ function AftercarePage({
     onContinue(responses);
   }
 
+  function handleSaveAndReturn() {
+    onSaveAndReturnToSummary?.(
+      responses,
+    );
+  }
+
   const showOtherField =
-    responses.helpfulItems.includes("other");
+    responses.helpfulItems.includes(
+      "other",
+    );
 
   return (
     <main className="aftercare-page">
@@ -82,18 +116,26 @@ function AftercarePage({
             Questionnaire
           </p>
 
-          <h1>Aftercare</h1>
+          <h1>
+            Aftercare
+          </h1>
 
           <p className="aftercare-intro">
-            Aftercare looks different for everyone.
-            Tell your partner what helps you feel safe,
-            supported, and cared for after a scene.
+            Aftercare looks different for
+            everyone. Tell your partner what
+            helps you feel safe, supported,
+            and cared for after a scene.
           </p>
 
           <div className="aftercare-progress">
             <div className="aftercare-progress__text">
-              <span>Aftercare</span>
-              <span>Almost complete</span>
+              <span>
+                Aftercare
+              </span>
+
+              <span>
+                Almost complete
+              </span>
             </div>
 
             <div className="aftercare-progress__track">
@@ -109,44 +151,61 @@ function AftercarePage({
             </p>
 
             <div>
-              <h2>What helps me?</h2>
-              <p>Choose all that apply.</p>
+              <h2>
+                What helps me?
+              </h2>
+
+              <p>
+                Choose all that apply.
+              </p>
             </div>
           </div>
 
           <div className="aftercare-chip-grid">
-            {AFTERCARE_HELP_OPTIONS.map((option) => {
-              const isSelected =
-                responses.helpfulItems.includes(
-                  option.id,
+            {AFTERCARE_HELP_OPTIONS.map(
+              (option) => {
+                const isSelected =
+                  responses.helpfulItems.includes(
+                    option.id,
+                  );
+
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    className={[
+                      "aftercare-chip",
+                      isSelected
+                        ? "is-selected"
+                        : "",
+                      option.id === "other"
+                        ? "is-other"
+                        : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    aria-pressed={
+                      isSelected
+                    }
+                    onClick={() =>
+                      toggleHelpfulItem(
+                        option.id,
+                      )
+                    }
+                  >
+                    <span className="aftercare-chip__indicator">
+                      {isSelected
+                        ? "✓"
+                        : ""}
+                    </span>
+
+                    <span>
+                      {option.label}
+                    </span>
+                  </button>
                 );
-
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  className={[
-                    "aftercare-chip",
-                    isSelected ? "is-selected" : "",
-                    option.id === "other"
-                      ? "is-other"
-                      : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  aria-pressed={isSelected}
-                  onClick={() =>
-                    toggleHelpfulItem(option.id)
-                  }
-                >
-                  <span className="aftercare-chip__indicator">
-                    {isSelected ? "✓" : ""}
-                  </span>
-
-                  <span>{option.label}</span>
-                </button>
-              );
-            })}
+              },
+            )}
           </div>
 
           {showOtherField && (
@@ -158,7 +217,9 @@ function AftercarePage({
               <input
                 id="aftercare-other-help"
                 type="text"
-                value={responses.helpfulItemsOther}
+                value={
+                  responses.helpfulItemsOther
+                }
                 maxLength={300}
                 placeholder="Describe anything else that helps you feel supported."
                 onChange={(event) =>
@@ -180,11 +241,13 @@ function AftercarePage({
 
             <div>
               <h2>
-                Tell your partner about your aftercare
+                Tell your partner about
+                your aftercare
               </h2>
+
               <p>
-                Share as much or as little detail as
-                feels useful.
+                Share as much or as little
+                detail as feels useful.
               </p>
             </div>
           </div>
@@ -192,12 +255,15 @@ function AftercarePage({
           <div className="aftercare-text-fields">
             <div className="aftercare-field">
               <label htmlFor="aftercare-responses">
-                After a scene I sometimes...
+                After a scene I
+                sometimes...
               </label>
 
               <textarea
                 id="aftercare-responses"
-                value={responses.possibleResponses}
+                value={
+                  responses.possibleResponses
+                }
                 maxLength={1200}
                 placeholder="Examples: I sometimes get very quiet, cry even when everything went well, become very tired, need extra reassurance, or do not realize I am dropping until hours later."
                 onChange={(event) =>
@@ -209,19 +275,26 @@ function AftercarePage({
               />
 
               <span className="aftercare-character-count">
-                {responses.possibleResponses.length} /
-                1200
+                {
+                  responses
+                    .possibleResponses
+                    .length
+                }{" "}
+                / 1200
               </span>
             </div>
 
             <div className="aftercare-field">
               <label htmlFor="aftercare-cared-for">
-                What makes me feel cared for?
+                What makes me feel cared
+                for?
               </label>
 
               <textarea
                 id="aftercare-cared-for"
-                value={responses.feelingCaredFor}
+                value={
+                  responses.feelingCaredFor
+                }
                 maxLength={1200}
                 placeholder="Examples: Hold me without talking, tell me I did well, bring me water or a snack, watch TV with me, tuck me into bed, rub my back, or sit quietly with me."
                 onChange={(event) =>
@@ -233,8 +306,12 @@ function AftercarePage({
               />
 
               <span className="aftercare-character-count">
-                {responses.feelingCaredFor.length} /
-                1200
+                {
+                  responses
+                    .feelingCaredFor
+                    .length
+                }{" "}
+                / 1200
               </span>
             </div>
 
@@ -245,7 +322,9 @@ function AftercarePage({
 
               <textarea
                 id="aftercare-avoid"
-                value={responses.thingsToAvoid}
+                value={
+                  responses.thingsToAvoid
+                }
                 maxLength={1200}
                 placeholder="Examples: Do not ask if I am okay repeatedly, do not joke immediately afterward, do not leave without checking in, do not touch me before asking, or do not bring up mistakes right away."
                 onChange={(event) =>
@@ -257,8 +336,12 @@ function AftercarePage({
               />
 
               <span className="aftercare-character-count">
-                {responses.thingsToAvoid.length} /
-                1200
+                {
+                  responses
+                    .thingsToAvoid
+                    .length
+                }{" "}
+                / 1200
               </span>
             </div>
           </div>
@@ -271,49 +354,58 @@ function AftercarePage({
             </p>
 
             <div>
-              <h2>Follow-up</h2>
+              <h2>
+                Follow-up
+              </h2>
+
               <p>
-                How would you like your partner to
-                check in?
+                How would you like your
+                partner to check in?
               </p>
             </div>
           </div>
 
           <div className="aftercare-follow-up">
-            {FOLLOW_UP_OPTIONS.map((option) => {
-              const isSelected =
-                responses.followUpPreference ===
-                option.id;
+            {FOLLOW_UP_OPTIONS.map(
+              (option) => {
+                const isSelected =
+                  responses.followUpPreference ===
+                  option.id;
 
-              return (
-                <label
-                  key={option.id}
-                  className={[
-                    "aftercare-radio-card",
-                    isSelected ? "is-selected" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                >
-                  <input
-                    type="radio"
-                    name="aftercare-follow-up"
-                    value={option.id}
-                    checked={isSelected}
-                    onChange={() =>
-                      updateResponses({
-                        followUpPreference:
-                          option.id,
-                      })
-                    }
-                  />
+                return (
+                  <label
+                    key={option.id}
+                    className={[
+                      "aftercare-radio-card",
+                      isSelected
+                        ? "is-selected"
+                        : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  >
+                    <input
+                      type="radio"
+                      name="aftercare-follow-up"
+                      value={option.id}
+                      checked={isSelected}
+                      onChange={() =>
+                        updateResponses({
+                          followUpPreference:
+                            option.id,
+                        })
+                      }
+                    />
 
-                  <span className="aftercare-radio-card__control" />
+                    <span className="aftercare-radio-card__control" />
 
-                  <span>{option.label}</span>
-                </label>
-              );
-            })}
+                    <span>
+                      {option.label}
+                    </span>
+                  </label>
+                );
+              },
+            )}
           </div>
         </section>
 
@@ -324,10 +416,13 @@ function AftercarePage({
             </p>
 
             <div>
-              <h2>Anything else?</h2>
+              <h2>
+                Anything else?
+              </h2>
+
               <p>
-                Add anything that was not covered
-                above.
+                Add anything that was not
+                covered above.
               </p>
             </div>
           </div>
@@ -343,7 +438,9 @@ function AftercarePage({
             <textarea
               id="aftercare-additional-notes"
               className="aftercare-field__large"
-              value={responses.additionalNotes}
+              value={
+                responses.additionalNotes
+              }
               maxLength={1800}
               placeholder="Anything else you would like your partner to know about caring for you after a scene."
               onChange={(event) =>
@@ -355,8 +452,11 @@ function AftercarePage({
             />
 
             <span className="aftercare-character-count">
-              {responses.additionalNotes.length} /
-              1800
+              {
+                responses.additionalNotes
+                  .length
+              }{" "}
+              / 1800
             </span>
           </div>
         </section>
@@ -369,6 +469,18 @@ function AftercarePage({
           >
             ← Back
           </button>
+
+          {onSaveAndReturnToSummary && (
+            <button
+              type="button"
+              className="aftercare-summary-button"
+              onClick={
+                handleSaveAndReturn
+              }
+            >
+              Return to Summary
+            </button>
+          )}
 
           <button
             type="button"

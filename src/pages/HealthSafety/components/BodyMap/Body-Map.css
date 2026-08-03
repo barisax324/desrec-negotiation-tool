@@ -59,51 +59,10 @@
   This sits above the page but below the orbit.
   It softens the body map so the wheel becomes the focus.
 */
-.body-map-focus-overlay {
-  position: fixed;
-  z-index: 999;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-  padding: 0;
-
-  border: 0;
-
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(10, 20, 34, 0.28),
-      rgba(5, 12, 24, 0.56)
-    );
-
-  backdrop-filter:
-    blur(7px)
-    brightness(0.72)
-    saturate(0.78);
-
-  -webkit-backdrop-filter:
-    blur(7px)
-    brightness(0.72)
-    saturate(0.78);
-
-  cursor: default;
-
-  animation: body-map-overlay-in 180ms ease-out;
-}
 
 @keyframes body-map-overlay-in {
   from {
     opacity: 0;
-    backdrop-filter:
-      blur(0)
-      brightness(1)
-      saturate(1);
-
-    -webkit-backdrop-filter:
-      blur(0)
-      brightness(1)
-      saturate(1);
   }
 
   to {
@@ -127,23 +86,6 @@
     max-height: 560px;
   }
 
-  .body-map-focus-overlay {
-    backdrop-filter:
-      blur(6px)
-      brightness(0.66)
-      saturate(0.75);
-
-    -webkit-backdrop-filter:
-      blur(6px)
-      brightness(0.66)
-      saturate(0.75);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .body-map-focus-overlay {
-    animation: none;
-  }
 }
 
 .body-map-notes {

@@ -1,3 +1,10 @@
+.body-region,
+.body-region-hit {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .body-region {
   cursor: pointer;
   outline: none;

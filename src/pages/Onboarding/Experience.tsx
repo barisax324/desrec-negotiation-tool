@@ -76,6 +76,7 @@ function Experience({
     <OnboardingLayout
       title="Experience"
       subtitle="Help us understand your background. Experience is not a measure of worth or ability. It simply provides context for your responses."
+
       progress={6}
     >
       <div className="experience-options">

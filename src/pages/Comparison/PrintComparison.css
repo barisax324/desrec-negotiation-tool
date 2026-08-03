@@ -1,0 +1,103 @@
+.print-comparison {
+  display: none;
+}
+
+@media print {
+  .print-comparison {
+    display: block;
+    color: #111111;
+    font-size: 10pt;
+    line-height: 1.25;
+  }
+
+  .print-comparison-header {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+    gap: 0.25in;
+    align-items: end;
+    padding-bottom: 0.08in;
+    border-bottom: 1px solid #999999;
+  }
+
+  .print-comparison-organization {
+    margin: 0 0 0.03in;
+    color: #a94829;
+    font-size: 8pt;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .print-comparison h1 {
+    margin: 0;
+    font-size: 17pt;
+    line-height: 1;
+  }
+
+  .print-comparison-name {
+    margin: 0.04in 0 0;
+    font-weight: 700;
+  }
+
+  .print-comparison-meta {
+    display: grid;
+    gap: 0.03in;
+    min-width: 2.25in;
+    margin: 0;
+  }
+
+  .print-comparison-meta div {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.18in;
+  }
+
+  .print-comparison-meta dt {
+    color: #555555;
+  }
+
+  .print-comparison-meta dd {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .print-comparison-columns,
+  .print-comparison-row {
+    display: grid;
+    grid-template-columns:
+      1.35in
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+    gap: 0.08in;
+  }
+
+  .print-comparison-columns {
+    margin-top: 0.08in;
+    padding: 0.04in 0;
+    border-bottom: 1px solid #999999;
+  }
+
+  .print-comparison-section {
+    margin-top: 0.08in;
+  }
+
+  .print-comparison-section h2 {
+    margin: 0;
+    padding: 0.04in 0;
+    border-bottom: 1px solid #999999;
+    font-size: 11pt;
+    text-transform: uppercase;
+  }
+
+  .print-comparison-row {
+    padding: 0.045in 0;
+    border-bottom: 1px solid #dddddd;
+    break-inside: avoid;
+  }
+
+  .print-comparison-label {
+    font-weight: 700;
+  }
+}

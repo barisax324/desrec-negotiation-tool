@@ -19,8 +19,17 @@ import {
 } from "./communicationOptions";
 
 interface CommunicationPageProps {
+  initialData?: CommunicationFormData | null;
+
   onBack?: () => void;
-  onContinue?: (data: CommunicationFormData) => void;
+
+  onContinue?: (
+    data: CommunicationFormData,
+  ) => void;
+
+  onSaveAndReturnToSummary?: (
+    data: CommunicationFormData,
+  ) => void;
 }
 
 export interface DiscussionFlag {
@@ -51,7 +60,9 @@ interface AccordionSectionProps {
   summary?: string;
   children: ReactNode;
   onToggle: () => void;
-  sectionRef?: React.RefObject<HTMLDivElement | null>;
+  sectionRef?: React.RefObject<
+    HTMLDivElement | null
+  >;
 }
 
 const SECTION_ORDER: CommunicationSectionId[] = [
@@ -63,18 +74,29 @@ const SECTION_ORDER: CommunicationSectionId[] = [
   "anything-else",
 ];
 
-const SECTION_LABELS: Record<CommunicationSectionId, string> = {
+const SECTION_LABELS: Record<
+  CommunicationSectionId,
+  string
+> = {
   "check-ins": "Check-ins",
-  "communication-style": "Communication Style",
-  "something-wrong": "If Something Feels Wrong",
+  "communication-style":
+    "Communication Style",
+  "something-wrong":
+    "If Something Feels Wrong",
   safewords: "Safewords & Signals",
-  "communication-habits": "Communication Habits",
+  "communication-habits":
+    "Communication Habits",
   "anything-else": "Anything Else?",
 };
 
-function toggleArrayValue(values: string[], value: string): string[] {
+function toggleArrayValue(
+  values: string[],
+  value: string,
+): string[] {
   if (values.includes(value)) {
-    return values.filter((item) => item !== value);
+    return values.filter(
+      (item) => item !== value,
+    );
   }
 
   return [...values, value];
@@ -86,9 +108,17 @@ function getOptionLabels(
 ): string[] {
   return selectedIds
     .map((selectedId) =>
-      options.find((option) => option.id === selectedId),
+      options.find(
+        (option) =>
+          option.id === selectedId,
+      ),
     )
-    .filter((option): option is CommunicationOption => Boolean(option))
+    .filter(
+      (
+        option,
+      ): option is CommunicationOption =>
+        Boolean(option),
+    )
     .map((option) =>
       option.discussionFlag
         ? `${option.label} · Discuss in person`
@@ -96,7 +126,9 @@ function getOptionLabels(
     );
 }
 
-function createSummary(labels: string[]): string {
+function createSummary(
+  labels: string[],
+): string {
   if (labels.length === 0) {
     return "";
   }
@@ -141,13 +173,22 @@ function AccordionSection({
         aria-expanded={isOpen}
         aria-controls={`${id}-content`}
       >
-        <span className="communication-accordion__icon" aria-hidden="true">
-          {isLocked ? "⌕" : isOpen ? "−" : "+"}
+        <span
+          className="communication-accordion__icon"
+          aria-hidden="true"
+        >
+          {isLocked
+            ? "⌕"
+            : isOpen
+              ? "−"
+              : "+"}
         </span>
 
         <span className="communication-accordion__heading">
           <span className="communication-accordion__title-row">
-            <span className="communication-accordion__title">{title}</span>
+            <span className="communication-accordion__title">
+              {title}
+            </span>
 
             {isComplete && !isOpen && (
               <span className="communication-accordion__complete">
@@ -158,7 +199,8 @@ function AccordionSection({
 
           {isLocked ? (
             <span className="communication-accordion__summary">
-              Complete the previous section first.
+              Complete the previous section
+              first.
             </span>
           ) : summary && !isOpen ? (
             <span className="communication-accordion__summary">
@@ -177,7 +219,9 @@ function AccordionSection({
         className="communication-accordion__content"
         aria-hidden={!isOpen}
       >
-        <div className="communication-accordion__inner">{children}</div>
+        <div className="communication-accordion__inner">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -186,7 +230,9 @@ function AccordionSection({
 interface MultiSelectChipsProps {
   options: CommunicationOption[];
   selectedValues: string[];
-  onChange: (nextValues: string[]) => void;
+  onChange: (
+    nextValues: string[],
+  ) => void;
 }
 
 function MultiSelectChips({
@@ -197,7 +243,8 @@ function MultiSelectChips({
   return (
     <div className="communication-chips">
       {options.map((option) => {
-        const isSelected = selectedValues.includes(option.id);
+        const isSelected =
+          selectedValues.includes(option.id);
 
         return (
           <button
@@ -205,14 +252,23 @@ function MultiSelectChips({
             type="button"
             className={[
               "communication-chip",
-              isSelected ? "is-selected" : "",
-              option.discussionFlag ? "is-discussion" : "",
+              isSelected
+                ? "is-selected"
+                : "",
+              option.discussionFlag
+                ? "is-discussion"
+                : "",
             ]
               .filter(Boolean)
               .join(" ")}
             aria-pressed={isSelected}
             onClick={() =>
-              onChange(toggleArrayValue(selectedValues, option.id))
+              onChange(
+                toggleArrayValue(
+                  selectedValues,
+                  option.id,
+                ),
+              )
             }
           >
             <span
@@ -256,56 +312,129 @@ function ContinueSectionButton({
       disabled={disabled}
       onClick={onClick}
     >
-      {final ? "Continue to Aftercare" : "Continue"}
-      <span aria-hidden="true">→</span>
+      {final
+        ? "Continue to Aftercare"
+        : "Continue"}
+
+      <span aria-hidden="true">
+        →
+      </span>
     </button>
   );
 }
 
 export default function CommunicationPage({
-  
+  initialData,
   onBack,
   onContinue,
+  onSaveAndReturnToSummary,
 }: CommunicationPageProps) {
-  const [openSection, setOpenSection] =
-    useState<CommunicationSectionId>("check-ins");
+  const [
+    openSection,
+    setOpenSection,
+  ] =
+    useState<CommunicationSectionId>(
+      initialData
+        ? "anything-else"
+        : "check-ins",
+    );
 
-  const [unlockedSectionIndex, setUnlockedSectionIndex] =
-    useState<number>(0);
+  const [
+    unlockedSectionIndex,
+    setUnlockedSectionIndex,
+  ] = useState<number>(
+    initialData
+      ? SECTION_ORDER.length - 1
+      : 0,
+  );
 
-  const [checkIns, setCheckIns] = useState<string[]>([]);
-  const [communicationStyle, setCommunicationStyle] = useState<
-    string[]
-  >([]);
-  const [somethingWrong, setSomethingWrong] = useState<string[]>([]);
-  const [safewordType, setSafewordType] = useState<string>("");
-  const [customSafeword, setCustomSafeword] = useState<string>("");
-  const [communicationHabits, setCommunicationHabits] = useState<
-    string[]
-  >([]);
-  const [additionalNotes, setAdditionalNotes] = useState<string>("");
+  const [checkIns, setCheckIns] =
+    useState<string[]>(
+      initialData?.checkIns ?? [],
+    );
+
+  const [
+    communicationStyle,
+    setCommunicationStyle,
+  ] = useState<string[]>(
+    initialData?.communicationStyle ?? [],
+  );
+
+  const [
+    somethingWrong,
+    setSomethingWrong,
+  ] = useState<string[]>(
+    initialData?.somethingWrong ?? [],
+  );
+
+  const [
+    safewordType,
+    setSafewordType,
+  ] = useState<string>(
+    initialData?.safewordType ?? "",
+  );
+
+  const [
+    customSafeword,
+    setCustomSafeword,
+  ] = useState<string>(
+    initialData?.customSafeword ?? "",
+  );
+
+  const [
+    communicationHabits,
+    setCommunicationHabits,
+  ] = useState<string[]>(
+    initialData?.communicationHabits ?? [],
+  );
+
+  const [
+    additionalNotes,
+    setAdditionalNotes,
+  ] = useState<string>(
+    initialData?.additionalNotes ?? "",
+  );
 
   const sectionRefs = {
-    "check-ins": useRef<HTMLDivElement>(null),
-    "communication-style": useRef<HTMLDivElement>(null),
-    "something-wrong": useRef<HTMLDivElement>(null),
-    safewords: useRef<HTMLDivElement>(null),
-    "communication-habits": useRef<HTMLDivElement>(null),
-    "anything-else": useRef<HTMLDivElement>(null),
+    "check-ins":
+      useRef<HTMLDivElement>(null),
+    "communication-style":
+      useRef<HTMLDivElement>(null),
+    "something-wrong":
+      useRef<HTMLDivElement>(null),
+    safewords:
+      useRef<HTMLDivElement>(null),
+    "communication-habits":
+      useRef<HTMLDivElement>(null),
+    "anything-else":
+      useRef<HTMLDivElement>(null),
   };
 
   const completion = useMemo<
-    Record<CommunicationSectionId, boolean>
+    Record<
+      CommunicationSectionId,
+      boolean
+    >
   >(
     () => ({
-      "check-ins": checkIns.length > 0,
-      "communication-style": communicationStyle.length > 0,
-      "something-wrong": somethingWrong.length > 0,
+      "check-ins":
+        checkIns.length > 0,
+
+      "communication-style":
+        communicationStyle.length > 0,
+
+      "something-wrong":
+        somethingWrong.length > 0,
+
       safewords:
         safewordType.length > 0 &&
         (safewordType !== "custom" ||
-          customSafeword.trim().length > 0),
-      "communication-habits": communicationHabits.length > 0,
+          customSafeword.trim().length >
+            0),
+
+      "communication-habits":
+        communicationHabits.length > 0,
+
       "anything-else": true,
     }),
     [
@@ -319,97 +448,152 @@ export default function CommunicationPage({
   );
 
   useEffect(() => {
-    const firstInvalidIndex = SECTION_ORDER.findIndex(
-      (sectionId, index) =>
-        index < unlockedSectionIndex && !completion[sectionId],
-    );
+    const firstInvalidIndex =
+      SECTION_ORDER.findIndex(
+        (sectionId, index) =>
+          index <
+            unlockedSectionIndex &&
+          !completion[sectionId],
+      );
 
     if (firstInvalidIndex === -1) {
       return;
     }
 
-    setUnlockedSectionIndex(firstInvalidIndex);
-    setOpenSection(SECTION_ORDER[firstInvalidIndex]);
-  }, [completion, unlockedSectionIndex]);
+    setUnlockedSectionIndex(
+      firstInvalidIndex,
+    );
 
-  const discussionFlags = useMemo<DiscussionFlag[]>(() => {
-    const flags: DiscussionFlag[] = [];
+    setOpenSection(
+      SECTION_ORDER[
+        firstInvalidIndex
+      ],
+    );
+  }, [
+    completion,
+    unlockedSectionIndex,
+  ]);
 
-    const addFlags = (
-      sectionId: CommunicationSectionId,
-      selectedIds: string[],
-      options: CommunicationOption[],
-    ) => {
-      selectedIds.forEach((selectedId) => {
-        const option = options.find(
-          (candidate) => candidate.id === selectedId,
+  const discussionFlags =
+    useMemo<DiscussionFlag[]>(() => {
+      const flags: DiscussionFlag[] = [];
+
+      const addFlags = (
+        sectionId:
+          CommunicationSectionId,
+        selectedIds: string[],
+        options:
+          CommunicationOption[],
+      ) => {
+        selectedIds.forEach(
+          (selectedId) => {
+            const option =
+              options.find(
+                (candidate) =>
+                  candidate.id ===
+                  selectedId,
+              );
+
+            if (
+              !option?.discussionFlag
+            ) {
+              return;
+            }
+
+            flags.push({
+              sectionId,
+              sectionLabel:
+                SECTION_LABELS[
+                  sectionId
+                ],
+              optionId: option.id,
+              optionLabel:
+                option.label,
+            });
+          },
         );
+      };
 
-        if (!option?.discussionFlag) {
-          return;
-        }
+      addFlags(
+        "check-ins",
+        checkIns,
+        CHECK_IN_OPTIONS,
+      );
 
-        flags.push({
-          sectionId,
-          sectionLabel: SECTION_LABELS[sectionId],
-          optionId: option.id,
-          optionLabel: option.label,
-        });
-      });
-    };
+      addFlags(
+        "something-wrong",
+        somethingWrong,
+        SOMETHING_WRONG_OPTIONS,
+      );
 
-    addFlags("check-ins", checkIns, CHECK_IN_OPTIONS);
-    addFlags(
-      "something-wrong",
+      addFlags(
+        "communication-habits",
+        communicationHabits,
+        COMMUNICATION_HABIT_OPTIONS,
+      );
+
+      return flags;
+    }, [
+      checkIns,
       somethingWrong,
-      SOMETHING_WRONG_OPTIONS,
-    );
-    addFlags(
-      "communication-habits",
       communicationHabits,
-      COMMUNICATION_HABIT_OPTIONS,
-    );
-
-    return flags;
-  }, [checkIns, somethingWrong, communicationHabits]);
+    ]);
 
   const summaries = useMemo<
-    Record<CommunicationSectionId, string>
+    Record<
+      CommunicationSectionId,
+      string
+    >
   >(
     () => ({
       "check-ins": createSummary(
-        getOptionLabels(checkIns, CHECK_IN_OPTIONS),
-      ),
-      "communication-style": createSummary(
         getOptionLabels(
-          communicationStyle,
-          COMMUNICATION_STYLE_OPTIONS,
+          checkIns,
+          CHECK_IN_OPTIONS,
         ),
       ),
-      "something-wrong": createSummary(
-        getOptionLabels(
-          somethingWrong,
-          SOMETHING_WRONG_OPTIONS,
+
+      "communication-style":
+        createSummary(
+          getOptionLabels(
+            communicationStyle,
+            COMMUNICATION_STYLE_OPTIONS,
+          ),
         ),
-      ),
+
+      "something-wrong":
+        createSummary(
+          getOptionLabels(
+            somethingWrong,
+            SOMETHING_WRONG_OPTIONS,
+          ),
+        ),
+
       safewords:
         safewordType === "custom"
-          ? customSafeword.trim() || "Custom Safeword"
+          ? customSafeword.trim() ||
+            "Custom Safeword"
           : createSummary(
               getOptionLabels(
-                safewordType ? [safewordType] : [],
+                safewordType
+                  ? [safewordType]
+                  : [],
                 SAFEWORD_OPTIONS,
               ),
             ),
-      "communication-habits": createSummary(
-        getOptionLabels(
-          communicationHabits,
-          COMMUNICATION_HABIT_OPTIONS,
+
+      "communication-habits":
+        createSummary(
+          getOptionLabels(
+            communicationHabits,
+            COMMUNICATION_HABIT_OPTIONS,
+          ),
         ),
-      ),
-      "anything-else": additionalNotes.trim()
-        ? "Additional information added"
-        : "No additional information",
+
+      "anything-else":
+        additionalNotes.trim()
+          ? "Additional information added"
+          : "No additional information",
     }),
     [
       checkIns,
@@ -422,37 +606,60 @@ export default function CommunicationPage({
     ],
   );
 
-  const isSectionLocked = (
-    sectionId: CommunicationSectionId,
-  ): boolean => {
-    const sectionIndex = SECTION_ORDER.indexOf(sectionId);
-    return sectionIndex > unlockedSectionIndex;
-  };
+  function isSectionLocked(
+    sectionId:
+      CommunicationSectionId,
+  ): boolean {
+    const sectionIndex =
+      SECTION_ORDER.indexOf(
+        sectionId,
+      );
 
-  const isSectionComplete = (
-    sectionId: CommunicationSectionId,
-  ): boolean => {
-    const sectionIndex = SECTION_ORDER.indexOf(sectionId);
+    return (
+      sectionIndex >
+      unlockedSectionIndex
+    );
+  }
 
-    if (sectionId === "anything-else") {
-      return sectionIndex < unlockedSectionIndex;
+  function isSectionComplete(
+    sectionId:
+      CommunicationSectionId,
+  ): boolean {
+    const sectionIndex =
+      SECTION_ORDER.indexOf(
+        sectionId,
+      );
+
+    if (
+      sectionId ===
+      "anything-else"
+    ) {
+      return (
+        sectionIndex <
+        unlockedSectionIndex
+      );
     }
 
     return completion[sectionId];
-  };
+  }
 
-  const scrollToSection = (
-    sectionId: CommunicationSectionId,
-  ): void => {
+  function scrollToSection(
+    sectionId:
+      CommunicationSectionId,
+  ): void {
     window.setTimeout(() => {
-      const element = sectionRefs[sectionId].current;
+      const element =
+        sectionRefs[
+          sectionId
+        ].current;
 
       if (!element) {
         return;
       }
 
       const top =
-        element.getBoundingClientRect().top +
+        element.getBoundingClientRect()
+          .top +
         window.scrollY -
         24;
 
@@ -461,66 +668,107 @@ export default function CommunicationPage({
         behavior: "smooth",
       });
     }, 230);
-  };
+  }
 
-  const handleSectionToggle = (
-    sectionId: CommunicationSectionId,
-  ): void => {
-    if (isSectionLocked(sectionId)) {
+  function handleSectionToggle(
+    sectionId:
+      CommunicationSectionId,
+  ): void {
+    if (
+      isSectionLocked(sectionId)
+    ) {
       return;
     }
 
-    setOpenSection((currentSection) =>
-      currentSection === sectionId ? sectionId : sectionId,
+    setOpenSection(sectionId);
+  }
+
+  function advanceFromSection(
+    currentSectionId:
+      CommunicationSectionId,
+  ): void {
+    if (
+      !completion[
+        currentSectionId
+      ]
+    ) {
+      return;
+    }
+
+    const currentIndex =
+      SECTION_ORDER.indexOf(
+        currentSectionId,
+      );
+
+    const nextIndex =
+      currentIndex + 1;
+
+    if (
+      nextIndex >=
+      SECTION_ORDER.length
+    ) {
+      return;
+    }
+
+    const nextSectionId =
+      SECTION_ORDER[nextIndex];
+
+    setUnlockedSectionIndex(
+      (currentUnlockedIndex) =>
+        Math.max(
+          currentUnlockedIndex,
+          nextIndex,
+        ),
     );
-  };
 
-  const advanceFromSection = (
-    currentSectionId: CommunicationSectionId,
-  ): void => {
-    if (!completion[currentSectionId]) {
-      return;
-    }
-
-    const currentIndex = SECTION_ORDER.indexOf(currentSectionId);
-    const nextIndex = currentIndex + 1;
-
-    if (nextIndex >= SECTION_ORDER.length) {
-      return;
-    }
-
-    const nextSectionId = SECTION_ORDER[nextIndex];
-
-    setUnlockedSectionIndex((currentUnlockedIndex) =>
-      Math.max(currentUnlockedIndex, nextIndex),
+    setOpenSection(
+      nextSectionId,
     );
 
-    setOpenSection(nextSectionId);
-    scrollToSection(nextSectionId);
-  };
+    scrollToSection(
+      nextSectionId,
+    );
+  }
 
-  const handleFinalContinue = (): void => {
-    const data: CommunicationFormData = {
+  function createCommunicationData(): CommunicationFormData {
+    return {
       checkIns,
       communicationStyle,
       somethingWrong,
       safewordType,
-      customSafeword: customSafeword.trim(),
+      customSafeword:
+        customSafeword.trim(),
       communicationHabits,
-      additionalNotes: additionalNotes.trim(),
+      additionalNotes:
+        additionalNotes.trim(),
       discussionFlags,
     };
+  }
 
-    onContinue?.(data);
-  };
+  function handleFinalContinue() {
+    onContinue?.(
+      createCommunicationData(),
+    );
+  }
 
-  const completedRequiredSections = SECTION_ORDER.slice(0, 5).filter(
-    (sectionId) => completion[sectionId],
-  ).length;
+  function handleSaveAndReturn() {
+    onSaveAndReturnToSummary?.(
+      createCommunicationData(),
+    );
+  }
 
-  const progressPercent = Math.round(
-    (completedRequiredSections / 5) * 100,
-  );
+  const completedRequiredSections =
+    SECTION_ORDER.slice(0, 5).filter(
+      (sectionId) =>
+        completion[sectionId],
+    ).length;
+
+  const progressPercent =
+    Math.round(
+      (completedRequiredSections /
+        5) *
+        100,
+    );
 
   return (
     <main className="communication-page">
@@ -531,12 +779,18 @@ export default function CommunicationPage({
               Scene Negotiation
             </p>
 
-            <h1>Communication &amp; Boundaries</h1>
+            <h1>
+              Communication &amp;
+              Boundaries
+            </h1>
 
             <p className="communication-page__intro">
-              Everyone communicates differently. Help your partner
-              understand how to check in with you and respond if
-              something changes during a scene.
+              Everyone communicates
+              differently. Help your
+              partner understand how to
+              check in with you and respond
+              if something changes during a
+              scene.
             </p>
           </div>
 
@@ -545,14 +799,21 @@ export default function CommunicationPage({
             aria-label={`${progressPercent}% complete`}
           >
             <div className="communication-progress__text">
-              <span>Communication</span>
-              <span>{progressPercent}%</span>
+              <span>
+                Communication
+              </span>
+
+              <span>
+                {progressPercent}%
+              </span>
             </div>
 
             <div className="communication-progress__track">
               <div
                 className="communication-progress__fill"
-                style={{ width: `${progressPercent}%` }}
+                style={{
+                  width: `${progressPercent}%`,
+                }}
               />
             </div>
           </div>
@@ -563,22 +824,49 @@ export default function CommunicationPage({
             id="check-ins"
             title="Check-ins"
             description="How would you like your partner to check in with you during a scene?"
-            isOpen={openSection === "check-ins"}
-            isLocked={isSectionLocked("check-ins")}
-            isComplete={isSectionComplete("check-ins")}
-            summary={summaries["check-ins"]}
-            onToggle={() => handleSectionToggle("check-ins")}
-            sectionRef={sectionRefs["check-ins"]}
+            isOpen={
+              openSection ===
+              "check-ins"
+            }
+            isLocked={isSectionLocked(
+              "check-ins",
+            )}
+            isComplete={isSectionComplete(
+              "check-ins",
+            )}
+            summary={
+              summaries["check-ins"]
+            }
+            onToggle={() =>
+              handleSectionToggle(
+                "check-ins",
+              )
+            }
+            sectionRef={
+              sectionRefs["check-ins"]
+            }
           >
             <MultiSelectChips
-              options={CHECK_IN_OPTIONS}
-              selectedValues={checkIns}
+              options={
+                CHECK_IN_OPTIONS
+              }
+              selectedValues={
+                checkIns
+              }
               onChange={setCheckIns}
             />
 
             <ContinueSectionButton
-              disabled={!completion["check-ins"]}
-              onClick={() => advanceFromSection("check-ins")}
+              disabled={
+                !completion[
+                  "check-ins"
+                ]
+              }
+              onClick={() =>
+                advanceFromSection(
+                  "check-ins",
+                )
+              }
             />
           </AccordionSection>
 
@@ -586,25 +874,54 @@ export default function CommunicationPage({
             id="communication-style"
             title="Communication Style"
             description="What communication style feels best during a scene?"
-            isOpen={openSection === "communication-style"}
-            isLocked={isSectionLocked("communication-style")}
-            isComplete={isSectionComplete("communication-style")}
-            summary={summaries["communication-style"]}
-            onToggle={() =>
-              handleSectionToggle("communication-style")
+            isOpen={
+              openSection ===
+              "communication-style"
             }
-            sectionRef={sectionRefs["communication-style"]}
+            isLocked={isSectionLocked(
+              "communication-style",
+            )}
+            isComplete={isSectionComplete(
+              "communication-style",
+            )}
+            summary={
+              summaries[
+                "communication-style"
+              ]
+            }
+            onToggle={() =>
+              handleSectionToggle(
+                "communication-style",
+              )
+            }
+            sectionRef={
+              sectionRefs[
+                "communication-style"
+              ]
+            }
           >
             <MultiSelectChips
-              options={COMMUNICATION_STYLE_OPTIONS}
-              selectedValues={communicationStyle}
-              onChange={setCommunicationStyle}
+              options={
+                COMMUNICATION_STYLE_OPTIONS
+              }
+              selectedValues={
+                communicationStyle
+              }
+              onChange={
+                setCommunicationStyle
+              }
             />
 
             <ContinueSectionButton
-              disabled={!completion["communication-style"]}
+              disabled={
+                !completion[
+                  "communication-style"
+                ]
+              }
               onClick={() =>
-                advanceFromSection("communication-style")
+                advanceFromSection(
+                  "communication-style",
+                )
               }
             />
           </AccordionSection>
@@ -613,25 +930,54 @@ export default function CommunicationPage({
             id="something-wrong"
             title="If Something Feels Wrong"
             description="What would you prefer your partner do if something does not feel right?"
-            isOpen={openSection === "something-wrong"}
-            isLocked={isSectionLocked("something-wrong")}
-            isComplete={isSectionComplete("something-wrong")}
-            summary={summaries["something-wrong"]}
-            onToggle={() =>
-              handleSectionToggle("something-wrong")
+            isOpen={
+              openSection ===
+              "something-wrong"
             }
-            sectionRef={sectionRefs["something-wrong"]}
+            isLocked={isSectionLocked(
+              "something-wrong",
+            )}
+            isComplete={isSectionComplete(
+              "something-wrong",
+            )}
+            summary={
+              summaries[
+                "something-wrong"
+              ]
+            }
+            onToggle={() =>
+              handleSectionToggle(
+                "something-wrong",
+              )
+            }
+            sectionRef={
+              sectionRefs[
+                "something-wrong"
+              ]
+            }
           >
             <MultiSelectChips
-              options={SOMETHING_WRONG_OPTIONS}
-              selectedValues={somethingWrong}
-              onChange={setSomethingWrong}
+              options={
+                SOMETHING_WRONG_OPTIONS
+              }
+              selectedValues={
+                somethingWrong
+              }
+              onChange={
+                setSomethingWrong
+              }
             />
 
             <ContinueSectionButton
-              disabled={!completion["something-wrong"]}
+              disabled={
+                !completion[
+                  "something-wrong"
+                ]
+              }
               onClick={() =>
-                advanceFromSection("something-wrong")
+                advanceFromSection(
+                  "something-wrong",
+                )
               }
             />
           </AccordionSection>
@@ -640,52 +986,85 @@ export default function CommunicationPage({
             id="safewords"
             title="Safewords & Signals"
             description="How would you like to communicate if you need to slow down or stop?"
-            isOpen={openSection === "safewords"}
-            isLocked={isSectionLocked("safewords")}
-            isComplete={isSectionComplete("safewords")}
-            summary={summaries.safewords}
-            onToggle={() => handleSectionToggle("safewords")}
-            sectionRef={sectionRefs.safewords}
+            isOpen={
+              openSection ===
+              "safewords"
+            }
+            isLocked={isSectionLocked(
+              "safewords",
+            )}
+            isComplete={isSectionComplete(
+              "safewords",
+            )}
+            summary={
+              summaries.safewords
+            }
+            onToggle={() =>
+              handleSectionToggle(
+                "safewords",
+              )
+            }
+            sectionRef={
+              sectionRefs.safewords
+            }
           >
             <div className="communication-chips">
-              {SAFEWORD_OPTIONS.map((option) => {
-                const isSelected = safewordType === option.id;
+              {SAFEWORD_OPTIONS.map(
+                (option) => {
+                  const isSelected =
+                    safewordType ===
+                    option.id;
 
-                return (
-                  <button
-                    key={option.id}
-                    type="button"
-                    className={[
-                      "communication-chip",
-                      isSelected ? "is-selected" : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                    aria-pressed={isSelected}
-                    onClick={() => {
-                      setSafewordType(option.id);
-
-                      if (option.id !== "custom") {
-                        setCustomSafeword("");
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      className={[
+                        "communication-chip",
+                        isSelected
+                          ? "is-selected"
+                          : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      aria-pressed={
+                        isSelected
                       }
-                    }}
-                  >
-                    <span
-                      className="communication-chip__check"
-                      aria-hidden="true"
-                    >
-                      {isSelected ? "✓" : ""}
-                    </span>
+                      onClick={() => {
+                        setSafewordType(
+                          option.id,
+                        );
 
-                    <span className="communication-chip__label">
-                      {option.label}
-                    </span>
-                  </button>
-                );
-              })}
+                        if (
+                          option.id !==
+                          "custom"
+                        ) {
+                          setCustomSafeword(
+                            "",
+                          );
+                        }
+                      }}
+                    >
+                      <span
+                        className="communication-chip__check"
+                        aria-hidden="true"
+                      >
+                        {isSelected
+                          ? "✓"
+                          : ""}
+                      </span>
+
+                      <span className="communication-chip__label">
+                        {option.label}
+                      </span>
+                    </button>
+                  );
+                },
+              )}
             </div>
 
-            {safewordType === "custom" && (
+            {safewordType ===
+              "custom" && (
               <div className="communication-custom-field">
                 <label htmlFor="custom-safeword">
                   Custom safeword
@@ -694,19 +1073,29 @@ export default function CommunicationPage({
                 <input
                   id="custom-safeword"
                   type="text"
-                  value={customSafeword}
+                  value={
+                    customSafeword
+                  }
                   maxLength={50}
                   placeholder="Enter your preferred safeword"
                   onChange={(event) =>
-                    setCustomSafeword(event.target.value)
+                    setCustomSafeword(
+                      event.target.value,
+                    )
                   }
                 />
               </div>
             )}
 
             <ContinueSectionButton
-              disabled={!completion.safewords}
-              onClick={() => advanceFromSection("safewords")}
+              disabled={
+                !completion.safewords
+              }
+              onClick={() =>
+                advanceFromSection(
+                  "safewords",
+                )
+              }
             />
           </AccordionSection>
 
@@ -714,27 +1103,54 @@ export default function CommunicationPage({
             id="communication-habits"
             title="Communication Habits"
             description="Help your partner understand how you naturally communicate under stress."
-            isOpen={openSection === "communication-habits"}
-            isLocked={isSectionLocked("communication-habits")}
+            isOpen={
+              openSection ===
+              "communication-habits"
+            }
+            isLocked={isSectionLocked(
+              "communication-habits",
+            )}
             isComplete={isSectionComplete(
               "communication-habits",
             )}
-            summary={summaries["communication-habits"]}
-            onToggle={() =>
-              handleSectionToggle("communication-habits")
+            summary={
+              summaries[
+                "communication-habits"
+              ]
             }
-            sectionRef={sectionRefs["communication-habits"]}
+            onToggle={() =>
+              handleSectionToggle(
+                "communication-habits",
+              )
+            }
+            sectionRef={
+              sectionRefs[
+                "communication-habits"
+              ]
+            }
           >
             <MultiSelectChips
-              options={COMMUNICATION_HABIT_OPTIONS}
-              selectedValues={communicationHabits}
-              onChange={setCommunicationHabits}
+              options={
+                COMMUNICATION_HABIT_OPTIONS
+              }
+              selectedValues={
+                communicationHabits
+              }
+              onChange={
+                setCommunicationHabits
+              }
             />
 
             <ContinueSectionButton
-              disabled={!completion["communication-habits"]}
+              disabled={
+                !completion[
+                  "communication-habits"
+                ]
+              }
               onClick={() =>
-                advanceFromSection("communication-habits")
+                advanceFromSection(
+                  "communication-habits",
+                )
               }
             />
           </AccordionSection>
@@ -743,52 +1159,91 @@ export default function CommunicationPage({
             id="anything-else"
             title="Anything Else?"
             description="Is there anything important your partner should know about communicating with you during a scene?"
-            isOpen={openSection === "anything-else"}
-            isLocked={isSectionLocked("anything-else")}
-            isComplete={isSectionComplete("anything-else")}
-            summary={summaries["anything-else"]}
-            onToggle={() =>
-              handleSectionToggle("anything-else")
+            isOpen={
+              openSection ===
+              "anything-else"
             }
-            sectionRef={sectionRefs["anything-else"]}
+            isLocked={isSectionLocked(
+              "anything-else",
+            )}
+            isComplete={isSectionComplete(
+              "anything-else",
+            )}
+            summary={
+              summaries[
+                "anything-else"
+              ]
+            }
+            onToggle={() =>
+              handleSectionToggle(
+                "anything-else",
+              )
+            }
+            sectionRef={
+              sectionRefs[
+                "anything-else"
+              ]
+            }
           >
             <div className="communication-notes-field">
               <label htmlFor="communication-notes">
-                Additional communication information
+                Additional communication
+                information
               </label>
 
               <textarea
                 id="communication-notes"
-                value={additionalNotes}
+                value={
+                  additionalNotes
+                }
                 maxLength={300}
                 rows={6}
                 placeholder="Optional"
                 onChange={(event) =>
-                  setAdditionalNotes(event.target.value)
+                  setAdditionalNotes(
+                    event.target.value,
+                  )
                 }
               />
 
               <div className="communication-character-count">
-                {additionalNotes.length}/300
+                {additionalNotes.length}
+                /300
               </div>
             </div>
 
             <ContinueSectionButton
               final
-              onClick={handleFinalContinue}
+              onClick={
+                handleFinalContinue
+              }
             />
           </AccordionSection>
         </section>
 
-        {onBack && (
-          <button
-            type="button"
-            className="communication-back-button"
-            onClick={onBack}
-          >
-            ← Back
-          </button>
-        )}
+        <div className="communication-page-actions">
+          {onBack && (
+            <button
+              type="button"
+              className="communication-back-button"
+              onClick={onBack}
+            >
+              ← Back
+            </button>
+          )}
+
+          {onSaveAndReturnToSummary && (
+            <button
+              type="button"
+              className="communication-summary-button"
+              onClick={
+                handleSaveAndReturn
+              }
+            >
+              Return to Summary
+            </button>
+          )}
+        </div>
       </div>
     </main>
   );

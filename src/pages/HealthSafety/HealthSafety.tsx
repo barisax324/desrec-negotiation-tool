@@ -1,10 +1,14 @@
 import { useState } from "react";
+
 import Button from "../../ui/Button";
 import PageLayout from "../../ui/PageLayout";
+
 import { ACCESSIBILITY_OPTIONS } from "./data/accessibilityOptions";
-import BodyMap from "./components/BodyMap/BodyMap";
 import { MEDICAL_CONSIDERATIONS } from "./data/medicalOptions";
+
+import BodyMap from "./components/BodyMap/BodyMap";
 import SelectableOptionGroup from "./components/SelectableOptionGroup";
+
 import type {
   EmergencyInformation,
   HealthSafetyResponses,
@@ -12,11 +16,21 @@ import type {
   SelectedOptionResponse,
   SelectedOptionResponses,
 } from "./types";
+
 import "./HealthSafety.css";
 
 interface HealthSafetyProps {
+  initialResponses?: HealthSafetyResponses | null;
+
   back: () => void;
-  next: (responses: HealthSafetyResponses) => void;
+
+  next: (
+    responses: HealthSafetyResponses,
+  ) => void;
+
+  onSaveAndReturnToSummary?: (
+    responses: HealthSafetyResponses,
+  ) => void;
 }
 
 const EMPTY_MEDICAL_INFORMATION: MedicalInformation = {
@@ -34,36 +48,49 @@ const EMPTY_EMERGENCY_INFORMATION: EmergencyInformation = {
 };
 
 function HealthSafety({
+  initialResponses,
   back,
   next,
+  onSaveAndReturnToSummary,
 }: HealthSafetyProps) {
   const [
     medicalConsiderations,
     setMedicalConsiderations,
-  ] = useState<SelectedOptionResponses>({});
+  ] = useState<SelectedOptionResponses>(
+    initialResponses?.medicalConsiderations ??
+      {},
+  );
 
   const [
     accessibilitySupport,
     setAccessibilitySupport,
-  ] = useState<SelectedOptionResponses>({});
+  ] = useState<SelectedOptionResponses>(
+    initialResponses?.accessibilitySupport ??
+      {},
+  );
 
   const [
     additionalSupportInformation,
     setAdditionalSupportInformation,
-  ] = useState("");
+  ] = useState(
+    initialResponses?.additionalSupportInformation ??
+      "",
+  );
 
   const [
     medicalInformation,
     setMedicalInformation,
   ] = useState<MedicalInformation>(
-    EMPTY_MEDICAL_INFORMATION,
+    initialResponses?.medicalInformation ??
+      EMPTY_MEDICAL_INFORMATION,
   );
 
   const [
     emergencyInformation,
     setEmergencyInformation,
   ] = useState<EmergencyInformation>(
-    EMPTY_EMERGENCY_INFORMATION,
+    initialResponses?.emergencyInformation ??
+      EMPTY_EMERGENCY_INFORMATION,
   );
 
   const [
@@ -108,15 +135,25 @@ function HealthSafety({
     );
   }
 
-function handleContinue() {
-  next({
-    medicalConsiderations,
-    medicalInformation,
-    emergencyInformation,
-    accessibilitySupport,
-    additionalSupportInformation,
-  });
-}
+  function createResponses(): HealthSafetyResponses {
+    return {
+      medicalConsiderations,
+      medicalInformation,
+      emergencyInformation,
+      accessibilitySupport,
+      additionalSupportInformation,
+    };
+  }
+
+  function handleContinue() {
+    next(createResponses());
+  }
+
+  function handleSaveAndReturn() {
+    onSaveAndReturnToSummary?.(
+      createResponses(),
+    );
+  }
 
   return (
     <PageLayout
@@ -126,25 +163,22 @@ function handleContinue() {
       <section className="health-safety-page">
         <div className="health-introduction">
           <p>
-            Every field on this page is
-            optional. Include only the
-            information that feels relevant to
-            this negotiation.
+            Every field on this page is optional.
+            Include only the information that feels
+            relevant to this negotiation.
           </p>
 
           <div className="health-reminder">
             <span aria-hidden="true">ⓘ</span>
 
             <p>
-              This is not a medical intake form.
-              You do not need to provide a
-              diagnosis or explain anything you
-              do not want to share.
+              This is not a medical intake form. You
+              do not need to provide a diagnosis or
+              explain anything you do not want to
+              share.
             </p>
           </div>
         </div>
-
-        {/* General Medical Considerations */}
 
         <section className="health-section">
           <div className="health-section-heading">
@@ -154,10 +188,9 @@ function handleContinue() {
               </h2>
 
               <p>
-                Select anything that may be
-                relevant during play. You can add
-                optional details to each selected
-                item.
+                Select anything that may be relevant
+                during play. You can add optional
+                details to each selected item.
               </p>
             </div>
 
@@ -179,8 +212,6 @@ function handleContinue() {
           />
         </section>
 
-        {/* Body Map */}
-
         <section className="health-section">
           <div className="health-section-heading">
             <div>
@@ -188,9 +219,8 @@ function handleContinue() {
 
               <p>
                 Mark any areas that deserve
-                additional attention and add
-                optional information for your
-                partner.
+                additional attention and add optional
+                information for your partner.
               </p>
             </div>
 
@@ -202,8 +232,6 @@ function handleContinue() {
           <BodyMap />
         </section>
 
-        {/* Accessibility and Support */}
-
         <section className="health-section">
           <div className="health-section-heading">
             <div>
@@ -212,9 +240,9 @@ function handleContinue() {
               </h2>
 
               <p>
-                Select anything that would help
-                you remain physically comfortable
-                or supported.
+                Select anything that would help you
+                remain physically comfortable or
+                supported.
               </p>
             </div>
 
@@ -238,9 +266,8 @@ function handleContinue() {
 
           <div className="health-field health-support-field">
             <label htmlFor="additional-support-information">
-              Anything Else That Would Help You
-              Feel Physically Comfortable or
-              Supported?
+              Anything Else That Would Help You Feel
+              Physically Comfortable or Supported?
             </label>
 
             <textarea
@@ -256,17 +283,14 @@ function handleContinue() {
           </div>
         </section>
 
-        {/* Medical Information */}
-
         <section className="health-section">
           <div className="health-section-heading">
             <div>
               <h2>Medical Information</h2>
 
               <p>
-                Add any broader medical
-                information that may be relevant
-                to play.
+                Add any broader medical information
+                that may be relevant to play.
               </p>
             </div>
 
@@ -301,7 +325,9 @@ function handleContinue() {
 
               <textarea
                 id="health-medications"
-                value={medicalInformation.medications}
+                value={
+                  medicalInformation.medications
+                }
                 onChange={(event) =>
                   updateMedicalInformation(
                     "medications",
@@ -314,8 +340,7 @@ function handleContinue() {
 
             <div className="health-field">
               <label htmlFor="health-conditions">
-                Medical Conditions Relevant to
-                Play
+                Medical Conditions Relevant to Play
               </label>
 
               <textarea
@@ -333,14 +358,15 @@ function handleContinue() {
 
             <div className="health-field">
               <label htmlFor="health-additional-information">
-                Anything Else Your Partner
-                Should Know
+                Anything Else Your Partner Should
+                Know
               </label>
 
               <textarea
                 id="health-additional-information"
                 value={
-                  medicalInformation.additionalInformation
+                  medicalInformation
+                    .additionalInformation
                 }
                 onChange={(event) =>
                   updateMedicalInformation(
@@ -354,17 +380,15 @@ function handleContinue() {
           </div>
         </section>
 
-        {/* Emergency Information */}
-
         <section className="health-section">
           <div className="health-section-heading">
             <div>
               <h2>Emergency Information</h2>
 
               <p>
-                Add a contact or instructions
-                that may be useful if something
-                unexpected happens.
+                Add a contact or instructions that may
+                be useful if something unexpected
+                happens.
               </p>
             </div>
 
@@ -454,8 +478,6 @@ function handleContinue() {
           </div>
         </section>
 
-        {/* Why This Matters */}
-
         <div className="health-why-card">
           <button
             type="button"
@@ -463,36 +485,37 @@ function handleContinue() {
             aria-expanded={whyThisMattersOpen}
             onClick={() =>
               setWhyThisMattersOpen(
-                (currentValue) => !currentValue,
+                (currentValue) =>
+                  !currentValue,
               )
             }
           >
             <span>Why this matters</span>
 
             <span aria-hidden="true">
-              {whyThisMattersOpen ? "−" : "+"}
+              {whyThisMattersOpen
+                ? "−"
+                : "+"}
             </span>
           </button>
 
           {whyThisMattersOpen && (
             <div className="health-why-content">
               <p>
-                Health and accessibility needs
-                can affect positioning,
-                circulation, sensation,
-                endurance, recovery, and how
-                someone responds during play.
-                Sharing relevant information
-                helps both people make safer,
-                more informed decisions.
+                Health and accessibility needs can
+                affect positioning, circulation,
+                sensation, endurance, recovery, and
+                how someone responds during play.
+                Sharing relevant information helps
+                both people make safer, more informed
+                decisions.
               </p>
 
               <p>
-                You are never required to share
-                your full medical history. Focus
-                only on what your partner may
-                reasonably need to know for this
-                negotiation.
+                You are never required to share your
+                full medical history. Focus only on
+                what your partner may reasonably need
+                to know for this negotiation.
               </p>
             </div>
           )}
@@ -503,8 +526,7 @@ function handleContinue() {
 
           <p>
             <strong>
-              Your health information is
-              personal.
+              Your health information is personal.
             </strong>{" "}
             Share only what you are comfortable
             including in this negotiation.
@@ -515,6 +537,14 @@ function handleContinue() {
           <Button onClick={back}>
             Back
           </Button>
+
+          {onSaveAndReturnToSummary && (
+            <Button
+              onClick={handleSaveAndReturn}
+            >
+              Return to Summary
+            </Button>
+          )}
 
           <Button onClick={handleContinue}>
             Continue

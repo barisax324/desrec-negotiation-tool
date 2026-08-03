@@ -1,25 +1,34 @@
 import { useMemo, useState } from "react";
+
 import Button from "../../../ui/Button";
 import PageLayout from "../../../ui/PageLayout";
 import ActivityCategory from "./ActivityCategory";
 import { ACTIVITY_CATEGORIES } from "./activityData";
+
 import type {
   ActivityCategoryId,
   ActivityResponse,
   ActivityResponses,
 } from "./types";
+
 import "./Activities.css";
 
 interface ActivitiesProps {
+  initialResponses?: ActivityResponses;
   back: () => void;
   next: (
+    responses: ActivityResponses,
+  ) => void;
+  onSaveAndReturnToSummary?: (
     responses: ActivityResponses,
   ) => void;
 }
 
 function Activities({
+  initialResponses = {},
   back,
   next,
+  onSaveAndReturnToSummary,
 }: ActivitiesProps) {
   const [
     expandedCategory,
@@ -29,7 +38,9 @@ function Activities({
   );
 
   const [responses, setResponses] =
-    useState<ActivityResponses>({});
+    useState<ActivityResponses>(
+      initialResponses,
+    );
 
   const activeCategories = useMemo(
     () =>
@@ -62,14 +73,15 @@ function Activities({
     }));
   }
 
-function handleContinue() {
-  console.log(
-    "Activity responses:",
-    responses,
-  );
+  function handleContinue() {
+    next(responses);
+  }
 
-  next(responses);
-}
+  function handleSaveAndReturn() {
+    onSaveAndReturnToSummary?.(
+      responses,
+    );
+  }
 
   return (
     <PageLayout
@@ -80,9 +92,9 @@ function handleContinue() {
         <div className="activities-introduction">
           <p>
             You do not need to answer every
-            activity. Only open and respond to
-            the sections that matter for this
-            negotiation.
+            activity. Only open and respond
+            to the sections that matter for
+            this negotiation.
           </p>
 
           <div className="activities-reminder">
@@ -92,9 +104,9 @@ function handleContinue() {
 
             <p>
               You can return to any category
-              later. Leaving an activity blank
-              does not mean the questionnaire is
-              unfinished.
+              later. Leaving an activity
+              blank does not mean the
+              questionnaire is unfinished.
             </p>
           </div>
         </div>
@@ -111,7 +123,9 @@ function handleContinue() {
                 }
                 responses={responses}
                 onToggle={() =>
-                  toggleCategory(category.id)
+                  toggleCategory(
+                    category.id,
+                  )
                 }
                 onResponseChange={
                   handleResponseChange
@@ -125,6 +139,16 @@ function handleContinue() {
           <Button onClick={back}>
             Back
           </Button>
+
+          {onSaveAndReturnToSummary && (
+            <Button
+              onClick={
+                handleSaveAndReturn
+              }
+            >
+              Return to Summary
+            </Button>
+          )}
 
           <Button
             onClick={handleContinue}

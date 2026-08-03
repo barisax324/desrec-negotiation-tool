@@ -381,6 +381,18 @@
     var(--border-color, #e2ddd6);
 }
 
+.health-selected-option--mobile {
+  display: none;
+}
+
+.health-selected-option--desktop {
+  display: block;
+}
+
+.health-option-chip-wrapper {
+  min-width: 0;
+}
+
 @media (max-width: 600px) {
   .health-section {
     padding: 0.95rem;
@@ -394,6 +406,13 @@
   .health-option-chips {
     display: grid;
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .health-option-chip-wrapper {
+    display: grid;
+    gap: 0.65rem;
+    width: 100%;
   }
 
   .health-option-chip {
@@ -401,6 +420,25 @@
     width: 100%;
     border-radius: 0.75rem;
     text-align: left;
+  }
+
+  /*
+   * Hide the separate desktop notes list.
+   * Mobile notes appear directly under the
+   * selected option instead.
+   */
+  .health-selected-options {
+    display: none;
+  }
+
+  .health-selected-option--mobile {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .health-selected-option--desktop {
+    display: none;
   }
 
   .health-selected-option-header {

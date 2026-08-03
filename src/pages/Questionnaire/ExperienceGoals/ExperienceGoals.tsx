@@ -1,6 +1,8 @@
 import { useState } from "react";
+
 import Button from "../../../ui/Button";
 import PageLayout from "../../../ui/PageLayout";
+
 import "./ExperienceGoals.css";
 
 export type ExperienceGoal =
@@ -30,11 +32,15 @@ export interface ExperienceGoalsData {
 
 interface ExperienceGoalsProps {
   data: ExperienceGoalsData;
+
   updateData: (
     updates: Partial<ExperienceGoalsData>,
   ) => void;
+
   next: () => void;
   back: () => void;
+
+  onSaveAndReturnToSummary?: () => void;
 }
 
 interface GoalOption {
@@ -118,6 +124,7 @@ function ExperienceGoals({
   updateData,
   next,
   back,
+  onSaveAndReturnToSummary,
 }: ExperienceGoalsProps) {
   const [showCustomGoal, setShowCustomGoal] =
     useState(false);
@@ -125,32 +132,42 @@ function ExperienceGoals({
   const [customGoalInput, setCustomGoalInput] =
     useState("");
 
-  const toggleGoal = (goal: ExperienceGoal) => {
-    const isSelected = data.goals.includes(goal);
+  const hasSelection =
+    data.goals.length > 0 ||
+    data.customGoals.length > 0;
+
+  function toggleGoal(
+    goal: ExperienceGoal,
+  ) {
+    const isSelected =
+      data.goals.includes(goal);
 
     updateData({
       goals: isSelected
         ? data.goals.filter(
-            (selectedGoal) => selectedGoal !== goal,
+            (selectedGoal) =>
+              selectedGoal !== goal,
           )
         : [...data.goals, goal],
     });
-  };
+  }
 
-  const addCustomGoal = () => {
-    const trimmedGoal = customGoalInput.trim();
+  function addCustomGoal() {
+    const trimmedGoal =
+      customGoalInput.trim();
 
     if (!trimmedGoal) {
       return;
     }
 
-    if (
+    const alreadyExists =
       data.customGoals.some(
         (goal) =>
           goal.toLowerCase() ===
           trimmedGoal.toLowerCase(),
-      )
-    ) {
+      );
+
+    if (alreadyExists) {
       setCustomGoalInput("");
       return;
     }
@@ -164,21 +181,19 @@ function ExperienceGoals({
 
     setCustomGoalInput("");
     setShowCustomGoal(false);
-  };
+  }
 
-  const removeCustomGoal = (
+  function removeCustomGoal(
     goalToRemove: string,
-  ) => {
+  ) {
     updateData({
-      customGoals: data.customGoals.filter(
-        (goal) => goal !== goalToRemove,
-      ),
+      customGoals:
+        data.customGoals.filter(
+          (goal) =>
+            goal !== goalToRemove,
+        ),
     });
-  };
-
-  const hasSelection =
-    data.goals.length > 0 ||
-    data.customGoals.length > 0;
+  }
 
   return (
     <PageLayout
@@ -192,13 +207,14 @@ function ExperienceGoals({
           </span>
 
           <h2>
-            What kind of experience are you hoping
-            to create during our scene?
+            What kind of experience are you
+            hoping to create during our scene?
           </h2>
 
           <p>
-            Choose the words that best describe how
-            you would like the experience to feel.
+            Choose the words that best describe
+            how you would like the experience
+            to feel.
           </p>
         </div>
 
@@ -208,7 +224,9 @@ function ExperienceGoals({
         >
           {GOAL_OPTIONS.map((option) => {
             const isSelected =
-              data.goals.includes(option.value);
+              data.goals.includes(
+                option.value,
+              );
 
             return (
               <button
@@ -232,24 +250,26 @@ function ExperienceGoals({
 
         {data.customGoals.length > 0 && (
           <div className="experience-custom-goals">
-            {data.customGoals.map((goal) => (
-              <div
-                className="experience-custom-goal"
-                key={goal}
-              >
-                <span>{goal}</span>
-
-                <button
-                  type="button"
-                  aria-label={`Remove ${goal}`}
-                  onClick={() =>
-                    removeCustomGoal(goal)
-                  }
+            {data.customGoals.map(
+              (goal) => (
+                <div
+                  className="experience-custom-goal"
+                  key={goal}
                 >
-                  ×
-                </button>
-              </div>
-            ))}
+                  <span>{goal}</span>
+
+                  <button
+                    type="button"
+                    aria-label={`Remove ${goal}`}
+                    onClick={() =>
+                      removeCustomGoal(goal)
+                    }
+                  >
+                    ×
+                  </button>
+                </div>
+              ),
+            )}
           </div>
         )}
 
@@ -261,7 +281,10 @@ function ExperienceGoals({
               setShowCustomGoal(true)
             }
           >
-            <span aria-hidden="true">＋</span>
+            <span aria-hidden="true">
+              ＋
+            </span>
+
             Add something else
           </button>
         ) : (
@@ -283,12 +306,16 @@ function ExperienceGoals({
                   )
                 }
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") {
+                  if (
+                    event.key === "Enter"
+                  ) {
                     event.preventDefault();
                     addCustomGoal();
                   }
 
-                  if (event.key === "Escape") {
+                  if (
+                    event.key === "Escape"
+                  ) {
                     setCustomGoalInput("");
                     setShowCustomGoal(false);
                   }
@@ -320,8 +347,8 @@ function ExperienceGoals({
 
         <div className="experience-goals-notes">
           <label htmlFor="experience-goals-notes">
-            Anything you would like your partner to
-            know about these goals?
+            Anything you would like your
+            partner to know about these goals?
           </label>
 
           <textarea
@@ -341,6 +368,17 @@ function ExperienceGoals({
           <Button onClick={back}>
             Back
           </Button>
+
+          {onSaveAndReturnToSummary && (
+            <Button
+              onClick={
+                onSaveAndReturnToSummary
+              }
+              disabled={!hasSelection}
+            >
+              Return to Summary
+            </Button>
+          )}
 
           <Button
             onClick={next}

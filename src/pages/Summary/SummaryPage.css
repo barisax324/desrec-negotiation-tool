@@ -460,3 +460,127 @@
   .summary-written-response {
   margin: 0.75rem 0 0;
 }
+.summary-negotiation-details {
+  width: min(100%, 38rem);
+  margin: 1.5rem auto;
+  padding: 1rem 1.25rem;
+  border: 1px solid
+    rgba(255, 255, 255, 0.18);
+  border-radius: 0.75rem;
+  text-align: left;
+}
+
+.summary-detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0;
+}
+
+.summary-detail-row span {
+  opacity: 0.75;
+}
+
+.summary-detail-row strong {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.summary-footer-reference {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+@media print {
+  .summary-negotiation-details {
+    border-color: #777;
+    break-inside: avoid;
+  }
+
+  .summary-footer-reference {
+    color: #000;
+  }
+}
+.summary-edit-select {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.summary-edit-select__label {
+  font-weight: 700;
+}
+
+.summary-edit-select select {
+  min-height: 2.75rem;
+  padding: 0.65rem 2.5rem 0.65rem 0.85rem;
+  border: 1px solid
+    rgba(255, 255, 255, 0.25);
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.summary-edit-select select:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.summary-edit-select option {
+  color: #111;
+}
+
+@media (max-width: 640px) {
+  .summary-edit-select {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .summary-edit-select select {
+    width: 100%;
+  }
+}
+
+@media print {
+  .summary-edit-select {
+    display: none;
+  }
+}
+
+.summary-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+
+  border-top: 1px solid
+    var(--border-color, #ddd);
+
+  text-align: center;
+
+  color: var(--muted-text-color, #666);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.summary-footer a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.summary-footer a:hover {
+  text-decoration: underline;
+}
+
+.summary-feedback a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.summary-feedback a:hover {
+  opacity: 0.8;
+}

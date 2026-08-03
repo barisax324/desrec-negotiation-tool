@@ -19,8 +19,11 @@ function Ready({
     >
       <p>
         You're all set. When you're ready, begin your
-        negotiation questionnaire.
-      </p>
+        negotiation questionnaire. 
+<p>
+  <strong>You can pause at any time.</strong> Your progress is saved whenever you continue to another page or return to your summary. You can safely close this tab and reopen the negotiation later using your Personal Link or Reference ID and password.
+</p>
+</p>
 
       <div
         style={{

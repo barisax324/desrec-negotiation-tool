@@ -692,3 +692,35 @@
     animation-iteration-count: 1 !important;
   }
 }
+.communication-page-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.communication-summary-button {
+  min-height: 2.75rem;
+  padding: 0.7rem 1.2rem;
+  border: 1px solid
+    rgba(255, 255, 255, 0.45);
+  border-radius: 0.65rem;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .communication-page-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .communication-summary-button,
+  .communication-back-button {
+    width: 100%;
+  }
+}

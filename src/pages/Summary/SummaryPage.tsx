@@ -12,6 +12,14 @@ import HealthSummary from "./Components/HealthSummary";
 import BodyMapSummary from "./Components/BodyMapSummary";
 import CommunicationSummary from "./Components/CommunicationSummary";
 import AftercareSummary from "./Components/AftercareSummary";
+import { APP_VERSION } from "../../version";
+
+export type SummaryEditSection =
+  | "experience-goals"
+  | "activities"
+  | "health-safety"
+  | "communication"
+  | "aftercare";
 
 interface SummaryPageProps {
   experienceGoals: ExperienceGoalsData;
@@ -19,7 +27,37 @@ interface SummaryPageProps {
   healthSafetyResponses: HealthSafetyResponses | null;
   communicationResponses: CommunicationFormData | null;
   aftercareResponses: AftercareResponses | null;
-  onEditResponses: () => void;
+
+  onEditSection: (
+    section: SummaryEditSection,
+  ) => void;
+
+  onViewComparison: () => void;
+}
+
+function formatSceneDate(
+  sceneDate: string,
+): string {
+  if (!sceneDate) {
+    return "";
+  }
+
+  const parsedDate = new Date(
+    `${sceneDate}T00:00:00`,
+  );
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return sceneDate;
+  }
+
+  return parsedDate.toLocaleDateString(
+    undefined,
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    },
+  );
 }
 
 export default function SummaryPage({
@@ -28,10 +66,56 @@ export default function SummaryPage({
   healthSafetyResponses,
   communicationResponses,
   aftercareResponses,
-  onEditResponses,
+  onEditSection,
+  onViewComparison,
 }: SummaryPageProps) {
+  
+  const referenceId =
+    sessionStorage.getItem(
+      "desrec.publicId",
+    ) ?? "";
+
+  const negotiationName =
+    sessionStorage.getItem(
+      "desrec.negotiationName",
+    ) ?? "";
+
+  const sceneDate =
+    sessionStorage.getItem(
+      "desrec.sceneDate",
+    ) ?? "";
+
+  const sceneDateUnknown =
+    sessionStorage.getItem(
+      "desrec.sceneDateUnknown",
+    ) === "true";
+
+  const participantRole =
+    sessionStorage.getItem(
+      "desrec.currentParticipantRole",
+    ) ?? "";
+
   function handlePrint() {
     window.print();
+  }
+
+  function handleEditSelection(
+    value: string,
+  ) {
+    const section =
+      value as SummaryEditSection;
+
+    if (
+      section !== "experience-goals" &&
+      section !== "activities" &&
+      section !== "health-safety" &&
+      section !== "communication" &&
+      section !== "aftercare"
+    ) {
+      return;
+    }
+
+    onEditSection(section);
   }
 
   return (
@@ -39,7 +123,10 @@ export default function SummaryPage({
       <article className="summary-document">
         <header className="summary-header">
           <div className="summary-complete-label">
-            <span aria-hidden="true">✓</span>
+            <span aria-hidden="true">
+              ✓
+            </span>
+
             Questionnaire Complete
           </div>
 
@@ -47,19 +134,83 @@ export default function SummaryPage({
             Desert Rope Education Collective
           </p>
 
-          <h1>Your Negotiation Summary</h1>
+          <h1>
+            Your Negotiation Summary
+          </h1>
+
+          <section
+            className="summary-negotiation-details"
+            aria-label="Negotiation details"
+          >
+            {referenceId && (
+              <div className="summary-detail-row">
+                <span>
+                  Reference ID
+                </span>
+
+                <strong>
+                  {referenceId}
+                </strong>
+              </div>
+            )}
+
+            {negotiationName && (
+              <div className="summary-detail-row">
+                <span>
+                  Negotiation
+                </span>
+
+                <strong>
+                  {negotiationName}
+                </strong>
+              </div>
+            )}
+
+            {participantRole && (
+              <div className="summary-detail-row">
+                <span>
+                  Participant
+                </span>
+
+                <strong>
+                  {participantRole}
+                </strong>
+              </div>
+            )}
+
+            {(sceneDate ||
+              sceneDateUnknown) && (
+              <div className="summary-detail-row">
+                <span>
+                  Scene Date
+                </span>
+
+                <strong>
+                  {sceneDateUnknown
+                    ? "Not decided"
+                    : formatSceneDate(
+                        sceneDate,
+                      )}
+                </strong>
+              </div>
+            )}
+          </section>
 
           <p className="summary-introduction">
-            Thank you for taking the time to thoughtfully consider your
-            preferences, boundaries, and needs.
+            Thank you for taking the time
+            to thoughtfully consider your
+            preferences, boundaries, and
+            needs.
           </p>
 
           <p className="summary-introduction">
-            Review this summary before discussing it with your partner.
+            Review this summary before
+            discussing it with your partner.
           </p>
 
           <p className="summary-principle">
-            The most effective scenes begin with thoughtful negotiation.
+            The most effective scenes begin
+            with thoughtful negotiation.
           </p>
         </header>
 
@@ -81,94 +232,203 @@ export default function SummaryPage({
           </button>
 
           <button
-            type="button"
-            className="summary-button"
-            onClick={onEditResponses}
-          >
-            Edit Responses
-          </button>
+  type="button"
+  className="summary-button"
+  onClick={onViewComparison}
+>
+  View Comparison
+</button>
+
+          <label className="summary-edit-select">
+            <span className="summary-edit-select__label">
+              Edit Responses
+            </span>
+
+            <select
+              defaultValue=""
+              aria-label="Choose a section to edit"
+              onChange={(event) => {
+                handleEditSelection(
+                  event.target.value,
+                );
+
+                event.currentTarget.value =
+                  "";
+              }}
+            >
+              <option
+                value=""
+                disabled
+              >
+                Choose a section
+              </option>
+
+              <option value="experience-goals">
+                Experience Goals
+              </option>
+
+              <option value="activities">
+                Activities
+              </option>
+
+              <option value="health-safety">
+                Health &amp; Safety
+              </option>
+
+              <option value="communication">
+                Communication &amp;
+                Boundaries
+              </option>
+
+              <option value="aftercare">
+                Aftercare
+              </option>
+            </select>
+          </label>
         </div>
 
         <aside className="summary-private-note">
-          <strong>Your personal summary</strong>
+          <strong>
+            Your personal summary
+          </strong>
 
           <p>
-            Review the information below before sharing it. This summary is
-            intended to support an in-person negotiation, not replace it.
+            Review the information below
+            before sharing it. This summary
+            is intended to support an
+            in-person negotiation, not
+            replace it.
           </p>
         </aside>
 
         <div className="summary-section-list">
           <section className="summary-section">
-            <h2>Experience Goals</h2>
+            <h2>
+              Experience Goals
+            </h2>
 
             <div className="summary-section-content">
-              <ExperienceSummary data={experienceGoals} />
+              <ExperienceSummary
+                data={experienceGoals}
+              />
             </div>
           </section>
 
           <section className="summary-section">
-            <h2>Activities</h2>
+            <h2>
+              Activities
+            </h2>
 
             <div className="summary-section-content">
-              <ActivitiesSummary responses={activityResponses} />
+              <ActivitiesSummary
+                responses={
+                  activityResponses
+                }
+              />
             </div>
           </section>
 
           <section className="summary-section">
-            <h2>Health &amp; Safety</h2>
+            <h2>
+              Health &amp; Safety
+            </h2>
 
             <div className="summary-section-content">
-              <HealthSummary responses={healthSafetyResponses} />
+              <HealthSummary
+                responses={
+                  healthSafetyResponses
+                }
+              />
 
               <div className="summary-response-block">
-                <h3>Body Map</h3>
+                <h3>
+                  Body Map
+                </h3>
+
                 <BodyMapSummary />
               </div>
             </div>
           </section>
 
           <section className="summary-section">
-            <h2>Communication &amp; Boundaries</h2>
+            <h2>
+              Communication &amp;
+              Boundaries
+            </h2>
 
             <div className="summary-section-content">
-              <CommunicationSummary responses={communicationResponses} />
+              <CommunicationSummary
+                responses={
+                  communicationResponses
+                }
+              />
             </div>
           </section>
 
           <section className="summary-section">
-            <h2>Aftercare</h2>
+            <h2>
+              Aftercare
+            </h2>
 
             <div className="summary-section-content">
-              <AftercareSummary responses={aftercareResponses} />
+              <AftercareSummary
+                responses={
+                  aftercareResponses
+                }
+              />
             </div>
           </section>
         </div>
 
-        <div className="summary-edit-area summary-screen-only">
-          <p>Need to change something?</p>
-
-          <button
-            type="button"
-            className="summary-return-button"
-            onClick={onEditResponses}
-          >
-            ← Return to Negotiation
-          </button>
-        </div>
-
         <footer className="summary-footer">
-          <strong>Desert Rope Education Collective</strong>
+          {referenceId && (
+            <p className="summary-footer-reference">
+              Reference ID:{" "}
+              <strong>
+                {referenceId}
+              </strong>
+            </p>
+          )}
 
-          <p>
-            <em>This questionnaire is a tool.</em>
-            <br />
-            <em>Negotiation is a conversation.</em>
-          </p>
+<strong>
+  Desert Rope Education Collective
+</strong>
 
-          <span>desrec.org</span>
+<p>
+  <em>
+    This questionnaire is a tool.
+  </em>
+
+  <br />
+
+  <em>
+    Negotiation is a conversation.
+  </em>
+</p>
+
+ <br />
+  <br />
+
+
+<p>
+  Version {APP_VERSION}
+</p>
+
+<p className="summary-feedback">
+  Found a bug or have feedback?
+  <br />
+  <a href="mailto:desrecphx@gmail.com">
+    desrecphx@gmail.com
+  </a>
+</p>
+
+<span>
+  desrec.org
+</span>
         </footer>
       </article>
     </main>
   );
+
+  
 }

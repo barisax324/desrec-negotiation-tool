@@ -205,7 +205,7 @@ function ReviewNegotiation() {
         "A",
       );
 
-      navigate("/save-personal-link");
+navigate("/create-password?participant=A");
     } catch (caughtError) {
       console.error(
         "Negotiation creation failed:",

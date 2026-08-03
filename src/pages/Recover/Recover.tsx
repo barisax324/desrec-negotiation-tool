@@ -1,92 +1,263 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import {
   Link,
   useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 
 import { supabase } from "../../lib/supabase";
+import { joinNegotiation } from "../../services/negotiation/joinNegotiation";
 
-import "./recover.css";
+import "./Recover.css";
+
+const PASSWORD_PATTERN =
+  /^[A-Za-z0-9]{6,12}$/;
 
 type RecoverySessionResult = {
   recovery_token: string;
   public_id: string;
-  participant_role: "a" | "b" | "A" | "B";
+  participant_role:
+    | "a"
+    | "b"
+    | "A"
+    | "B";
 };
+
+function extractInvitationToken(
+  enteredValue: string,
+): string {
+  const trimmedValue = enteredValue.trim();
+
+  if (!trimmedValue) {
+    return "";
+  }
+
+  try {
+    const invitationUrl = new URL(
+      trimmedValue,
+      window.location.origin,
+    );
+
+    return (
+      invitationUrl.searchParams
+        .get("t")
+        ?.trim() ?? ""
+    );
+  } catch {
+    return trimmedValue;
+  }
+}
 
 function Recover() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [identifier, setIdentifier] =
+  const [invitationLink, setInvitationLink] =
+    useState("");
+
+  const [returnIdentifier, setReturnIdentifier] =
     useState("");
 
   const [password, setPassword] =
     useState("");
 
-  const [isOpening, setIsOpening] =
-    useState(false);
+  const [
+    isJoiningFirstTime,
+    setIsJoiningFirstTime,
+  ] = useState(false);
 
-  const [error, setError] =
+  const [
+    isOpeningExisting,
+    setIsOpeningExisting,
+  ] = useState(false);
+
+  const [invitationError, setInvitationError] =
+    useState("");
+
+  const [returnError, setReturnError] =
     useState("");
 
   const passwordIsValid =
-    /^[A-Za-z0-9]{6,12}$/.test(password);
+    PASSWORD_PATTERN.test(password);
 
-  const canSubmit =
-    identifier.trim().length > 0 &&
+  const canJoinFirstTime =
+    invitationLink.trim().length > 0 &&
+    !isJoiningFirstTime &&
+    !isOpeningExisting;
+
+  const canOpenExisting =
+    returnIdentifier.trim().length > 0 &&
     passwordIsValid &&
-    !isOpening;
+    !isOpeningExisting &&
+    !isJoiningFirstTime;
 
-  const handleSubmit = async (
+  useEffect(() => {
+    const invitationFromUrl =
+      searchParams.get("invite")?.trim() ?? "";
+
+    if (invitationFromUrl) {
+      setInvitationLink(invitationFromUrl);
+    }
+  }, [searchParams]);
+
+  async function handleFirstTimeJoin(
     event: FormEvent<HTMLFormElement>,
-  ) => {
+  ) {
     event.preventDefault();
-    setError("");
+
+    setInvitationError("");
+    setReturnError("");
+
+    const invitationToken =
+      extractInvitationToken(invitationLink);
+
+    if (!invitationToken) {
+      setInvitationError(
+        "Enter the complete invitation link you were sent.",
+      );
+      return;
+    }
+
+    setIsJoiningFirstTime(true);
+
+    try {
+      const result =
+        await joinNegotiation(invitationToken);
+
+      if (result.participantRole !== "B") {
+        throw new Error(
+          "This is not a Participant B invitation link.",
+        );
+      }
+
+      /*
+       * The invitation token identifies Participant B
+       * during first-time password setup.
+       */
+      sessionStorage.setItem(
+        "desrec.pendingAccessToken",
+        invitationToken,
+      );
+
+      sessionStorage.setItem(
+        "desrec.currentParticipantRole",
+        "B",
+      );
+
+      sessionStorage.setItem(
+        "desrec.passwordCreated",
+        "false",
+      );
+
+      sessionStorage.setItem(
+        "desrec.firstTimeParticipant",
+        "B",
+      );
+
+      if (result.negotiationName) {
+        sessionStorage.setItem(
+          "desrec.negotiationName",
+          result.negotiationName,
+        );
+      }
+
+      sessionStorage.setItem(
+        "desrec.negotiationStatus",
+        result.negotiationStatus,
+      );
+
+      if (result.expiresAt) {
+        sessionStorage.setItem(
+          "desrec.expiresAt",
+          result.expiresAt,
+        );
+      }
+
+      /*
+       * We will update joinNegotiation next so it also
+       * returns and saves the shared Reference ID.
+       */
+sessionStorage.setItem(
+  "desrec.publicId",
+  result.publicId,
+);
+
+      navigate(
+        "/create-password?participant=B",
+      );
+    } catch (caughtError) {
+      console.error(
+        "Unable to join negotiation:",
+        caughtError,
+      );
+
+      setInvitationError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "The invitation could not be opened.",
+      );
+    } finally {
+      setIsJoiningFirstTime(false);
+    }
+  }
+
+  async function handleReturningLogin(
+    event: FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    setInvitationError("");
+    setReturnError("");
 
     const cleanedIdentifier =
-      identifier.trim();
+      returnIdentifier.trim();
 
     if (!cleanedIdentifier) {
-      setError(
+      setReturnError(
         "Enter your Personal Link or Reference ID.",
       );
       return;
     }
 
     if (!passwordIsValid) {
-      setError(
-        "Password must be 6–12 letters and numbers.",
+      setReturnError(
+        "Password must be 6 to 12 letters and numbers.",
       );
       return;
     }
 
-    setIsOpening(true);
+    setIsOpeningExisting(true);
 
     try {
-      const { data, error: rpcError } =
-        await supabase.rpc(
-          "create_recovery_session",
-          {
-            p_identifier: cleanedIdentifier,
-            p_password: password,
-          },
-        );
+      const {
+        data,
+        error: rpcError,
+      } = await supabase.rpc(
+        "create_recovery_session",
+        {
+          p_identifier: cleanedIdentifier,
+          p_password: password,
+        },
+      );
 
-      if (rpcError) {
-        console.error(
-          "create_recovery_session error:",
-          rpcError,
-        );
+if (rpcError) {
+  console.error(
+    "create_recovery_session error:",
+    rpcError,
+  );
 
-        throw new Error(rpcError.message);
-      }
+  throw new Error(
+    "The Personal Link, Reference ID, or password is incorrect or the negotiation has expired. Please verify your information or create a new negotiation.",
+    );
+}
 
-      const result = Array.isArray(data)
-        ? (data[0] as
-            | RecoverySessionResult
-            | undefined)
-        : undefined;
+      const result =
+        Array.isArray(data)
+          ? (data[0] as
+              | RecoverySessionResult
+              | undefined)
+          : undefined;
 
       if (!result?.recovery_token) {
         throw new Error(
@@ -102,7 +273,7 @@ function Recover() {
         participantRole !== "B"
       ) {
         throw new Error(
-          "The participant role could not be determined.",
+          "The participant could not be identified.",
         );
       }
 
@@ -137,22 +308,21 @@ function Recover() {
         caughtError,
       );
 
-      const message =
+      setReturnError(
         caughtError instanceof Error
           ? caughtError.message
-          : "Something went wrong while opening your negotiation.";
-
-      setError(message);
+          : "Something went wrong while opening your negotiation.",
+      );
     } finally {
-      setIsOpening(false);
+      setIsOpeningExisting(false);
     }
-  };
+  }
 
   return (
     <main className="recover-page">
       <section
         className="recover-card"
-        aria-labelledby="recover-title"
+        aria-labelledby="open-negotiation-title"
       >
         <Link
           className="recover-back-link"
@@ -161,123 +331,224 @@ function Recover() {
           ← Back
         </Link>
 
-        <div className="recover-heading">
+        <header className="recover-heading">
           <p className="recover-eyebrow">
             DesREC Negotiation Tool
           </p>
 
-          <h1 id="recover-title">
-            Open your negotiation
+          <h1 id="open-negotiation-title">
+            Open Negotiation
           </h1>
 
           <p>
-            Enter your Personal Link or Reference ID
-            and the password you created.
+            Join a negotiation for the first time
+            or return to one you already started.
           </p>
-        </div>
+        </header>
 
-        <form
-          className="recover-form"
-          onSubmit={handleSubmit}
-        >
-          <label htmlFor="recovery-identifier">
-            Personal Link or Reference ID
-          </label>
+        <section className="recover-section">
+          <div className="recover-section-heading">
+            <span
+              className="recover-section-number"
+              aria-hidden="true"
+            >
+              1
+            </span>
 
-          <input
-            id="recovery-identifier"
-            name="identifier"
-            type="text"
-            autoComplete="off"
-            value={identifier}
-            onChange={(event) => {
-              setIdentifier(event.target.value);
-              setError("");
-            }}
-            placeholder="Paste your link or enter your ID"
-            disabled={isOpening}
-          />
+            <div>
+              <h2>First Time Joining?</h2>
 
-          <p className="recover-help">
-            Your Reference ID was shown when the
-            negotiation was created.
-          </p>
+              <p>
+                Paste the invitation link you
+                received to create your password
+                and begin your questionnaire.
+              </p>
+            </div>
+          </div>
 
-          <label htmlFor="recovery-password">
-            Password
-          </label>
+          <form
+            className="recover-form"
+            onSubmit={handleFirstTimeJoin}
+          >
+            <label htmlFor="invitation-link">
+              Invitation Link
+            </label>
 
-          <input
-            id="recovery-password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(event) => {
-              const cleanedPassword =
-                event.target.value.replace(
-                  /[^A-Za-z0-9]/g,
-                  "",
+            <input
+              id="invitation-link"
+              name="invitationLink"
+              type="text"
+              autoComplete="off"
+              value={invitationLink}
+              onChange={(event) => {
+                setInvitationLink(
+                  event.target.value,
                 );
 
-              setPassword(
-                cleanedPassword.slice(0, 12),
-              );
+                setInvitationError("");
+              }}
+              placeholder="Paste your invitation link"
+              disabled={
+                isJoiningFirstTime ||
+                isOpeningExisting
+              }
+              aria-invalid={Boolean(
+                invitationError,
+              )}
+            />
 
-              setError("");
-            }}
-            placeholder="Enter your password"
-            disabled={isOpening}
-            aria-describedby={
-              error
-                ? "recovery-error"
-                : "recovery-help"
-            }
-            aria-invalid={Boolean(error)}
-          />
+            <p className="recover-help">
+              This section is only for
+              Participant B using an invitation
+              for the first time.
+            </p>
 
-          <p
-            id="recovery-help"
-            className="recover-help"
-          >
-            Passwords contain 6–12 letters and
-            numbers.
-          </p>
+            {invitationError && (
+              <div
+                className="recover-error"
+                role="alert"
+              >
+                {invitationError}
+              </div>
+            )}
 
-          {error && (
-            <div
-              id="recovery-error"
-              className="recover-error"
-              role="alert"
-              aria-live="polite"
+            <button
+              className="recover-submit"
+              type="submit"
+              disabled={!canJoinFirstTime}
             >
-              {error}
+              {isJoiningFirstTime
+                ? "Opening Invitation..."
+                : "Join Negotiation"}
+            </button>
+          </form>
+        </section>
+
+        <div
+          className="recover-divider"
+          aria-hidden="true"
+        >
+          <span>OR</span>
+        </div>
+
+        <section className="recover-section">
+          <div className="recover-section-heading">
+            <span
+              className="recover-section-number"
+              aria-hidden="true"
+            >
+              2
+            </span>
+
+            <div>
+              <h2>
+                Returning to Your Negotiation?
+              </h2>
+
+              <p>
+                Use your Personal Link or shared
+                Reference ID together with your
+                password.
+              </p>
             </div>
-          )}
+          </div>
 
-          <button
-            className="recover-submit"
-            type="submit"
-            disabled={!canSubmit}
+          <form
+            className="recover-form"
+            onSubmit={handleReturningLogin}
           >
-            {isOpening
-              ? "Opening…"
-              : "Open my negotiation"}
-          </button>
-        </form>
+            <label htmlFor="return-identifier">
+              Personal Link or Reference ID
+            </label>
 
-        <div className="recover-privacy-note">
-          <h2>
-            Your password protects your access
-          </h2>
+            <input
+              id="return-identifier"
+              name="identifier"
+              type="text"
+              autoComplete="off"
+              value={returnIdentifier}
+              onChange={(event) => {
+                setReturnIdentifier(
+                  event.target.value,
+                );
+
+                setReturnError("");
+              }}
+              placeholder="Paste your link or enter your ID"
+              disabled={
+                isOpeningExisting ||
+                isJoiningFirstTime
+              }
+              aria-invalid={Boolean(returnError)}
+            />
+
+            <label htmlFor="return-password">
+              Password
+            </label>
+
+            <input
+              id="return-password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => {
+                const cleanedPassword =
+                  event.target.value.replace(
+                    /[^A-Za-z0-9]/g,
+                    "",
+                  );
+
+                setPassword(
+                  cleanedPassword.slice(0, 12),
+                );
+
+                setReturnError("");
+              }}
+              placeholder="Enter your password"
+              disabled={
+                isOpeningExisting ||
+                isJoiningFirstTime
+              }
+              aria-invalid={Boolean(returnError)}
+            />
+
+            <p className="recover-help">
+              Passwords contain 6 to 12 letters
+              and numbers.
+            </p>
+
+            {returnError && (
+              <div
+                className="recover-error"
+                role="alert"
+              >
+                {returnError}
+              </div>
+            )}
+
+            <button
+              className="recover-submit"
+              type="submit"
+              disabled={!canOpenExisting}
+            >
+              {isOpeningExisting
+                ? "Opening Negotiation..."
+                : "Open My Negotiation"}
+            </button>
+          </form>
+        </section>
+
+        <aside className="recover-privacy-note">
+          <h2>Your password protects your access</h2>
 
           <p>
-            Your password is stored as a secure
-            hash. DesREC and the site host cannot
-            use it to view your negotiation
-            responses.
+            Your Personal Link or Reference ID
+            identifies the negotiation. Your
+            password identifies which
+            participant’s questionnaire to open.
           </p>
-        </div>
+        </aside>
       </section>
     </main>
   );
