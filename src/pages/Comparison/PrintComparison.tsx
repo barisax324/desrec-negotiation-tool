@@ -5,9 +5,9 @@ import type {
 } from "../Onboarding/types";
 
 import type {
-  ExperienceGoal,
-  ExperienceGoalsData,
-} from "../Questionnaire/ExperienceGoals/ExperienceGoals";
+  SceneGoal,
+  SceneGoalsData,
+} from "../Questionnaire/SceneGoals/SceneGoals";
 
 import type {
   ActivityResponse,
@@ -61,8 +61,8 @@ export interface PrintParticipantResponses {
     | OnboardingData
     | null;
 
-  experienceGoals?:
-    ExperienceGoalsData;
+  sceneGoals?:
+    SceneGoalsData;
 
   activities?:
     ActivityResponses;
@@ -314,7 +314,7 @@ function formatExperience(
 }
 
 function getGoals(
-  data?: ExperienceGoalsData,
+  data?: SceneGoalsData,
 ): string {
   if (!data) {
     return "";
@@ -802,21 +802,21 @@ export default function PrintComparison({
         <PrintRow
           label="Desired Experience"
           participantA={getGoals(
-            participantA.experienceGoals,
+            participantA.sceneGoals,
           )}
           participantB={getGoals(
-            participantB.experienceGoals,
+            participantB.sceneGoals,
           )}
         />
 
         <PrintRow
           label="Additional Notes"
           participantA={
-            participantA.experienceGoals
+            participantA.sceneGoals
               ?.notes ?? ""
           }
           participantB={
-            participantB.experienceGoals
+            participantB.sceneGoals
               ?.notes ?? ""
           }
         />

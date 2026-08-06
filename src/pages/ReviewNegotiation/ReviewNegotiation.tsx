@@ -71,6 +71,9 @@ function ReviewNegotiation() {
   const sceneDateUndecided =
     sessionStorage.getItem("desrec.sceneDateUndecided") === "true";
 
+  const plannedActivities =
+  sessionStorage.getItem("desrec.plannedActivities") ?? "";
+
   const storedRetentionPeriod =
     sessionStorage.getItem("desrec.retentionPeriod") ?? "7-days";
 
@@ -161,14 +164,15 @@ function ReviewNegotiation() {
     setIsCreating(true);
 
     try {
-      const result = await createNegotiation({
-        name: negotiationName || "Untitled Negotiation",
-        sceneDate: sceneDateUndecided
-          ? null
-          : sceneDate || null,
-        sceneDateUnknown: sceneDateUndecided,
-        retentionPeriod,
-      });
+const result = await createNegotiation({
+  name: negotiationName || "Untitled Negotiation",
+  sceneDate: sceneDateUndecided
+    ? null
+    : sceneDate || null,
+  sceneDateUnknown: sceneDateUndecided,
+  plannedActivities,
+  retentionPeriod,
+});
 
       sessionStorage.setItem(
   "desrec.creatorToken",
@@ -328,6 +332,11 @@ navigate("/create-password?participant=A");
                   )}
                 </dd>
               </div>
+
+<div className="review-detail-row">
+  <dt>Planned activities</dt>
+  <dd>{plannedActivities}</dd>
+</div>
 
             </dl>
           </section>

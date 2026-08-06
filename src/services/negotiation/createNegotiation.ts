@@ -9,6 +9,7 @@ export interface CreateNegotiationInput {
   name: string;
   sceneDate: string | null;
   sceneDateUnknown: boolean;
+  plannedActivities: string;
   retentionPeriod: RetentionPeriod;
 }
 
@@ -30,10 +31,23 @@ interface CreateNegotiationRpcRow {
 
 function validate(input: CreateNegotiationInput): void {
   const name = input.name.trim();
+  const plannedActivities = input.plannedActivities.trim();
 
   if (name.length > 120) {
     throw new Error(
       "Negotiation name cannot exceed 120 characters.",
+    );
+  }
+
+  if (!plannedActivities) {
+    throw new Error(
+      "Planned scene activities are required.",
+    );
+  }
+
+  if (plannedActivities.length > 500) {
+    throw new Error(
+      "Planned scene activities cannot exceed 500 characters.",
     );
   }
 
@@ -70,6 +84,8 @@ export async function createNegotiation(
         : input.sceneDate,
       p_scene_date_unknown: input.sceneDateUnknown,
       p_retention_period: input.retentionPeriod,
+      p_planned_activities:
+        input.plannedActivities.trim(),
     },
   );
 

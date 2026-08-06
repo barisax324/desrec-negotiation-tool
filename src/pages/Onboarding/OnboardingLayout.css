@@ -4,3 +4,16 @@
   color: var(--color-text-secondary);
   white-space: nowrap;
 }
+
+.participant-actions {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  margin-top: 2rem;
+}
+
+@media (max-width: 540px) {
+  .participant-actions {
+    grid-template-columns: 1fr;
+  }
+}

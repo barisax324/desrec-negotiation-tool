@@ -3,26 +3,30 @@ import OnboardingLayout from "./OnboardingLayout";
 import { ONBOARDING_PROGRESS } from "./types";
 
 interface WelcomeProps {
+  back: () => void;
   next: () => void;
 }
 
-function Welcome({ next }: WelcomeProps) {
+function Welcome({
+  back,
+  next,
+}: WelcomeProps) {
   return (
     <OnboardingLayout
-  title="Welcome"
-  progress={ONBOARDING_PROGRESS.welcome}
->
+      title="Welcome"
+      progress={ONBOARDING_PROGRESS.welcome}
+    >
       <div className="participant-welcome-box">
         <p>
           <strong>
-            You&apos;re about to complete your side of a shared
+            You're about to complete your side of a shared
             negotiation.
           </strong>
         </p>
 
         <p>
           Your responses are private until both participants have
-          finished. Once both people submit, you&apos;ll receive a
+          finished. Once both people submit, you'll receive a
           comparison that highlights shared interests, discussion
           topics, and boundaries.
         </p>
@@ -92,10 +96,22 @@ function Welcome({ next }: WelcomeProps) {
         </article>
       </section>
 
-      <Button onClick={next}>
-        Continue
-        <span aria-hidden="true"> →</span>
-      </Button>
+      <div className="participant-actions">
+        <Button
+          variant="secondary"
+          onClick={back}
+        >
+          ← Back
+        </Button>
+
+        <Button onClick={next}>
+          Continue
+          <span aria-hidden="true">
+            {" "}
+            →
+          </span>
+        </Button>
+      </div>
     </OnboardingLayout>
   );
 }

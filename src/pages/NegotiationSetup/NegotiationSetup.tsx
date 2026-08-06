@@ -1,5 +1,6 @@
 import { useState } from "react";
-import type { FormEvent } from "react";import { useNavigate } from "react-router-dom";
+import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "./NegotiationSetup.css";
 
@@ -25,7 +26,12 @@ function NegotiationSetup() {
 
   const [sceneDateUndecided, setSceneDateUndecided] = useState(
     () =>
-      sessionStorage.getItem("desrec.sceneDateUndecided") === "true",
+      sessionStorage.getItem("desrec.sceneDateUndecided") ===
+      "true",
+  );
+
+  const [plannedActivities, setPlannedActivities] = useState(
+    () => sessionStorage.getItem("desrec.plannedActivities") ?? "",
   );
 
   const [error, setError] = useState("");
@@ -49,6 +55,7 @@ function NegotiationSetup() {
     sessionStorage.removeItem("desrec.negotiationName");
     sessionStorage.removeItem("desrec.sceneDate");
     sessionStorage.removeItem("desrec.sceneDateUndecided");
+    sessionStorage.removeItem("desrec.plannedActivities");
 
     navigate("/");
   }
@@ -58,10 +65,18 @@ function NegotiationSetup() {
     setError("");
 
     const trimmedName = negotiationName.trim();
+    const trimmedActivities = plannedActivities.trim();
 
     if (!sceneDate && !sceneDateUndecided) {
       setError(
         "Choose a planned scene date or select Not decided yet.",
+      );
+      return;
+    }
+
+    if (!trimmedActivities) {
+      setError(
+        "Add a brief overview of the activities planned for this scene.",
       );
       return;
     }
@@ -79,6 +94,11 @@ function NegotiationSetup() {
     sessionStorage.setItem(
       "desrec.sceneDateUndecided",
       String(sceneDateUndecided),
+    );
+
+    sessionStorage.setItem(
+      "desrec.plannedActivities",
+      trimmedActivities,
     );
 
     navigate("/deletion-preference");
@@ -173,61 +193,83 @@ function NegotiationSetup() {
             </small>
           </label>
 
-          <fieldset className="setup-date-section">
-            <legend>When is the scene planned?</legend>
+<section className="setup-date-section">
+  <h2>When is the scene planned?</h2>
 
-            <p>
-              Choose the expected date. You can update it later if
-              plans change.
-            </p>
+  <p>
+    Choose the expected date. You can update it later if plans
+    change.
+  </p>
 
-            <label className="setup-field setup-date-field">
-              <span>Planned scene date</span>
+  <label className="setup-field setup-date-field">
+    <span>Planned scene date</span>
 
-              <input
-                type="date"
-                value={sceneDate}
-                min={today}
-                disabled={sceneDateUndecided}
-                onChange={(event) => {
-                  setSceneDate(event.target.value);
-                  setError("");
-                }}
-              />
-            </label>
+    <input
+      type="date"
+      value={sceneDate}
+      min={today}
+      disabled={sceneDateUndecided}
+      onChange={(event) => {
+        setSceneDate(event.target.value);
+        setError("");
+      }}
+    />
+  </label>
 
-            <div className="setup-divider">
-              <span>or</span>
-            </div>
+  <div className="setup-divider">
+    <span>or</span>
+  </div>
 
-            <label
-              className={`setup-undecided-card ${
-                sceneDateUndecided
-                  ? "setup-undecided-card-selected"
-                  : ""
-              }`}
-            >
-              <input
-                type="checkbox"
-                checked={sceneDateUndecided}
-                onChange={(event) =>
-                  handleUndecidedChange(event.target.checked)
-                }
-              />
+  <label
+    className={`setup-undecided-card ${
+      sceneDateUndecided
+        ? "setup-undecided-card-selected"
+        : ""
+    }`}
+  >
+    <input
+      type="checkbox"
+      checked={sceneDateUndecided}
+      onChange={(event) =>
+        handleUndecidedChange(event.target.checked)
+      }
+    />
 
-              <span className="setup-undecided-check">
-                {sceneDateUndecided ? "✓" : ""}
-              </span>
+    <span className="setup-undecided-check">
+      {sceneDateUndecided ? "✓" : ""}
+    </span>
 
-              <span>
-                <strong>Not decided yet</strong>
-                <small>
-                  The date can be added after the negotiation is
-                  created.
-                </small>
-              </span>
-            </label>
-          </fieldset>
+    <span>
+      <strong>Not decided yet</strong>
+      <small>
+        The date can be added after the negotiation is created.
+      </small>
+    </span>
+  </label>
+</section>
+
+<section className="setup-activities-section">
+  <h2>
+    What activities are you planning for this scene?
+  </h2>
+
+  <label className="setup-field">
+    <textarea
+      value={plannedActivities}
+      onChange={(event) => {
+        setPlannedActivities(event.target.value);
+        setError("");
+      }}
+      maxLength={500}
+      rows={5}
+      placeholder="Provide a brief overview of what you hope to explore during this scene. This helps both participants start the negotiation with the same expectations."
+    />
+
+    <small>
+      {plannedActivities.length}/500 characters
+    </small>
+  </label>
+</section>
 
           {error && (
             <div className="setup-error" role="alert">

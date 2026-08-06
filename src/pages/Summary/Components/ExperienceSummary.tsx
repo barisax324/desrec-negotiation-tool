@@ -1,13 +1,8 @@
-import type {
-  ExperienceGoal,
-  ExperienceGoalsData,
-} from "../../Questionnaire/ExperienceGoals/ExperienceGoals";
+import type { SceneGoalsData,} from "../../Questionnaire/SceneGoals/SceneGoals";
 
-interface ExperienceSummaryProps {
-  data: ExperienceGoalsData;
-}
+interface ExperienceSummaryProps { data: SceneGoalsData;}
 
-const GOAL_LABELS: Record<ExperienceGoal, string> = {
+const GOAL_LABELS: Record<SceneGoalsData["goals"][number], string> = {
   "emotional-connection":
     "Emotional Connection & Intimacy",
   relaxed: "Relaxed & Low Pressure",

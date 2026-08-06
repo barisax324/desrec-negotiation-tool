@@ -3,7 +3,7 @@ import { useState } from "react";
 import Button from "../../../ui/Button";
 import PageLayout from "../../../ui/PageLayout";
 
-import "./ExperienceGoals.css";
+import "./SceneGoals.css";
 
 export type ExperienceGoal =
   | "emotional-connection"
@@ -24,17 +24,17 @@ export type ExperienceGoal =
   | "serious"
   | "unsure";
 
-export interface ExperienceGoalsData {
+export interface SceneGoalsData {
   goals: ExperienceGoal[];
   customGoals: string[];
   notes: string;
 }
 
-interface ExperienceGoalsProps {
-  data: ExperienceGoalsData;
+interface SceneGoalsProps {
+  data: SceneGoalsData;
 
   updateData: (
-    updates: Partial<ExperienceGoalsData>,
+    updates: Partial<SceneGoalsData>,
   ) => void;
 
   next: () => void;
@@ -119,13 +119,13 @@ const GOAL_OPTIONS: GoalOption[] = [
   },
 ];
 
-function ExperienceGoals({
+function SceneGoals({
   data,
   updateData,
   next,
   back,
   onSaveAndReturnToSummary,
-}: ExperienceGoalsProps) {
+}: SceneGoalsProps) {
   const [showCustomGoal, setShowCustomGoal] =
     useState(false);
 
@@ -200,9 +200,9 @@ function ExperienceGoals({
       title="Experience Goals"
       subtitle="Select all that apply."
     >
-      <section className="experience-goals-card">
-        <div className="experience-goals-heading">
-          <span className="experience-goals-eyebrow">
+      <section className="scene-goals-card">
+        <div className="scene-goals-heading">
+          <span className="scene-goals-eyebrow">
             Desired vibe and intentions
           </span>
 
@@ -219,8 +219,8 @@ function ExperienceGoals({
         </div>
 
         <div
-          className="experience-goals-options"
-          aria-label="Experience goals"
+          className="scene-goals-options"
+          aria-label="Scene goals"
         >
           {GOAL_OPTIONS.map((option) => {
             const isSelected =
@@ -345,14 +345,14 @@ function ExperienceGoals({
           </div>
         )}
 
-        <div className="experience-goals-notes">
-          <label htmlFor="experience-goals-notes">
+        <div className="scene-goals-notes">
+          <label htmlFor="scene-goals-notes">
             Anything you would like your
             partner to know about these goals?
           </label>
 
           <textarea
-            id="experience-goals-notes"
+            id="scene-goals-notes"
             value={data.notes}
             placeholder="Optional notes"
             rows={4}
@@ -364,7 +364,7 @@ function ExperienceGoals({
           />
         </div>
 
-        <div className="experience-goals-navigation">
+        <div className="scene-goals-navigation">
           <Button onClick={back}>
             Back
           </Button>
@@ -392,4 +392,4 @@ function ExperienceGoals({
   );
 }
 
-export default ExperienceGoals;
+export default SceneGoals;

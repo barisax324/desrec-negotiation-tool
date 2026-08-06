@@ -1,4 +1,4 @@
-.experience-goals-card {
+.scene-goals-card {
   width: 100%;
   max-width: 48rem;
   margin: 0 auto;
@@ -12,11 +12,11 @@
     0 8px 24px rgb(0 0 0 / 5%);
 }
 
-.experience-goals-heading {
+.scene-goals-heading {
   margin-bottom: 1.5rem;
 }
 
-.experience-goals-eyebrow {
+.scene-goals-eyebrow {
   display: block;
   margin-bottom: 0.65rem;
   color: var(--primary-color, #c65d36);
@@ -26,26 +26,26 @@
   text-transform: uppercase;
 }
 
-.experience-goals-heading h2 {
+.scene-goals-heading h2 {
   max-width: 38rem;
   margin: 0;
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   line-height: 1.12;
 }
 
-.experience-goals-heading p {
+.scene-goals-heading p {
   margin: 1rem 0 0;
   color: var(--muted-text-color, #6c655e);
   line-height: 1.6;
 }
 
-.experience-goals-options {
+.scene-goals-options {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.experience-goal-chip {
+.scene-goal-chip {
   min-height: 3.15rem;
   padding: 0.8rem 1.1rem;
   border: 1px solid
@@ -67,7 +67,7 @@
     transform 150ms ease;
 }
 
-.experience-goal-chip:hover {
+.scene-goal-chip:hover {
   border-color: var(
     --primary-color,
     #c65d36
@@ -75,10 +75,10 @@
   transform: translateY(-1px);
 }
 
-.experience-goal-chip:focus-visible,
-.experience-add-goal:focus-visible,
-.experience-custom-goal button:focus-visible,
-.experience-custom-cancel:focus-visible {
+.scene-goal-chip:focus-visible,
+.scene-add-goal:focus-visible,
+.scene-custom-goal button:focus-visible,
+.scene-custom-cancel:focus-visible {
   outline: 3px solid
     color-mix(
       in srgb,
@@ -88,7 +88,7 @@
   outline-offset: 2px;
 }
 
-.experience-goal-chip--selected {
+.scene-goal-chip--selected {
   border-color: var(
     --primary-color,
     #c65d36
@@ -102,14 +102,14 @@
     var(--primary-color, #c65d36);
 }
 
-.experience-custom-goals {
+.scene-custom-goals {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
   margin-top: 1rem;
 }
 
-.experience-custom-goal {
+.scene-custom-goal {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
@@ -126,7 +126,7 @@
   font-weight: 600;
 }
 
-.experience-custom-goal button {
+.scene-custom-goal button {
   display: grid;
   place-items: center;
   width: 1.65rem;
@@ -141,7 +141,7 @@
   cursor: pointer;
 }
 
-.experience-add-goal {
+.scene-add-goal {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
@@ -161,12 +161,12 @@
   cursor: pointer;
 }
 
-.experience-add-goal span {
+.scene-add-goal span {
   color: var(--primary-color, #c65d36);
   font-size: 1.35rem;
 }
 
-.experience-custom-entry {
+.scene-custom-entry {
   margin-top: 1.25rem;
   padding: 1rem;
   border: 1px solid
@@ -178,21 +178,21 @@
   );
 }
 
-.experience-custom-entry label,
-.experience-goals-notes label {
+.scene-custom-entry label,
+.scene-goals-notes label {
   display: block;
   margin-bottom: 0.55rem;
   font-weight: 700;
 }
 
-.experience-custom-entry__controls {
+.scene-custom-entry__controls {
   display: flex;
   align-items: stretch;
   gap: 0.75rem;
 }
 
-.experience-custom-entry input,
-.experience-goals-notes textarea {
+.scene-custom-entry input,
+.scene-goals-notes textarea {
   width: 100%;
   border: 1px solid
     var(--border-color, #cec6bc);
@@ -202,13 +202,13 @@
   font: inherit;
 }
 
-.experience-custom-entry input {
+.scene-custom-entry input {
   min-height: 3rem;
   padding: 0.75rem 0.9rem;
 }
 
-.experience-custom-entry input:focus,
-.experience-goals-notes textarea:focus {
+.scene-custom-entry input:focus,
+.scene-goals-notes textarea:focus {
   border-color: var(
     --primary-color,
     #c65d36
@@ -221,7 +221,7 @@
     );
 }
 
-.experience-custom-cancel {
+.scene-custom-cancel {
   margin-top: 0.65rem;
   padding: 0;
   border: 0;
@@ -232,14 +232,14 @@
   cursor: pointer;
 }
 
-.experience-goals-notes {
+.scene-goals-notes {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid
     var(--border-color, #e2ddd6);
 }
 
-.experience-goals-notes textarea {
+.scene-goals-notes textarea {
   display: block;
   min-height: 7rem;
   padding: 0.85rem 0.95rem;
@@ -247,7 +247,7 @@
   line-height: 1.5;
 }
 
-.experience-goals-navigation {
+.scene-goals-navigation {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -258,26 +258,26 @@
 }
 
 @media (max-width: 600px) {
-  .experience-goals-card {
+  .scene-goals-card {
     padding: 1.15rem;
     border-radius: 1rem;
   }
 
-  .experience-goal-chip {
+  .scene-goal-chip {
     flex: 1 1 calc(50% - 0.75rem);
   }
 
-  .experience-custom-entry__controls {
+  .scene-custom-entry__controls {
     flex-direction: column;
   }
 
-  .experience-goals-navigation > * {
+  .scene-goals-navigation > * {
     flex: 1;
   }
 }
 
 @media (max-width: 420px) {
-  .experience-goal-chip {
+  .scene-goal-chip {
     flex-basis: 100%;
   }
 }

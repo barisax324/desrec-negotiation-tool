@@ -25,18 +25,33 @@ const pages: OnboardingPage[] = [
 ];
 
 interface OnboardingProps {
+  initialPage?: OnboardingPage;
+  welcomeOnly?: boolean;
+  onWelcomeContinue?: () => void;
+  onBackToOverview: () => void;
   onComplete: (
     data: OnboardingData,
   ) => void;
 }
 
 export default function Onboarding({
+  initialPage = "welcome",
+  welcomeOnly = false,
+  onWelcomeContinue,
+  onBackToOverview,
   onComplete,
 }: OnboardingProps) {
   const [
     currentPage,
     setCurrentPage,
-  ] = useState(0);
+  ] = useState(() => {
+    const pageIndex =
+      pages.indexOf(initialPage);
+
+    return pageIndex >= 0
+      ? pageIndex
+      : 0;
+  });
 
   const [
     data,
@@ -55,6 +70,15 @@ export default function Onboarding({
 
   function next() {
     if (
+      currentPage === 0 &&
+      welcomeOnly &&
+      onWelcomeContinue
+    ) {
+      onWelcomeContinue();
+      return;
+    }
+
+    if (
       currentPage <
       pages.length - 1
     ) {
@@ -65,11 +89,22 @@ export default function Onboarding({
   }
 
   function back() {
+    if (
+      currentPage === 1 &&
+      initialPage === "about-you"
+    ) {
+      onBackToOverview();
+      return;
+    }
+
     if (currentPage > 0) {
       setCurrentPage(
         (page) => page - 1,
       );
+      return;
     }
+
+    onBackToOverview();
   }
 
   function updateData(
@@ -88,6 +123,7 @@ export default function Onboarding({
       return (
         <Welcome
           next={next}
+          back={onBackToOverview}
         />
       );
 

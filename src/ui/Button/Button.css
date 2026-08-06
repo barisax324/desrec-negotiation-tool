@@ -57,13 +57,14 @@
 }
 
 .desrec-button--secondary {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-primary);
 }
 
 .desrec-button--secondary:hover:not(:disabled) {
-  background: var(--color-background-alt);
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .desrec-button--ghost {

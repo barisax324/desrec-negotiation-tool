@@ -1,16 +1,15 @@
-import type { ChangeEvent } from "react";
-
 import Button from "../../../ui/Button";
 import OnboardingLayout from "../OnboardingLayout";
+import AboutYouForm from "./AboutYouForm";
+import "./AboutYou.css";
 
 import type {
   OnboardingData,
-  OnboardingRole,
 } from "../types";
 
-import { ONBOARDING_PROGRESS } from "../types";
-
-import "./AboutYou.css";
+import {
+  ONBOARDING_PROGRESS,
+} from "../types";
 
 interface AboutYouProps {
   data: OnboardingData;
@@ -21,88 +20,14 @@ interface AboutYouProps {
   back: () => void;
 }
 
-interface RoleOption {
-  value: OnboardingRole;
-  label: string;
-  description: string;
-}
-
-const ROLE_OPTIONS: RoleOption[] = [
-  {
-    value: "top",
-    label: "Top",
-    description:
-      "Directing, initiating, or taking the active role during the scene.",
-  },
-  {
-    value: "bottom",
-    label: "Bottom",
-    description:
-      "Receiving, following, or taking the receptive role during the scene.",
-  },
-  {
-    value: "switch",
-    label: "Switch",
-    description:
-      "Planning to participate in both active and receptive roles during the scene.",
-  },
-  {
-    value: "observer",
-    label: "Observer",
-    description:
-      "Present as a witness, audience member, photographer, or silent participant.",
-  },
-  {
-    value: "facilitator",
-    label: "Facilitator",
-    description:
-      "Supporting safety, education, timekeeping, or overall scene management.",
-  },
-  {
-    value: "unsure",
-    label: "Unsure",
-    description:
-      "Still exploring or discussing what role feels right today.",
-  },
-  {
-    value: "other",
-    label: "Other",
-    description:
-      "A role or dynamic not represented above.",
-  },
-];
-
 function AboutYou({
   data,
   updateData,
   next,
   back,
 }: AboutYouProps) {
-  const canContinue = data.role !== null;
-
-  function handleNicknameChange(
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
-    updateData({
-      nickname: event.target.value,
-    });
-  }
-
-  function handleRoleSelect(role: OnboardingRole) {
-    updateData({
-      role,
-      otherRole:
-        role === "other" ? data.otherRole : "",
-    });
-  }
-
-  function handleOtherRoleChange(
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
-    updateData({
-      otherRole: event.target.value,
-    });
-  }
+  const canContinue =
+    data.role !== null;
 
   function handleContinue() {
     if (!canContinue) {
@@ -116,164 +41,40 @@ function AboutYou({
     <OnboardingLayout
       title="About You"
       subtitle="Tell us how you would like to be identified in this negotiation."
-      progress={ONBOARDING_PROGRESS.aboutYou}
+      progress={
+        ONBOARDING_PROGRESS.aboutYou
+      }
     >
-      <div className="about-you">
-        <section className="about-you-section">
-          <div className="about-you-section-heading">
-            <div>
-              <h2>
-                What would you like to be called?
-              </h2>
+      <AboutYouForm
+        data={data}
+        updateData={updateData}
+      />
 
-              <span className="about-you-optional">
-                Optional
-              </span>
-            </div>
+      <div className="about-you-actions">
+        <Button onClick={back}>
+          <span aria-hidden="true">
+            ←
+          </span>
+          Back
+        </Button>
 
-            <p>
-              This name will only appear in the
-              completed comparison and downloaded PDF.
-            </p>
-          </div>
-
-          <label
-            className="about-you-nickname-field"
-            htmlFor="onboarding-nickname"
+        <div className="about-you-continue-area">
+          <Button
+            onClick={handleContinue}
+            disabled={!canContinue}
           >
-            <span
-              className="about-you-input-icon"
-              aria-hidden="true"
-            >
-              ♙
+            Continue
+            <span aria-hidden="true">
+              →
             </span>
-
-            <input
-              id="onboarding-nickname"
-              type="text"
-              value={data.nickname}
-              onChange={handleNicknameChange}
-              placeholder="Nickname or first name"
-              autoComplete="nickname"
-              maxLength={60}
-            />
-          </label>
-
-          <p className="about-you-helper-text">
-            <span aria-hidden="true">ⓘ</span>
-
-            Your personal link remains the only way to
-            access your side of the negotiation.
-          </p>
-        </section>
-
-        <section
-          className="about-you-section"
-          aria-labelledby="planned-role-heading"
-        >
-          <div className="about-you-section-heading">
-            <div>
-              <h2 id="planned-role-heading">
-                What best describes your role in this
-                negotiation?
-              </h2>
-
-              <span className="about-you-required">
-                Required
-              </span>
-            </div>
-
-            <p>
-              Choose the option that best matches your
-              planned participation.
-            </p>
-          </div>
-
-          <div
-            className="about-you-role-list"
-            role="radiogroup"
-            aria-labelledby="planned-role-heading"
-          >
-            {ROLE_OPTIONS.map((option) => {
-              const isSelected =
-                data.role === option.value;
-
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  className={[
-                    "about-you-role-card",
-                    isSelected
-                      ? "about-you-role-card-selected"
-                      : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  role="radio"
-                  aria-checked={isSelected}
-                  onClick={() =>
-                    handleRoleSelect(option.value)
-                  }
-                >
-                  <span className="about-you-role-copy">
-                    <strong>{option.label}</strong>
-
-                    <span>{option.description}</span>
-                  </span>
-
-                  <span
-                    className="about-you-radio"
-                    aria-hidden="true"
-                  >
-                    <span />
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {data.role === "other" && (
-            <div className="about-you-other-field">
-              <label htmlFor="onboarding-other-role">
-                Describe your planned role
-                <span>Optional</span>
-              </label>
-
-              <input
-                id="onboarding-other-role"
-                type="text"
-                value={data.otherRole}
-                onChange={handleOtherRoleChange}
-                placeholder="Enter your role or dynamic"
-                maxLength={100}
-                autoFocus
-              />
-            </div>
-          )}
-        </section>
-
-        <div className="about-you-actions">
-          <Button onClick={back}>
-            <span aria-hidden="true">←</span>
-            Back
           </Button>
 
-          <div className="about-you-continue-area">
-            <Button
-              onClick={handleContinue}
-              disabled={!canContinue}
-            >
-              Continue
-              <span aria-hidden="true">→</span>
-            </Button>
-
-            {!canContinue && (
-              <p>
-                Choose your planned role to continue.
-              </p>
-            )}
-          </div>
+          {!canContinue && (
+            <p>
+              Choose your planned role to
+              continue.
+            </p>
+          )}
         </div>
       </div>
     </OnboardingLayout>

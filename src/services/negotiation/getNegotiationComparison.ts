@@ -3,7 +3,7 @@ import { supabase } from "../../lib/supabase";
 export interface ComparisonParticipantResponses {
   onboardingCompleted?: boolean;
   onboardingData?: unknown;
-  experienceGoals?: unknown;
+  sceneGoals?: unknown;
   activities?: unknown;
   healthSafety?: unknown;
   communication?: unknown;

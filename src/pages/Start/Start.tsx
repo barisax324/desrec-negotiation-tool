@@ -1,122 +1,30 @@
 import "./Start.css";
 
 import { useEffect, useState } from "react";
+import {Link, useSearchParams, } from "react-router-dom";
+import { openNegotiation } from "../../services/negotiation/openNegotiation";
+import { BODY_MAP_STORAGE_KEY, isQuestionnairePage, readBodyMap,} from "./startTypes";import {  getParticipantProgress,saveParticipantProgress,} from "../../services/negotiation/participantProgress";
+import { useNegotiationOverview } from "./hooks/useNegotiationOverview";
+import { useQuestionnaireState } from "./hooks/useQuestionnaireState";
+import QuestionnaireRouter from "./components/QuestionnaireRouter";
+import OnboardingRouter from "./components/OnboardingRouter";
+
+import type {
+  ParticipantProgressResponses,
+  ProgressOverrides,
+  QuestionnairePage,
+} from "./startTypes";
+
 import {
-  Link,
-  useSearchParams,
-} from "react-router-dom";
+  DEFAULT_ONBOARDING_DATA,
+} from "../Onboarding/types";
 
-import Activities from "../Questionnaire/Activities/Activities";
-import Onboarding from "../Onboarding";
-import ExperienceGoals from "../Questionnaire/ExperienceGoals/ExperienceGoals";
-import HealthSafety from "../HealthSafety/HealthSafety";
-import CommunicationPage from "../Communication/CommunicationPage";
-import AftercarePage from "../../components/Aftercare/AftercarePage";
-import SummaryPage from "../Summary/SummaryPage";
-import ComparisonPage from "../Comparison/ComparisonPage";
-
+import type {OnboardingData, OnboardingPage, } from "../Onboarding/types";
 import type { HealthSafetyResponses } from "../HealthSafety/types";
 import type { CommunicationFormData } from "../Communication/CommunicationPage";
-import type { ExperienceGoalsData } from "../Questionnaire/ExperienceGoals/ExperienceGoals";
-import type { OnboardingData } from "../Onboarding/types";
 import type { AftercareResponses } from "../../components/Aftercare/AftercarePage";
 import type { ActivityResponses } from "../Questionnaire/Activities/types";
 import type { SummaryEditSection } from "../Summary/SummaryPage";
-
-import { openNegotiation } from "../../services/negotiation/openNegotiation";
-import { supabase } from "../../lib/supabase";
-
-type QuestionnairePage =
-  | "experience-goals"
-  | "activities"
-  | "health-safety"
-  | "communication"
-  | "aftercare"
-  | "summary"
-  | "comparison";
-
-interface BodyMapData {
-  statuses: Record<string, string>;
-  notes: Record<string, string>;
-}
-
-interface ParticipantProgressResponses {
-  onboardingCompleted: boolean;
-  onboardingData: OnboardingData | null;
-  experienceGoals: ExperienceGoalsData;
-  activities: ActivityResponses;
-  healthSafety: HealthSafetyResponses | null;
-  communication: CommunicationFormData | null;
-  aftercare: AftercareResponses | null;
-  bodyMap: BodyMapData | null;
-}
-
-interface ParticipantProgressRow {
-  current_page: string;
-  responses: Partial<ParticipantProgressResponses> | null;
-  responses_version: number;
-}
-
-interface ProgressOverrides {
-  onboardingCompleted?: boolean;
-  onboardingData?: OnboardingData | null;
-  experienceGoals?: ExperienceGoalsData;
-  activities?: ActivityResponses;
-  healthSafety?: HealthSafetyResponses | null;
-  communication?: CommunicationFormData | null;
-  aftercare?: AftercareResponses | null;
-  bodyMap?: BodyMapData | null;
-}
-
-const BODY_MAP_STORAGE_KEY =
-  "desrec.bodyMap";
-
-const DEFAULT_EXPERIENCE_GOALS: ExperienceGoalsData = {
-  goals: [],
-  customGoals: [],
-  notes: "",
-};
-
-function isQuestionnairePage(
-  value: string | null | undefined,
-): value is QuestionnairePage {
-  return (
-    value === "experience-goals" ||
-    value === "activities" ||
-    value === "health-safety" ||
-    value === "communication" ||
-    value === "aftercare" ||
-    value === "summary"  ||
-    value === "comparison"
-  );
-}
-
-function readBodyMap(): BodyMapData | null {
-  const savedBodyMap =
-    sessionStorage.getItem(
-      BODY_MAP_STORAGE_KEY,
-    );
-
-  if (!savedBodyMap) {
-    return null;
-  }
-
-  try {
-    const parsedBodyMap =
-      JSON.parse(
-        savedBodyMap,
-      ) as Partial<BodyMapData>;
-
-    return {
-      statuses:
-        parsedBodyMap.statuses ?? {},
-      notes:
-        parsedBodyMap.notes ?? {},
-    };
-  } catch {
-    return null;
-  }
-}
 
 interface StartProps {
   participantRole?: "A" | "B";
@@ -131,6 +39,16 @@ function Start({
   const recoveryCredential =
     searchParams.get("r")?.trim() ??
     "";
+
+    const {
+  negotiationInfo,
+  setNegotiationInfo,
+  isSavingOverview,
+  overviewSaveError,
+  saveOverview,
+} = useNegotiationOverview(
+  recoveryCredential,
+);
 
   const [isLoading, setIsLoading] =
     useState(true);
@@ -147,16 +65,26 @@ function Start({
   const [hasStarted, setHasStarted] =
     useState(false);
 
-  const [
-    onboardingData,
-    setOnboardingData,
-  ] = useState<OnboardingData | null>(
-    null,
-  );
+    const [
+  hasSeenWelcome,
+  setHasSeenWelcome,
+] = useState(false);
+
+    const [
+  onboardingStartPage,
+  setOnboardingStartPage,
+] = useState<OnboardingPage>(
+  "welcome",
+);
+
+    const [
+  hasReviewedScene,
+  setHasReviewedScene,
+] = useState(false);
 
 const [page, setPage] =
   useState<QuestionnairePage>(
-    "experience-goals",
+    "scene-goals",
   );
 
 useEffect(() => {
@@ -174,41 +102,43 @@ const [
   null,
 );
 
-  const [
-    experienceGoals,
-    setExperienceGoals,
-  ] = useState<ExperienceGoalsData>(
-    DEFAULT_EXPERIENCE_GOALS,
-  );
+const [
+  editingOnboardingSection,
+  setEditingOnboardingSection,
+] = useState<
+  "about-you" | "onboarding-experience" | null
+>(null);
 
-  const [
-    activityResponses,
-    setActivityResponses,
-  ] = useState<ActivityResponses>({});
+const [
+  onboardingEditDraft,
+  setOnboardingEditDraft,
+] = useState<OnboardingData | null>(null);
 
-  const [
-    healthSafetyResponses,
-    setHealthSafetyResponses,
-  ] =
-    useState<HealthSafetyResponses | null>(
-      null,
-    );
+const {
+  onboardingData,
+  setOnboardingData,
 
-  const [
-    communicationResponses,
-    setCommunicationResponses,
-  ] =
-    useState<CommunicationFormData | null>(
-      null,
-    );
+  sceneGoals,
+  setSceneGoals,
+  updateSceneGoals,
 
-  const [
-    aftercareResponses,
-    setAftercareResponses,
-  ] =
-    useState<AftercareResponses | null>(
-      null,
-    );
+  activityResponses,
+  setActivityResponses,
+
+  healthSafetyResponses,
+  setHealthSafetyResponses,
+
+  communicationResponses,
+  setCommunicationResponses,
+
+  aftercareResponses,
+  setAftercareResponses,
+} = useQuestionnaireState();
+
+const [
+  isEditingSceneDetails,
+  setIsEditingSceneDetails,
+] = useState(false);
 
   useEffect(() => {
     let isCancelled = false;
@@ -249,6 +179,17 @@ const [
           return;
         }
 
+        setNegotiationInfo({
+  negotiationName:
+    negotiationResult.negotiationName,
+  sceneDate:
+    negotiationResult.sceneDate,
+  sceneDateUnknown:
+    negotiationResult.sceneDateUnknown,
+  plannedActivities:
+    negotiationResult.plannedActivities,
+});
+
         sessionStorage.setItem(
           "desrec.activeRecoveryToken",
           recoveryCredential,
@@ -280,34 +221,10 @@ const [
           );
         }
 
-        const {
-          data,
-          error,
-        } = await supabase.rpc(
-          "get_participant_progress",
-          {
-            p_recovery_token:
-              recoveryCredential,
-          },
-        );
-
-        if (error) {
-          console.error(
-            "get_participant_progress error:",
-            error,
-          );
-
-          throw new Error(
-            error.message,
-          );
-        }
-
-        const progressRow =
-          Array.isArray(data)
-            ? (data[0] as
-                | ParticipantProgressRow
-                | undefined)
-            : undefined;
+const progressRow =
+  await getParticipantProgress(
+    recoveryCredential,
+  );
 
         const savedResponses =
           progressRow?.responses ?? {};
@@ -321,10 +238,10 @@ const [
         }
 
         if (
-          savedResponses.experienceGoals
+          savedResponses.sceneGoals
         ) {
-          setExperienceGoals(
-            savedResponses.experienceGoals,
+          setSceneGoals(
+            savedResponses.sceneGoals,
           );
         }
 
@@ -376,7 +293,7 @@ const [
             progressRow?.current_page,
           )
             ? progressRow.current_page
-            : "experience-goals";
+            : "scene-goals";
 
         setPage(savedPage);
 
@@ -428,9 +345,9 @@ const [
           ? overrides.onboardingData
           : onboardingData,
 
-      experienceGoals:
-        overrides.experienceGoals ??
-        experienceGoals,
+      sceneGoals:
+        overrides.sceneGoals ??
+        sceneGoals,
 
       activities:
         overrides.activities ??
@@ -481,29 +398,13 @@ const [
           overrides,
         );
 
-      const { error } =
-        await supabase.rpc(
-          "save_participant_progress",
-          {
-            p_recovery_token:
-              recoveryCredential,
-            p_current_page:
-              nextPage,
-            p_responses:
-              responses,
-          },
-        );
-
-      if (error) {
-        console.error(
-          "save_participant_progress error:",
-          error,
-        );
-
-        throw new Error(
-          error.message,
-        );
-      }
+await saveParticipantProgress({
+  recoveryToken:
+    recoveryCredential,
+  currentPage:
+    nextPage,
+  responses,
+});
 
       return true;
     } catch (error) {
@@ -559,18 +460,37 @@ function displayPage(
     displayPage("summary");
   }
 
-  function beginEditingSection(
-    section: SummaryEditSection,
-  ) {
-    setEditingSection(section);
-    setHasStarted(true);
-
-    void saveAndMove(section, {
-      onboardingCompleted: true,
-    });
+function beginEditingSection(
+  section: SummaryEditSection,
+) {
+  if (section === "scene-details") {
+    setIsEditingSceneDetails(true);
+    return;
   }
 
-  async function handleOnboardingComplete(
+  if (
+    section === "about-you" ||
+    section === "onboarding-experience"
+  ) {
+    setOnboardingEditDraft(
+      onboardingData
+        ? { ...onboardingData }
+        : { ...DEFAULT_ONBOARDING_DATA },
+    );
+
+    setEditingOnboardingSection(section);
+    return;
+  }
+
+  setEditingSection(section);
+  setHasStarted(true);
+
+  void saveAndMove(section, {
+    onboardingCompleted: true,
+  });
+}
+
+async function handleOnboardingComplete(
     completedOnboardingData: OnboardingData,
   ) {
     setOnboardingData(
@@ -580,7 +500,7 @@ function displayPage(
     setHasStarted(true);
 
     await saveAndMove(
-      "experience-goals",
+      "scene-goals",
       {
         onboardingCompleted: true,
         onboardingData:
@@ -589,17 +509,26 @@ function displayPage(
     );
   }
 
-  function updateExperienceGoals(
-    updates: Partial<ExperienceGoalsData>,
-  ) {
-    setExperienceGoals(
-      (currentData) => ({
-        ...currentData,
-        ...updates,
-      }),
-    );
+  async function saveOnboardingEdit(
+  updatedData: OnboardingData,
+) {
+  const saved = await saveProgress(
+    "summary",
+    {
+      onboardingCompleted: true,
+      onboardingData: updatedData,
+    },
+  );
+
+  if (!saved) {
+    return;
   }
 
+  setOnboardingData(updatedData);
+  setOnboardingEditDraft(null);
+  setEditingOnboardingSection(null);
+  displayPage("summary");
+}
   function saveActivitiesLocally(
     responses: ActivityResponses,
   ) {
@@ -673,360 +602,151 @@ function displayPage(
     );
   }
 
-  if (!hasStarted) {
-    return (
-      <Onboarding
-        onComplete={(data) => {
-          void handleOnboardingComplete(
-            data,
-          );
-        }}
-      />
-    );
-  }
+const onboardingPage = (
+  <OnboardingRouter
+  enabled={
+  !hasStarted ||
+  isEditingSceneDetails ||
+  editingOnboardingSection !== null
+}
+    hasStarted={hasStarted}
+    hasSeenWelcome={
+      hasSeenWelcome
+    }
+    hasReviewedScene={
+      hasReviewedScene
+    }
+    onboardingStartPage={
+      onboardingStartPage
+    }
+    editingOnboardingSection={
+      editingOnboardingSection
+    }
+    onboardingEditDraft={
+      onboardingEditDraft
+    }
+    negotiationInfo={
+      negotiationInfo
+    }
+    isSavingOverview={
+      isSavingOverview
+    }
+    overviewSaveError={
+      overviewSaveError
+    }
+    saveOverview={
+      saveOverview
+    }
+    handleOnboardingComplete={
+      handleOnboardingComplete
+    }
+    saveOnboardingEdit={
+      saveOnboardingEdit
+    }
+    setHasSeenWelcome={
+      setHasSeenWelcome
+    }
+    setHasReviewedScene={
+      setHasReviewedScene
+    }
+    setOnboardingStartPage={
+      setOnboardingStartPage
+    }
+    setEditingOnboardingSection={
+      setEditingOnboardingSection
+    }
+    setOnboardingEditDraft={
+      setOnboardingEditDraft
+    }
+  />
+);
 
-  const savingMessage =
-    saveError ? (
-      <div
-        className="questionnaire-save-error"
-        role="alert"
-      >
-        {saveError}
-      </div>
-    ) : null;
+if (
+  !hasStarted ||
+  isEditingSceneDetails ||
+  editingOnboardingSection !== null
+) {
+  return onboardingPage;
+}
 
-  if (page === "experience-goals") {
-    return (
-      <>
-        {savingMessage}
+const questionnairePage = (
+  <QuestionnaireRouter
+    page={page}
+    recoveryCredential={
+      recoveryCredential
+    }
+    saveError={saveError}
+    editingSection={
+      editingSection
+    }
+    onboardingData={
+      onboardingData
+    }
+    sceneGoals={
+      sceneGoals
+    }
+    activityResponses={
+      activityResponses
+    }
+    healthSafetyResponses={
+      healthSafetyResponses
+    }
+    communicationResponses={
+      communicationResponses
+    }
+    aftercareResponses={
+      aftercareResponses
+    }
+    updateSceneGoals={
+      updateSceneGoals
+    }
+    setHasStarted={
+      setHasStarted
+    }
+    setOnboardingStartPage={
+      setOnboardingStartPage
+    }
+    saveAndMove={
+      saveAndMove
+    }
+    returnToSummary={
+      returnToSummary
+    }
+    displayPage={
+      displayPage
+    }
+    saveActivitiesLocally={
+      saveActivitiesLocally
+    }
+    saveHealthSafetyLocally={
+      saveHealthSafetyLocally
+    }
+    saveCommunicationLocally={
+      saveCommunicationLocally
+    }
+    saveAftercareLocally={
+      saveAftercareLocally
+    }
+    beginEditingSection={
+      beginEditingSection
+    }
+    readBodyMap={
+      readBodyMap
+    }
+  />
+);
 
-        <ExperienceGoals
-          data={experienceGoals}
-          updateData={
-            updateExperienceGoals
-          }
-          back={() => {
-            if (editingSection) {
-              void returnToSummary({
-                experienceGoals,
-              });
-
-              return;
-            }
-
-            setHasStarted(false);
-          }}
-          next={() => {
-            if (
-              editingSection ===
-              "experience-goals"
-            ) {
-              void returnToSummary({
-                experienceGoals,
-              });
-
-              return;
-            }
-
-            void saveAndMove(
-              "activities",
-              {
-                experienceGoals,
-              },
-            );
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "experience-goals"
-              ? () => {
-                  void returnToSummary({
-                    experienceGoals,
-                  });
-                }
-              : undefined
-          }
-        />
-      </>
-    );
-  }
-
-  if (page === "activities") {
-    return (
-      <>
-        {savingMessage}
-
-        <Activities
-          initialResponses={
-            activityResponses
-          }
-          back={() => {
-            void saveAndMove(
-              "experience-goals",
-            );
-          }}
-          next={(responses) => {
-            saveActivitiesLocally(
-              responses,
-            );
-
-            if (
-              editingSection ===
-              "activities"
-            ) {
-              void returnToSummary({
-                activities: responses,
-              });
-
-              return;
-            }
-
-            void saveAndMove(
-              "health-safety",
-              {
-                activities: responses,
-              },
-            );
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "activities"
-              ? (responses) => {
-                  saveActivitiesLocally(
-                    responses,
-                  );
-
-                  void returnToSummary({
-                    activities:
-                      responses,
-                  });
-                }
-              : undefined
-          }
-        />
-      </>
-    );
-  }
-
-  if (page === "health-safety") {
-    return (
-      <>
-        {savingMessage}
-
-        <HealthSafety
-          initialResponses={
-            healthSafetyResponses
-          }
-          back={() => {
-            void saveAndMove(
-              "activities",
-            );
-          }}
-          next={(responses) => {
-            saveHealthSafetyLocally(
-              responses,
-            );
-
-            if (
-              editingSection ===
-              "health-safety"
-            ) {
-              void returnToSummary({
-                healthSafety: responses,
-                bodyMap:
-                  readBodyMap(),
-              });
-
-              return;
-            }
-
-            void saveAndMove(
-              "communication",
-              {
-                healthSafety: responses,
-                bodyMap:
-                  readBodyMap(),
-              },
-            );
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "health-safety"
-              ? (responses) => {
-                  saveHealthSafetyLocally(
-                    responses,
-                  );
-
-                  void returnToSummary({
-                    healthSafety:
-                      responses,
-                    bodyMap:
-                      readBodyMap(),
-                  });
-                }
-              : undefined
-          }
-        />
-      </>
-    );
-  }
-
-  if (page === "communication") {
-    return (
-      <>
-        {savingMessage}
-
-        <CommunicationPage
-          initialData={
-            communicationResponses
-          }
-          onBack={() => {
-            void saveAndMove(
-              "health-safety",
-            );
-          }}
-          onContinue={(responses) => {
-            saveCommunicationLocally(
-              responses,
-            );
-
-            if (
-              editingSection ===
-              "communication"
-            ) {
-              void returnToSummary({
-                communication:
-                  responses,
-              });
-
-              return;
-            }
-
-            void saveAndMove(
-              "aftercare",
-              {
-                communication:
-                  responses,
-              },
-            );
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "communication"
-              ? (responses) => {
-                  saveCommunicationLocally(
-                    responses,
-                  );
-
-                  void returnToSummary({
-                    communication:
-                      responses,
-                  });
-                }
-              : undefined
-          }
-        />
-      </>
-    );
-  }
-
-  if (page === "aftercare") {
-    return (
-      <>
-        {savingMessage}
-
-        <AftercarePage
-          initialResponses={
-            aftercareResponses
-          }
-          onBack={() => {
-            void saveAndMove(
-              "communication",
-            );
-          }}
-          onContinue={(responses) => {
-            saveAftercareLocally(
-              responses,
-            );
-
-            void returnToSummary({
-              aftercare: responses,
-            });
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "aftercare"
-              ? (responses) => {
-                  saveAftercareLocally(
-                    responses,
-                  );
-
-                  void returnToSummary({
-                    aftercare:
-                      responses,
-                  });
-                }
-              : undefined
-          }
-        />
-      </>
-    );
-  }
-
-  if (page === "comparison") {
+if (isSaving) {
   return (
-    <ComparisonPage
-      recoveryToken={recoveryCredential}
-      onBackToSummary={() => {
-        displayPage("summary");
-      }}
-    />
+    <main className="questionnaire-loading">
+      <h1>
+        Saving your progress...
+      </h1>
+    </main>
   );
 }
 
-  if (page === "summary") {
-    return (
-      <>
-        {savingMessage}
-
-        <SummaryPage
-          experienceGoals={
-            experienceGoals
-          }
-          activityResponses={
-            activityResponses
-          }
-          healthSafetyResponses={
-            healthSafetyResponses
-          }
-          communicationResponses={
-            communicationResponses
-          }
-          aftercareResponses={
-            aftercareResponses
-          }
-          onEditSection={
-            beginEditingSection
-          }
-          onViewComparison={() => {
-  displayPage("comparison");
-}}
-
-        />
-      </>
-    );
-  }
-
-  if (isSaving) {
-    return (
-      <main className="questionnaire-loading">
-        <h1>
-          Saving your progress...
-        </h1>
-      </main>
-    );
-  }
-
-  return null;
+return questionnairePage;
 }
 
 export default Start;

@@ -1,11 +1,11 @@
 import type {
   ExperienceGoal,
-  ExperienceGoalsData,
-} from "../../Questionnaire/ExperienceGoals/ExperienceGoals";
+  SceneGoalsData,
+} from "../../Questionnaire/SceneGoals/SceneGoals";
 
 interface ExperienceComparisonProps {
-  participantA?: ExperienceGoalsData | null;
-  participantB?: ExperienceGoalsData | null;
+  participantA?: SceneGoalsData | null;
+  participantB?: SceneGoalsData | null;
 }
 
 const GOAL_LABELS: Record<
@@ -37,7 +37,7 @@ const GOAL_LABELS: Record<
 };
 
 function getGoals(
-  data?: ExperienceGoalsData | null,
+  data?: SceneGoalsData | null,
 ): string[] {
   if (!data) {
     return [];

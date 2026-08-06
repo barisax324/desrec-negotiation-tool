@@ -1,6 +1,11 @@
 import "./SummaryPage.css";
 
-import type { ExperienceGoalsData } from "../Questionnaire/ExperienceGoals/ExperienceGoals";
+import type {
+  OnboardingData,
+  OnboardingRole,
+  ExperienceLevel,
+} from "../Onboarding/types";
+import type { SceneGoalsData } from "../Questionnaire/SceneGoals/SceneGoals";
 import type { ActivityResponses } from "../Questionnaire/Activities/types";
 import type { CommunicationFormData } from "../Communication/CommunicationPage";
 import type { HealthSafetyResponses } from "../HealthSafety/types";
@@ -15,14 +20,18 @@ import AftercareSummary from "./Components/AftercareSummary";
 import { APP_VERSION } from "../../version";
 
 export type SummaryEditSection =
-  | "experience-goals"
+  | "scene-details"
+  | "about-you"
+  | "onboarding-experience"
+  | "scene-goals"
   | "activities"
   | "health-safety"
   | "communication"
   | "aftercare";
 
 interface SummaryPageProps {
-  experienceGoals: ExperienceGoalsData;
+  onboardingData: OnboardingData | null;
+  sceneGoals: SceneGoalsData;
   activityResponses: ActivityResponses;
   healthSafetyResponses: HealthSafetyResponses | null;
   communicationResponses: CommunicationFormData | null;
@@ -34,6 +43,29 @@ interface SummaryPageProps {
 
   onViewComparison: () => void;
 }
+
+const ROLE_LABELS: Record<OnboardingRole, string> = {
+  top: "Top",
+  bottom: "Bottom",
+  switch: "Switch",
+  observer: "Observer",
+  facilitator: "Facilitator",
+  unsure: "Unsure",
+  other: "Other",
+};
+
+const EXPERIENCE_LABELS: Record<
+  ExperienceLevel,
+  string
+> = {
+  "first-time": "First time",
+  learning: "Learning",
+  "some-experience": "Some experience",
+  comfortable: "Comfortable",
+  "very-experienced": "Very experienced",
+  "teaching-facilitating":
+    "Teaching or facilitating",
+};
 
 function formatSceneDate(
   sceneDate: string,
@@ -61,7 +93,8 @@ function formatSceneDate(
 }
 
 export default function SummaryPage({
-  experienceGoals,
+  onboardingData,
+  sceneGoals,
   activityResponses,
   healthSafetyResponses,
   communicationResponses,
@@ -69,7 +102,6 @@ export default function SummaryPage({
   onEditSection,
   onViewComparison,
 }: SummaryPageProps) {
-  
   const referenceId =
     sessionStorage.getItem(
       "desrec.publicId",
@@ -87,8 +119,13 @@ export default function SummaryPage({
 
   const sceneDateUnknown =
     sessionStorage.getItem(
-      "desrec.sceneDateUnknown",
+      "desrec.sceneDateUndecided",
     ) === "true";
+
+  const plannedActivities =
+    sessionStorage.getItem(
+      "desrec.plannedActivities",
+    ) ?? "";
 
   const participantRole =
     sessionStorage.getItem(
@@ -97,25 +134,6 @@ export default function SummaryPage({
 
   function handlePrint() {
     window.print();
-  }
-
-  function handleEditSelection(
-    value: string,
-  ) {
-    const section =
-      value as SummaryEditSection;
-
-    if (
-      section !== "experience-goals" &&
-      section !== "activities" &&
-      section !== "health-safety" &&
-      section !== "communication" &&
-      section !== "aftercare"
-    ) {
-      return;
-    }
-
-    onEditSection(section);
   }
 
   return (
@@ -154,18 +172,6 @@ export default function SummaryPage({
               </div>
             )}
 
-            {negotiationName && (
-              <div className="summary-detail-row">
-                <span>
-                  Negotiation
-                </span>
-
-                <strong>
-                  {negotiationName}
-                </strong>
-              </div>
-            )}
-
             {participantRole && (
               <div className="summary-detail-row">
                 <span>
@@ -174,23 +180,6 @@ export default function SummaryPage({
 
                 <strong>
                   {participantRole}
-                </strong>
-              </div>
-            )}
-
-            {(sceneDate ||
-              sceneDateUnknown) && (
-              <div className="summary-detail-row">
-                <span>
-                  Scene Date
-                </span>
-
-                <strong>
-                  {sceneDateUnknown
-                    ? "Not decided"
-                    : formatSceneDate(
-                        sceneDate,
-                      )}
                 </strong>
               </div>
             )}
@@ -232,59 +221,12 @@ export default function SummaryPage({
           </button>
 
           <button
-  type="button"
-  className="summary-button"
-  onClick={onViewComparison}
->
-  View Comparison
-</button>
-
-          <label className="summary-edit-select">
-            <span className="summary-edit-select__label">
-              Edit Responses
-            </span>
-
-            <select
-              defaultValue=""
-              aria-label="Choose a section to edit"
-              onChange={(event) => {
-                handleEditSelection(
-                  event.target.value,
-                );
-
-                event.currentTarget.value =
-                  "";
-              }}
-            >
-              <option
-                value=""
-                disabled
-              >
-                Choose a section
-              </option>
-
-              <option value="experience-goals">
-                Experience Goals
-              </option>
-
-              <option value="activities">
-                Activities
-              </option>
-
-              <option value="health-safety">
-                Health &amp; Safety
-              </option>
-
-              <option value="communication">
-                Communication &amp;
-                Boundaries
-              </option>
-
-              <option value="aftercare">
-                Aftercare
-              </option>
-            </select>
-          </label>
+            type="button"
+            className="summary-button"
+            onClick={onViewComparison}
+          >
+            View Comparison
+          </button>
         </div>
 
         <aside className="summary-private-note">
@@ -303,21 +245,176 @@ export default function SummaryPage({
 
         <div className="summary-section-list">
           <section className="summary-section">
-            <h2>
-              Experience Goals
-            </h2>
+            <div className="summary-section-heading">
+              <h2>Scene Details</h2>
+
+              <button
+                type="button"
+                className="summary-edit-button summary-screen-only"
+                onClick={() =>
+                  onEditSection(
+                    "scene-details",
+                  )
+                }
+              >
+                Edit
+              </button>
+            </div>
+
+            <div className="summary-section-content">
+              <div className="summary-response-block">
+                <h3>Negotiation Name</h3>
+
+                <p>
+                  {negotiationName ||
+                    "No name provided"}
+                </p>
+              </div>
+
+              <div className="summary-response-block">
+                <h3>Scene Date</h3>
+
+                <p>
+                  {sceneDateUnknown
+                    ? "Not decided yet"
+                    : sceneDate
+                      ? formatSceneDate(
+                          sceneDate,
+                        )
+                      : "No date provided"}
+                </p>
+              </div>
+
+              <div className="summary-response-block">
+                <h3>Planned Activities</h3>
+
+                <p>
+                  {plannedActivities ||
+                    "No planned activities provided"}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="summary-section">
+            <div className="summary-section-heading">
+              <h2>About You</h2>
+
+              <button
+                type="button"
+                className="summary-edit-button summary-screen-only"
+                onClick={() =>
+                  onEditSection(
+                    "about-you",
+                  )
+                }
+              >
+                Edit
+              </button>
+            </div>
+
+            <div className="summary-section-content">
+              <div className="summary-response-block">
+                <h3>Name</h3>
+
+                <p>
+                  {onboardingData?.nickname ||
+                    "No name provided"}
+                </p>
+              </div>
+
+              <div className="summary-response-block">
+                <h3>Planned Role</h3>
+
+                <p>
+                  {onboardingData?.role
+                    ? onboardingData.role ===
+                      "other"
+                      ? onboardingData.otherRole ||
+                        "Other"
+                      : ROLE_LABELS[
+                          onboardingData.role
+                        ]
+                    : "No role selected"}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="summary-section">
+            <div className="summary-section-heading">
+              <h2>General Experience</h2>
+
+              <button
+                type="button"
+                className="summary-edit-button summary-screen-only"
+                onClick={() =>
+                  onEditSection(
+                    "onboarding-experience",
+                  )
+                }
+              >
+                Edit
+              </button>
+            </div>
+
+            <div className="summary-section-content">
+              <div className="summary-response-block">
+                <h3>Experience Level</h3>
+
+                <p>
+                  {onboardingData?.experience
+                    ? EXPERIENCE_LABELS[
+                        onboardingData.experience
+                      ]
+                    : "No experience level selected"}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="summary-section">
+            <div className="summary-section-heading">
+              <h2>
+                Experience Goals
+              </h2>
+
+              <button
+                type="button"
+                className="summary-edit-button summary-screen-only"
+                onClick={() =>
+                  onEditSection(
+                    "scene-goals",
+                  )
+                }
+              >
+                Edit
+              </button>
+            </div>
 
             <div className="summary-section-content">
               <ExperienceSummary
-                data={experienceGoals}
+                data={sceneGoals}
               />
             </div>
           </section>
 
           <section className="summary-section">
-            <h2>
-              Activities
-            </h2>
+            <div className="summary-section-heading">
+              <h2>Activities</h2>
+
+              <button
+                type="button"
+                className="summary-edit-button summary-screen-only"
+                onClick={() =>
+                  onEditSection(
+                    "activities",
+                  )
+                }
+              >
+                Edit
+              </button>
+            </div>
 
             <div className="summary-section-content">
               <ActivitiesSummary
@@ -329,9 +426,23 @@ export default function SummaryPage({
           </section>
 
           <section className="summary-section">
-            <h2>
-              Health &amp; Safety
-            </h2>
+            <div className="summary-section-heading">
+              <h2>
+                Health &amp; Safety
+              </h2>
+
+              <button
+                type="button"
+                className="summary-edit-button summary-screen-only"
+                onClick={() =>
+                  onEditSection(
+                    "health-safety",
+                  )
+                }
+              >
+                Edit
+              </button>
+            </div>
 
             <div className="summary-section-content">
               <HealthSummary
@@ -341,9 +452,7 @@ export default function SummaryPage({
               />
 
               <div className="summary-response-block">
-                <h3>
-                  Body Map
-                </h3>
+                <h3>Body Map</h3>
 
                 <BodyMapSummary />
               </div>
@@ -351,10 +460,24 @@ export default function SummaryPage({
           </section>
 
           <section className="summary-section">
-            <h2>
-              Communication &amp;
-              Boundaries
-            </h2>
+            <div className="summary-section-heading">
+              <h2>
+                Communication &amp;
+                Boundaries
+              </h2>
+
+              <button
+                type="button"
+                className="summary-edit-button summary-screen-only"
+                onClick={() =>
+                  onEditSection(
+                    "communication",
+                  )
+                }
+              >
+                Edit
+              </button>
+            </div>
 
             <div className="summary-section-content">
               <CommunicationSummary
@@ -366,9 +489,21 @@ export default function SummaryPage({
           </section>
 
           <section className="summary-section">
-            <h2>
-              Aftercare
-            </h2>
+            <div className="summary-section-heading">
+              <h2>Aftercare</h2>
+
+              <button
+                type="button"
+                className="summary-edit-button summary-screen-only"
+                onClick={() =>
+                  onEditSection(
+                    "aftercare",
+                  )
+                }
+              >
+                Edit
+              </button>
+            </div>
 
             <div className="summary-section-content">
               <AftercareSummary
@@ -390,45 +525,43 @@ export default function SummaryPage({
             </p>
           )}
 
-<strong>
-  Desert Rope Education Collective
-</strong>
+          <strong>
+            Desert Rope Education Collective
+          </strong>
 
-<p>
-  <em>
-    This questionnaire is a tool.
-  </em>
+          <p>
+            <em>
+              This questionnaire is a tool.
+            </em>
 
-  <br />
+            <br />
 
-  <em>
-    Negotiation is a conversation.
-  </em>
-</p>
+            <em>
+              Negotiation is a conversation.
+            </em>
+          </p>
 
- <br />
-  <br />
+          <br />
+          <br />
 
+          <p>
+            Version {APP_VERSION}
+          </p>
 
-<p>
-  Version {APP_VERSION}
-</p>
+          <p className="summary-feedback">
+            Found a bug or have feedback?
+            <br />
 
-<p className="summary-feedback">
-  Found a bug or have feedback?
-  <br />
-  <a href="mailto:desrecphx@gmail.com">
-    desrecphx@gmail.com
-  </a>
-</p>
+            <a href="mailto:desrecphx@gmail.com">
+              desrecphx@gmail.com
+            </a>
+          </p>
 
-<span>
-  desrec.org
-</span>
+          <span>
+            desrec.org
+          </span>
         </footer>
       </article>
     </main>
   );
-
-  
 }

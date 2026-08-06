@@ -12,7 +12,7 @@ import {
 import PrintComparison from "./PrintComparison";
 
 import type { OnboardingData } from "../Onboarding/types";
-import type { ExperienceGoalsData } from "../Questionnaire/ExperienceGoals/ExperienceGoals";
+import type { SceneGoalsData } from "../Questionnaire/SceneGoals/SceneGoals";
 import type { ActivityResponses } from "../Questionnaire/Activities/types";
 import type { HealthSafetyResponses } from "../HealthSafety/types";
 import type { CommunicationFormData } from "../Communication/CommunicationPage";
@@ -53,8 +53,8 @@ interface SavedParticipantResponses {
     | OnboardingData
     | null;
 
-  experienceGoals?:
-    ExperienceGoalsData;
+  sceneGoals?:
+    SceneGoalsData;
 
   activities?:
     ActivityResponses;
@@ -530,7 +530,7 @@ export default function ComparisonPage({
 
         <div
           className="comparison-section-wrapper"
-          data-comparison-section="Experience Goals"
+          data-comparison-section="Scene Goals"
         >
           <ExperienceComparison
             participantA={

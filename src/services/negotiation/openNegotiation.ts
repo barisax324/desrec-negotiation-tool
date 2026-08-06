@@ -5,6 +5,7 @@ export interface OpenNegotiationResult {
   negotiationName: string | null;
   sceneDate: string | null;
   sceneDateUnknown: boolean;
+  plannedActivities: string | null;
   retentionPeriod:
     | "24-hours"
     | "7-days"
@@ -25,8 +26,7 @@ export async function openNegotiation(
   credential: string,
   accessMode: NegotiationAccessMode = "permanent",
 ): Promise<OpenNegotiationResult> {
-  const cleanedCredential =
-    credential.trim();
+  const cleanedCredential = credential.trim();
 
   if (!cleanedCredential) {
     throw new Error(
@@ -36,23 +36,23 @@ export async function openNegotiation(
     );
   }
 
-  const { data, error } =
-    accessMode === "recovery"
-      ? await supabase.rpc(
-          "open_negotiation_with_recovery",
-          {
-            p_recovery_token:
-              cleanedCredential,
-          },
-        )
-      : await supabase.rpc(
-          "open_negotiation",
-          {
-            p_access_token:
-              cleanedCredential,
-          },
-        );
-
+const { data, error } =
+  accessMode === "recovery"
+    ? await supabase.rpc(
+        "open_negotiation_with_recovery_v2",
+        {
+          p_recovery_token:
+            cleanedCredential,
+        },
+      )
+    : await supabase.rpc(
+        "open_negotiation_v2",
+        {
+          p_access_token:
+            cleanedCredential,
+        },
+      );
+      
   if (error) {
     console.error(
       "Unable to open negotiation:",
@@ -70,10 +70,9 @@ export async function openNegotiation(
 
   const row = data[0];
 
-  const participantRole =
-    String(
-      row.participant_role,
-    ).toUpperCase();
+  const participantRole = String(
+    row.participant_role,
+  ).toUpperCase();
 
   if (
     participantRole !== "A" &&
@@ -92,6 +91,8 @@ export async function openNegotiation(
       row.scene_date ?? null,
     sceneDateUnknown:
       Boolean(row.scene_date_unknown),
+    plannedActivities:
+      row.planned_activities ?? null,
     retentionPeriod:
       row.retention_period,
     negotiationStatus:
