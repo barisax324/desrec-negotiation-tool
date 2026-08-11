@@ -1,0 +1,25 @@
+.edit-dialog-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 2rem;
+
+  background: rgba(0, 0, 0, 0.75);
+
+  z-index: 2000;
+}
+
+.edit-dialog {
+  width: min(1200px, 100%);
+  max-height: 92vh;
+
+  overflow-y: auto;
+
+  border-radius: 16px;
+
+  background: var(--surface-color);
+}

@@ -4,7 +4,7 @@ import type {
   ParticipantProgressResponses,
   ParticipantProgressRow,
   QuestionnairePage,
-} from "../../pages/Start/startTypes";
+} from "../../app/negotiation-flow/types";
 
 export async function getParticipantProgress(
   recoveryToken: string,
