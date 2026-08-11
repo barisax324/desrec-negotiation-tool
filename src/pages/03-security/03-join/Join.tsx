@@ -10,9 +10,9 @@ import {
   useSearchParams,
 } from "react-router-dom";
 
-import NegotiationFlow from "../../../app/negotiation-flow";
+import NegotiationFlow from "@/app/negotiation-flow";
 
-import { joinNegotiation } from "../../../services/negotiation/joinNegotiation";
+import { joinNegotiation } from "@/services/negotiation/joinNegotiation";
 
 function Join() {
   const navigate = useNavigate();

@@ -4,7 +4,7 @@ import {
   COMMUNICATION_STYLE_OPTIONS,
   SAFEWORD_OPTIONS,
   SOMETHING_WRONG_OPTIONS,
-} from "../../../../pages/05-questionnaire/04-communication-boundaries";
+} from "@/pages/05-questionnaire/04-communication-boundaries";
 
 import type {
   CommunicationFormData,

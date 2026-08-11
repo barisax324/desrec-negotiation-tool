@@ -1,4 +1,4 @@
-import { supabase } from "../../shared/clients/supabase";
+import { supabase } from "@/shared/clients/supabase";
 
 export interface OpenNegotiationResult {
   participantRole: "A" | "B";

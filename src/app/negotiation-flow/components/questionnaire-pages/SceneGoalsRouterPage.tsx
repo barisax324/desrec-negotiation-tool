@@ -1,13 +1,13 @@
-import SceneGoals from "../../../../pages/05-questionnaire/01-scene-goals";
+import SceneGoals from "@/pages/05-questionnaire/01-scene-goals";
 import type {
   SceneGoalsData,
-} from "../../../../pages/05-questionnaire/01-scene-goals";
+} from "@/pages/05-questionnaire/01-scene-goals";
 import type {
   ProgressOverrides,
 } from "../../types";
 import type {
   SummaryEditSection,
-} from "../../../../pages/06-results/01-summary";
+} from "@/pages/06-results/01-summary";
 
 interface SceneGoalsRouterPageProps {
   savingMessage: React.ReactNode;

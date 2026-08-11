@@ -1,11 +1,11 @@
 import {
   AFTERCARE_HELP_OPTIONS,
   FOLLOW_UP_OPTIONS,
-} from "../../../../pages/05-questionnaire/05-aftercare";
+} from "@/pages/05-questionnaire/05-aftercare";
 
 import type {
   AftercareResponses,
-} from "../../../../pages/05-questionnaire/05-aftercare";
+} from "@/pages/05-questionnaire/05-aftercare";
 
 interface AftercareSummaryProps {
   responses: AftercareResponses | null;

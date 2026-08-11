@@ -1,10 +1,10 @@
-import { supabase } from "../../shared/clients/supabase";
+import { supabase } from "@/shared/clients/supabase";
 
 import type {
   ParticipantProgressResponses,
   ParticipantProgressRow,
   QuestionnairePage,
-} from "../../app/negotiation-flow/types";
+} from "@/app/negotiation-flow/types";
 
 export async function getParticipantProgress(
   recoveryToken: string,

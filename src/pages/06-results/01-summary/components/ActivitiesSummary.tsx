@@ -1,10 +1,10 @@
 import {
   ACTIVITY_LOOKUP,
-} from "../../../../pages/05-questionnaire/02-activities";
+} from "@/pages/05-questionnaire/02-activities";
 
 import type {
   ActivityResponses,
-} from "../../../../pages/05-questionnaire/02-activities";
+} from "@/pages/05-questionnaire/02-activities";
 interface ActivitiesSummaryProps {
   responses: ActivityResponses;
 }

@@ -27,7 +27,7 @@ import HealthSummary from "./components/HealthSummary";
 import BodyMapSummary from "./components/BodyMapSummary";
 import CommunicationSummary from "./components/CommunicationSummary";
 import AftercareSummary from "./components/AftercareSummary";
-import { APP_VERSION } from "../../../version";
+import { APP_VERSION } from "@/version";
 
 export type SummaryEditSection =
   | "scene-details"

@@ -1,4 +1,4 @@
-import ComparisonPage from "../../../../pages/06-results/02-comparison";
+import ComparisonPage from "@/pages/06-results/02-comparison";
 
 interface ComparisonRouterPageProps {
   recoveryCredential: string;

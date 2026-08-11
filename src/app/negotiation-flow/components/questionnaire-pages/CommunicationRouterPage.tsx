@@ -1,15 +1,15 @@
-import CommunicationPage from "../../../../pages/05-questionnaire/04-communication-boundaries";
+import CommunicationPage from "@/pages/05-questionnaire/04-communication-boundaries";
 
 import type {
   CommunicationFormData,
-} from "../../../../pages/05-questionnaire/04-communication-boundaries";
+} from "@/pages/05-questionnaire/04-communication-boundaries";
 
 import type {
   ProgressOverrides,
 } from "../../types";
 import type {
   SummaryEditSection,
-} from "../../../../pages/06-results/01-summary";
+} from "@/pages/06-results/01-summary";
 
 interface CommunicationRouterPageProps {
   savingMessage: React.ReactNode;

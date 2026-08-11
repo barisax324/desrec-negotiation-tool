@@ -1,75 +1,189 @@
-# React + TypeScript + Vite
+# DesREC Negotiation Tool
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A privacy-focused negotiation tool designed for rope, BDSM, and other consent-based activities.
 
-Currently, two official plugins are available:
+The application guides two participants through a structured negotiation, allowing each person to complete their responses independently before viewing a side-by-side comparison.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The goal is not to negotiate for the user, but to facilitate clear communication and informed consent.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Features
 
-## Expanding the ESLint configuration
+- Guided multi-step negotiation workflow
+- Independent participant questionnaires
+- Side-by-side comparison of responses
+- Shared scene details
+- Interactive body map
+- Health & safety questionnaire
+- Communication & boundary negotiation
+- Aftercare planning
+- Secure participant links
+- Recovery using participant credentials
+- Automatic progress saving
+- Printable negotiation summary
+- Automatic negotiation expiration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Project Goals
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Privacy-first architecture
+- Simple, guided user experience
+- Clear communication over visual complexity
+- Consistent interface throughout the application
+- Mobile-friendly responsive design
+- Maintainable, scalable codebase
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
 
-```
+# Technology
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- React
+- TypeScript
+- Vite
+- Supabase
+- React Router
+- CSS Modules / Shared UI Components
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Project Structure
 
 ```
+src
+├── app/
+├── pages/
+│   ├── 01-home
+│   ├── 02-setup
+│   ├── 03-security
+│   ├── 04-onboarding
+│   ├── 05-questionnaire
+│   ├── 06-results
+│   └── 07-about
+│
+├── shared/
+│   ├── assets
+│   ├── clients
+│   ├── components
+│   ├── data
+│   ├── design
+│   ├── layouts
+│   ├── styles
+│   ├── types
+│   ├── ui
+│   └── utils
+│
+├── services/
+└── utils/
+```
+
+---
+
+# Development
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Run locally
+
+```bash
+npm run dev
+```
+
+Production build
+
+```bash
+npm run build
+```
+
+Preview production build
+
+```bash
+npm run preview
+```
+
+---
+
+# Current Status
+
+The application is currently in active development toward the **v1.1** milestone.
+
+Current priorities include:
+
+- Summary editing for every questionnaire section
+- Shared Questionnaire Context
+- UI consistency and polish
+- Comparison improvements
+- Production readiness
+- Accessibility improvements
+
+---
+
+# Design Principles
+
+The application is designed around a few core principles.
+
+## Privacy First
+
+Participants control access to their own negotiation.
+
+## Reduce Cognitive Load
+
+Only highlight information that requires attention.
+
+Visual complexity should never compete with the conversation.
+
+## Consistency
+
+Every page should follow the same interaction patterns whenever possible.
+
+## Communication Over Automation
+
+The application exists to encourage discussion—not replace it.
+
+---
+
+# UI Principles
+
+- Use color only where it communicates meaningful information.
+- Activities and Communication comparisons should remain color-coded.
+- Informational sections should display responses without unnecessary comparison highlighting.
+- Maintain consistent spacing, typography, and navigation throughout the application.
+- Prefer reusable shared components over page-specific implementations.
+
+---
+
+# Architecture
+
+The application follows a workflow-based architecture.
+
+- `app` contains application orchestration.
+- `pages` contains the user workflow.
+- `shared` contains reusable components, UI, assets, styles, data, and shared services.
+- `services` contains database interaction and business logic.
+
+This organization is intended to keep future development predictable and maintainable.
+
+---
+
+# Future Development
+
+See:
+
+- `/docs/ROADMAP.md`
+- `/docs/DEVLOG.md`
+- `/docs/CHANGELOG.md`
+
+for upcoming work, development notes, and release history.
+
+---
+
+# License
+
+Private project.
+
+Developed for the Desert Rope Education Collective (DesREC).

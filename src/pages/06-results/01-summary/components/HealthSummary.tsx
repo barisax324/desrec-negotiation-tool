@@ -1,7 +1,7 @@
 import {
   ACCESSIBILITY_OPTIONS,
   MEDICAL_CONSIDERATIONS,
-} from "../../../../pages/05-questionnaire/03-health-safety";
+} from "@/pages/05-questionnaire/03-health-safety";
 
 import type {
   HealthSafetyResponses,

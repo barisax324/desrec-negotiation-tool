@@ -1,15 +1,15 @@
-import Activities from "../../../../pages/05-questionnaire/02-activities";
+import Activities from "@/pages/05-questionnaire/02-activities";
 
 import type {
   ActivityResponses,
-} from "../../../../pages/05-questionnaire/02-activities";
+} from "@/pages/05-questionnaire/02-activities";
 
 import type {
   ProgressOverrides,
 } from "../../types";
 import type {
   SummaryEditSection,
-} from "../../../../pages/06-results/01-summary";
+} from "@/pages/06-results/01-summary";
 
 interface ActivitiesRouterPageProps {
   savingMessage: React.ReactNode;

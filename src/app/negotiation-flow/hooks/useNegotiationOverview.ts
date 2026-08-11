@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { updateNegotiationOverview } from "../../../services/negotiation/updateNegotiationOverview";
+import { updateNegotiationOverview } from "@/services/negotiation/updateNegotiationOverview";
 
 import type { NegotiationInfo } from "../types";
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import {
   saveParticipantProgress,
-} from "../../../services/negotiation/participantProgress";
+} from "@/services/negotiation/participantProgress";
 
 import {
   readBodyMap,
@@ -16,27 +16,27 @@ import type {
 
 import type {
   OnboardingData,
-} from "../../../pages/04-onboarding/shared";
+} from "@/pages/04-onboarding/shared";
 
 import type {
   SceneGoalsData,
-} from "../../../pages/05-questionnaire/01-scene-goals";
+} from "@/pages/05-questionnaire/01-scene-goals";
 
 import type {
   ActivityResponses,
-} from "../../../pages/05-questionnaire/02-activities";
+} from "@/pages/05-questionnaire/02-activities";
 
 import type {
   HealthSafetyResponses,
-} from "../../../pages/05-questionnaire/03-health-safety";
+} from "@/pages/05-questionnaire/03-health-safety";
 
 import type {
   CommunicationFormData,
-} from "../../../pages/05-questionnaire/04-communication-boundaries";
+} from "@/pages/05-questionnaire/04-communication-boundaries";
 
 import type {
   AftercareResponses,
-} from "../../../pages/05-questionnaire/05-aftercare";
+} from "@/pages/05-questionnaire/05-aftercare";
 
 interface UseParticipantProgressInput {
   recoveryCredential: string;

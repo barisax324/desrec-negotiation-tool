@@ -1,13 +1,13 @@
-import AftercarePage from "../../../../pages/05-questionnaire/05-aftercare";
+import AftercarePage from "@/pages/05-questionnaire/05-aftercare";
 import type {
   AftercareResponses,
-} from "../../../../pages/05-questionnaire/05-aftercare";
+} from "@/pages/05-questionnaire/05-aftercare";
 import type {
   ProgressOverrides,
 } from "../../types";
 import type {
   SummaryEditSection,
-} from "../../../../pages/06-results/01-summary";
+} from "@/pages/06-results/01-summary";
 
 interface AftercareRouterPageProps {
   savingMessage: React.ReactNode;

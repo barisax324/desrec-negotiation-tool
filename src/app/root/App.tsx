@@ -5,21 +5,21 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import ScrollToTop from "../../shared/components/scroll-to-top";
-import About from "../../pages/07-about";
-import AftercarePage from "../../pages/05-questionnaire/05-aftercare";
+import ScrollToTop from "@/shared/components/scroll-to-top";
+import About from "@/pages/07-about";
+import AftercarePage from "@/pages/05-questionnaire/05-aftercare";
 import CommunicationPage, {
   type CommunicationFormData,
-} from "../../pages/05-questionnaire/04-communication-boundaries";
-import CreatePassword from "../../pages/03-security/01-secure-negotiation";
-import Home from "../../pages/01-home";
-import Join from "../../pages/03-security/03-join";
-import NegotiationSetup from "../../pages/02-setup/01-negotiation-details";
-import Privacy from "../../pages/02-setup/04-privacy-consent";
-import Recover from "../../pages/03-security/04-recover";
-import Retention from "../../pages/02-setup/02-availability";
-import ReviewNegotiation from "../../pages/02-setup/03-review";
-import SavePersonalLink from "../../pages/03-security/02-save-access";
+} from "@/pages/05-questionnaire/04-communication-boundaries";
+import CreatePassword from "@/pages/03-security/01-secure-negotiation";
+import Home from "@/pages/01-home";
+import Join from "@/pages/03-security/03-join";
+import NegotiationSetup from "@/pages/02-setup/01-negotiation-details";
+import Privacy from "@/pages/02-setup/04-privacy-consent";
+import Recover from "@/pages/03-security/04-recover";
+import Retention from "@/pages/02-setup/02-availability";
+import ReviewNegotiation from "@/pages/02-setup/03-review";
+import SavePersonalLink from "@/pages/03-security/02-save-access";
 import NegotiationFlow from "../negotiation-flow";
 
 

@@ -7,7 +7,7 @@ import {
 import {
   getNegotiationComparison,
   type NegotiationComparisonResult,
-} from "../../../services/negotiation/getNegotiationComparison";
+} from "@/services/negotiation/getNegotiationComparison";
 
 import PrintComparison from "./PrintComparison";
 

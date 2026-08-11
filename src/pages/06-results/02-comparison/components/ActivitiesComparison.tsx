@@ -1,11 +1,11 @@
 import type {
   ActivityResponse,
   ActivityResponses,
-} from "../../../../pages/05-questionnaire/02-activities";
+} from "@/pages/05-questionnaire/02-activities";
 
 import {
   ACTIVITY_LOOKUP,
-} from "../../../../pages/05-questionnaire/02-activities";
+} from "@/pages/05-questionnaire/02-activities";
 
 interface ActivitiesComparisonProps {
   participantA?: ActivityResponses | null;

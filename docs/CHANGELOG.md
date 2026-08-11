@@ -28,6 +28,10 @@ All notable user facing changes to the DesREC Negotiation Tool will be documente
 - Updated Scene Goals wording to focus on the current scene rather than general experience.
 - Updated Scene Details editing so selecting a date automatically clears **Not decided yet**.
 - Redesigned the Scene Details page to match the layout used throughout the rest of the application.
+- Reorganized the application into a numbered workflow-based page structure covering Home, Setup, Security, Onboarding, Questionnaire, Results, and About.
+- Moved shared assets, static data, and the Supabase client into centralized shared directories.
+- Standardized shared UI folder naming using lowercase kebab-case conventions.
+- Updated imports throughout the project to match the new application architecture.
 - Continued refactoring `Start.tsx` by moving state management, loading, routing, and database logic into dedicated hooks, services, and router components.
 
 ### Fixed
@@ -40,6 +44,8 @@ All notable user facing changes to the DesREC Negotiation Tool will be documente
 - Fixed questionnaire progress saving after renaming Experience Goals to Scene Goals.
 - Fixed the `participants.current_page` database constraint and default value after the Scene Goals rename.
 - Fixed Scene Goals option styling caused by an incorrect CSS class name.
+- Fixed numerous import paths and build issues introduced during the project architecture reorganization.
+- Resolved Windows case-sensitivity issues affecting TypeScript builds after folder renaming.
 
 ### Improved
 - Removed the scene time field from the Scene Details page.
@@ -47,6 +53,7 @@ All notable user facing changes to the DesREC Negotiation Tool will be documente
 - Added planned activities to the Review page before negotiation creation.
 - Improved section heading layout to prevent titles from overlapping their containers.
 - Improved visual consistency across onboarding and questionnaire pages.
+- Improved overall project organization and maintainability through a standardized directory structure.
 
 ### Database
 - Added the `planned_activities` column to the `negotiations` table.
@@ -64,6 +71,11 @@ All notable user facing changes to the DesREC Negotiation Tool will be documente
 - Simplified `OnboardingRouter` by introducing reusable helper functions for editing workflows.
 - Continued decomposing `Start.tsx` into focused hooks, services, and router components.
 - Standardized routing architecture across onboarding and questionnaire flows in preparation for a shared Questionnaire Context.
+- Completed a full project architecture reorganization into dedicated `app`, `pages`, and `shared` layers.
+- Centralized reusable UI components, assets, styles, design tokens, shared data, and shared clients into a unified `shared` directory.
+- Reorganized the application into workflow-based numbered page folders for improved navigation and scalability.
+- Moved project documentation into a dedicated `docs` directory.
+- Standardized the overall project structure to improve maintainability, readability, and long-term scalability without changing user-facing functionality.
 
 ### In Progress
 - Implementing a shared Questionnaire Context to eliminate prop drilling between routing components.

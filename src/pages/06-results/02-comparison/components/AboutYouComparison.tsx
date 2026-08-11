@@ -2,7 +2,7 @@ import type {
   ExperienceLevel,
   OnboardingData,
   OnboardingRole,
-} from "../../../../pages/04-onboarding/shared";
+} from "@/pages/04-onboarding/shared";
 
 interface AboutYouComparisonProps {
   participantA?: OnboardingData | null;

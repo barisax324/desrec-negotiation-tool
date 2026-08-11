@@ -1,6 +1,6 @@
 import type {
   BodyRegionStatus,
-} from "../../../../pages/05-questionnaire/03-health-safety";
+} from "@/pages/05-questionnaire/03-health-safety";
 
 interface BodyMapData {
   statuses: Record<string, BodyRegionStatus>;

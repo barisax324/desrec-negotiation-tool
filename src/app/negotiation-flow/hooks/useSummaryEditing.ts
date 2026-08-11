@@ -4,14 +4,14 @@ import {
 
 import {
   DEFAULT_ONBOARDING_DATA,
-} from "../../../pages/04-onboarding/shared";
+} from "@/pages/04-onboarding/shared";
 import type {
   OnboardingData,
-} from "../../../pages/04-onboarding/shared";
+} from "@/pages/04-onboarding/shared";
 
 import type {
   SummaryEditSection,
-} from "../../../pages/06-results/01-summary";
+} from "@/pages/06-results/01-summary";
 
 import type {
   ProgressOverrides,

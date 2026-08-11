@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "../root";
 import { QuestionnaireProvider } from "../negotiation-flow/context/QuestionnaireContext";
 
-import "../../shared/styles/global/index.css";
+import "@/shared/styles/global/index.css";
 
 ReactDOM.createRoot(
   document.getElementById("root")!,

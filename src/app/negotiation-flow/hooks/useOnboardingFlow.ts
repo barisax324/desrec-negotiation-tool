@@ -8,7 +8,7 @@ import type {
 import type {
   OnboardingData,
   OnboardingPage,
-} from "../../../pages/04-onboarding/shared";
+} from "@/pages/04-onboarding/shared";
 
 import type {
   ProgressOverrides,

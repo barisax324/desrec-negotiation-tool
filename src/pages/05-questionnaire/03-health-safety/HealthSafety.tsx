@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import Button from "../../../shared/ui/button";
-import PageLayout from "../../../shared/ui/page-layout";
+import Button from "@/shared/ui/button";
+import PageLayout from "@/shared/ui/page-layout";
 
 import { ACCESSIBILITY_OPTIONS } from "./data/accessibilityOptions";
 import { MEDICAL_CONSIDERATIONS } from "./data/medicalOptions";

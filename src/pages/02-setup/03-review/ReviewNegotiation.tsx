@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { createNegotiation } from "../../../services/negotiation/createNegotiation";
+import { createNegotiation } from "@/services/negotiation/createNegotiation";
 
 import "./ReviewNegotiation.css";
 

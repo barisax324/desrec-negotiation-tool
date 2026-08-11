@@ -1,15 +1,15 @@
-import HealthSafety from "../../../../pages/05-questionnaire/03-health-safety";
+import HealthSafety from "@/pages/05-questionnaire/03-health-safety";
 
 import type {
   HealthSafetyResponses,
-} from "../../../../pages/05-questionnaire/03-health-safety";
+} from "@/pages/05-questionnaire/03-health-safety";
 
 import type {
   ProgressOverrides,
 } from "../../types";
 import type {
   SummaryEditSection,
-} from "../../../../pages/06-results/01-summary";
+} from "@/pages/06-results/01-summary";
 
 interface HealthSafetyRouterPageProps {
   savingMessage: React.ReactNode;

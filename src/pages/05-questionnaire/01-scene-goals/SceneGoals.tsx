@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import Button from "../../../shared/ui/button";
-import PageLayout from "../../../shared/ui/page-layout";
+import Button from "@/shared/ui/button";
+import PageLayout from "@/shared/ui/page-layout";
 
 import "./SceneGoals.css";
 

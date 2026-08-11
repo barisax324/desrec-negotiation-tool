@@ -1,12 +1,12 @@
-import NegotiationOverview from "../../../pages/04-onboarding/02-scene-details";
-import Onboarding from "../../../pages/04-onboarding/";
-import AboutYou from "../../../pages/04-onboarding/03-about-you";
-import Experience from "../../../pages/04-onboarding/04-experience";
+import NegotiationOverview from "@/pages/04-onboarding/02-scene-details";
+import Onboarding from "@/pages/04-onboarding/";
+import AboutYou from "@/pages/04-onboarding/03-about-you";
+import Experience from "@/pages/04-onboarding/04-experience";
 
 import type {
   OnboardingData,
   OnboardingPage, }
-from "../../../pages/04-onboarding/shared";
+from "@/pages/04-onboarding/shared";
 
 import type {
   NegotiationInfo,

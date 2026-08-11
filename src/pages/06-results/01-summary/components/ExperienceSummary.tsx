@@ -1,6 +1,6 @@
 import type {
   SceneGoalsData,
-} from "../../../../pages/05-questionnaire/01-scene-goals";
+} from "@/pages/05-questionnaire/01-scene-goals";
 
 interface ExperienceSummaryProps { data: SceneGoalsData;}
 

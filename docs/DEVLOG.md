@@ -2,31 +2,98 @@
 
 Internal development notes for the DesREC Negotiation Tool.
 
-Unlike `CHANGELOG.md`, this document records architectural decisions, refactoring milestones, technical debt, and future development plans. It is intended for developers and project maintainers.
+Unlike `CHANGELOG.md`, this document captures architectural decisions, design philosophy, refactoring milestones, technical debt, and long-term development plans. It is intended for developers and project maintainers rather than end users.
 
 ---
 
-# 2026-08-10
+# 2026-08-11
 
-## Architecture Refactor
+## Major Architecture Refactor
 
 ### Objective
 
-Reduce the complexity of `Start.tsx`, separate application flow from page rendering, and establish a scalable architecture before implementing Summary edit dialogs and future collaboration features.
+Establish a scalable, maintainable project architecture before continuing feature development.
+
+The primary goals were to:
+
+- Reduce application complexity.
+- Separate business logic from presentation.
+- Standardize project organization.
+- Improve long-term maintainability.
+- Create reusable infrastructure for future Summary editing and collaboration features.
+
+No user-facing functionality was intentionally changed during this refactor.
 
 ---
 
 ## Completed
 
-### Start Flow
+### Application Architecture
 
-- Continued decomposing `Start.tsx` into dedicated hooks, services, and router components.
-- Moved negotiation loading, progress management, onboarding flow, Summary editing, and questionnaire state into reusable hooks.
-- Reduced `Start.tsx` to primarily orchestrating application flow.
+The application was reorganized into dedicated application layers.
 
-### Questionnaire Routing
+```
+src
+├── app
+├── pages
+├── shared
+├── services
+└── utils
+```
 
-Introduced dedicated router components for every questionnaire page.
+Responsibilities are now clearly separated.
+
+- **app** manages application orchestration and routing.
+- **pages** contains the user workflow.
+- **shared** contains reusable resources.
+- **services** contains database interaction.
+- **utils** contains application utilities.
+
+---
+
+### Workflow Organization
+
+All user-facing pages were reorganized into numbered workflow folders.
+
+```
+01-home
+02-setup
+03-security
+04-onboarding
+05-questionnaire
+06-results
+07-about
+```
+
+This mirrors the actual user experience and makes navigation significantly easier.
+
+---
+
+### Shared Resources
+
+Shared resources were consolidated into a single location.
+
+```
+shared
+├── assets
+├── clients
+├── components
+├── data
+├── design
+├── layouts
+├── styles
+├── types
+├── ui
+└── utils
+```
+
+The project no longer scatters reusable resources throughout unrelated folders.
+
+---
+
+### Questionnaire Architecture
+
+Questionnaire routing now uses dedicated router components.
 
 ```
 QuestionnaireRouter
@@ -41,68 +108,87 @@ QuestionnaireRouter
 
 Responsibilities moved into router components include:
 
-- Page navigation
-- Progress saving
-- Summary return logic
-- Edit mode behavior
-- Comparison navigation
+- page navigation
+- questionnaire progression
+- progress saving
+- Summary return behavior
+- edit mode behavior
+- comparison navigation
 
-`QuestionnaireRouter` now serves primarily as a page router instead of containing page-specific business logic.
+`QuestionnaireRouter` now serves only as the routing layer.
+
+---
 
 ### Onboarding
 
-- Simplified `OnboardingRouter` by extracting shared editing helpers.
-- Removed duplicated update, save, and cancel logic.
-- Standardized onboarding editing behavior.
+The onboarding flow was further simplified.
 
-### Shared Types
-
-- Moved questionnaire router interfaces into a dedicated shared type definition file.
-- Reduced duplication between router components.
-
-### General Cleanup
-
-- Removed duplicated navigation logic.
-- Standardized routing patterns across onboarding and questionnaire flows.
-- Improved separation between UI components and application logic.
+- Reduced duplicated editing logic.
+- Shared helper functions.
+- Consistent navigation behavior.
+- Improved separation between routing and UI.
 
 ---
 
-## Current Architecture
+### Shared Hooks
+
+Application state is now managed primarily through reusable hooks.
+
+Current hooks include:
 
 ```
-Start
-├── useNegotiationLoader
-├── useNegotiationOverview
-├── useQuestionnaireState
-├── useParticipantProgress
-├── useSummaryEditing
-├── useOnboardingFlow
-│
-├── OnboardingRouter
-│
-└── QuestionnaireRouter
-     ├── SceneGoalsRouterPage
-     ├── ActivitiesRouterPage
-     ├── HealthSafetyRouterPage
-     ├── CommunicationRouterPage
-     ├── AftercareRouterPage
-     ├── SummaryRouterPage
-     └── ComparisonRouterPage
+useNegotiationLoader
+useNegotiationOverview
+useQuestionnaireState
+useParticipantProgress
+useSummaryEditing
+useOnboardingFlow
+```
+
+Each hook has a focused responsibility, reducing duplication throughout the application.
+
+---
+
+### Documentation
+
+Project documentation was reorganized.
+
+```
+docs/
+├── CHANGELOG.md
+├── DEVLOG.md
+├── README.md
+└── ROADMAP.md
 ```
 
 ---
 
-## Design Goals
+## Design Philosophy
 
-Current architecture priorities:
+Current architectural principles:
 
-- Single responsibility for components.
+- Single responsibility.
 - Business logic separated from UI.
-- Reusable hooks instead of duplicated state management.
-- Consistent routing structure.
-- Easy addition of future questionnaire pages.
+- Reusable components over duplicated implementations.
+- Shared hooks over duplicated state.
+- Predictable workflow-based organization.
 - Minimize coupling between application layers.
+- Keep future feature development straightforward.
+
+---
+
+## UI Philosophy
+
+The interface should reduce cognitive load whenever possible.
+
+Guiding principles include:
+
+- Show only the information users need.
+- Use color intentionally, not decoratively.
+- Favor consistency over novelty.
+- Reuse shared UI components whenever possible.
+- Keep navigation predictable.
+- Reduce scrolling where practical.
 
 ---
 
@@ -110,43 +196,37 @@ Current architecture priorities:
 
 ### High Priority
 
-- Introduce `QuestionnaireContext` to eliminate prop drilling.
-- Replace large router component interfaces with shared context.
-- Centralize questionnaire navigation into a dedicated navigation API.
-
-### Medium Priority
-
-- Replace Summary page navigation with reusable edit dialogs.
-- Convert remaining questionnaire sections into reusable form components.
-- Reduce duplicate save and navigation callbacks.
-- Continue improving TypeScript type organization.
-
-### Low Priority
-
-- UI polish.
-- Animation improvements.
-- Accessibility review.
-- Final production cleanup.
+- Implement `QuestionnaireContext` to eliminate prop drilling.
+- Simplify router component interfaces.
+- Introduce TypeScript path aliases (`@/...`).
+- Continue decomposing large orchestration components where appropriate.
 
 ---
 
-## Future Milestones
+### Medium Priority
 
-### Milestone 1
+- Complete Summary edit dialogs.
+- Convert remaining questionnaire sections into reusable form components.
+- Continue reducing duplicated navigation callbacks.
+- Improve shared type organization.
 
-Implement `QuestionnaireContext`.
+---
 
-Expected benefits:
+### Low Priority
 
-- Significantly fewer props passed between components.
-- Cleaner router interfaces.
-- Easier future feature development.
+- Accessibility review.
+- Animation polish.
+- Bundle size optimization.
+- Performance improvements.
+- Additional UI refinement.
 
-### Milestone 2
+---
 
-Summary edit dialogs.
+## Upcoming Work
 
-Replace full-page navigation with inline editing for:
+### Summary Editing
+
+Replace page navigation with inline editing for:
 
 - Scene Details
 - About You
@@ -157,20 +237,38 @@ Replace full-page navigation with inline editing for:
 - Communication
 - Aftercare
 
-### Milestone 3
+---
 
-Production polish.
+### Comparison Improvements
 
-- Cross-browser testing
-- Mobile testing
-- Accessibility review
-- Performance optimization
-- Launch preparation
+Only use comparison highlighting where it improves decision-making.
+
+Color-coded comparison should remain for:
+
+- Activities
+- Communication & Boundaries
+
+Other sections should simply display each participant's responses without similarity highlighting.
+
+---
+
+### Production Readiness
+
+Before public release:
+
+- Complete accessibility review.
+- Cross-browser testing.
+- Mobile testing.
+- Performance optimization.
+- Full workflow validation.
+- Verify both Participant A and Participant B flows after every significant feature addition.
 
 ---
 
 ## Notes
 
-This refactor intentionally focused on architecture rather than user-facing functionality.
+This architecture refactor represents one of the largest internal improvements made to the project.
 
-The goal was to establish a maintainable foundation before implementing larger features such as Summary edit dialogs, improved navigation, and future collaboration capabilities.
+Although users should notice very little difference, future development should be significantly faster, cleaner, and more maintainable due to the standardized project organization and separation of responsibilities.
+
+The project is now focused primarily on usability, polish, and production readiness rather than large architectural changes.
