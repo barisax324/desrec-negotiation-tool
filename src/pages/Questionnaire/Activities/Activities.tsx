@@ -91,9 +91,9 @@ function Activities({
       <section className="activities-page">
         <div className="activities-introduction">
           <p>
-            You do not need to answer every
+            You do not need to have an answer for every
             activity. Only open and respond
-            to the sections that matter for
+            to the ones that matter for
             this negotiation.
           </p>
 

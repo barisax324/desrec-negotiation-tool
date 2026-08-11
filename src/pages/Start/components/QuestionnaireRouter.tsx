@@ -1,86 +1,13 @@
-import Activities from "../../Questionnaire/Activities/Activities";
-import SceneGoals from "../../Questionnaire/SceneGoals/SceneGoals";
-import HealthSafety from "../../HealthSafety/HealthSafety";
-import CommunicationPage from "../../Communication/CommunicationPage";
-import AftercarePage from "../../../components/Aftercare/AftercarePage";
-import SummaryPage from "../../Summary/SummaryPage";
-import ComparisonPage from "../../Comparison/ComparisonPage";
+import ActivitiesRouterPage from "./questionnaire-pages/ActivitiesRouterPage";
+import SceneGoalsRouterPage from "./questionnaire-pages/SceneGoalsRouterPage";
+import HealthSafetyRouterPage from "./questionnaire-pages/HealthSafetyRouterPage";
+import CommunicationRouterPage from "./questionnaire-pages/CommunicationRouterPage";
+import AftercareRouterPage from "./questionnaire-pages/AftercareRouterPage";
+import SummaryRouterPage from "./questionnaire-pages/SummaryRouterPage";
+import ComparisonRouterPage from "./questionnaire-pages/ComparisonRouterPage";
 
-import type { SceneGoalsData } from "../../Questionnaire/SceneGoals/SceneGoals";
-import type { ActivityResponses } from "../../Questionnaire/Activities/types";
-import type { HealthSafetyResponses } from "../../HealthSafety/types";
-import type { CommunicationFormData } from "../../Communication/CommunicationPage";
-import type { AftercareResponses } from "../../../components/Aftercare/AftercarePage";
-import type { OnboardingData } from "../../Onboarding/types";
-import type { SummaryEditSection } from "../../Summary/SummaryPage";
-import type {
-  ProgressOverrides,
-  QuestionnairePage,
-} from "../startTypes";
-
-interface QuestionnaireRouterProps {
-  page: QuestionnairePage;
-  recoveryCredential: string;
-  saveError: string;
-  editingSection: SummaryEditSection | null;
-
-  onboardingData: OnboardingData | null;
-  sceneGoals: SceneGoalsData;
-  activityResponses: ActivityResponses;
-  healthSafetyResponses: HealthSafetyResponses | null;
-  communicationResponses: CommunicationFormData | null;
-  aftercareResponses: AftercareResponses | null;
-
-  updateSceneGoals: (
-    updates: Partial<SceneGoalsData>,
-  ) => void;
-
-  setHasStarted: (
-    value: boolean,
-  ) => void;
-
-  setOnboardingStartPage: (
-    page: "welcome" | "about-you" | "experience" | "ready",
-  ) => void;
-
-  saveAndMove: (
-    nextPage: QuestionnairePage,
-    overrides?: ProgressOverrides,
-  ) => Promise<void>;
-
-  returnToSummary: (
-    overrides?: ProgressOverrides,
-  ) => Promise<void>;
-
-  displayPage: (
-    nextPage: QuestionnairePage,
-  ) => void;
-
-  saveActivitiesLocally: (
-    responses: ActivityResponses,
-  ) => void;
-
-  saveHealthSafetyLocally: (
-    responses: HealthSafetyResponses,
-  ) => void;
-
-  saveCommunicationLocally: (
-    responses: CommunicationFormData,
-  ) => void;
-
-  saveAftercareLocally: (
-    responses: AftercareResponses,
-  ) => void;
-
-  beginEditingSection: (
-    section: SummaryEditSection,
-  ) => void;
-
-  readBodyMap: () => {
-    statuses: Record<string, string>;
-    notes: Record<string, string>;
-  } | null;
-}
+import type {QuestionnaireRouterProps,} from "./questionnaire-pages/questionnaireRouterTypes";
+import type {QuestionnairePage,} from "../startTypes";
 
 function QuestionnaireRouter({
   page,
@@ -101,10 +28,12 @@ function QuestionnaireRouter({
   saveAndMove,
   returnToSummary,
   displayPage,
+
   saveActivitiesLocally,
   saveHealthSafetyLocally,
   saveCommunicationLocally,
   saveAftercareLocally,
+
   beginEditingSection,
   readBodyMap,
 }: QuestionnaireRouterProps) {
@@ -117,301 +46,150 @@ function QuestionnaireRouter({
     </div>
   ) : null;
 
-  if (page === "scene-goals") {
-    return (
-      <>
-        {savingMessage}
-
-        <SceneGoals
-          data={sceneGoals}
-          updateData={updateSceneGoals}
-          back={() => {
-            if (editingSection) {
-              void returnToSummary({
-                sceneGoals,
-              });
-
-              return;
-            }
-
-            setOnboardingStartPage("ready");
-            setHasStarted(false);
-          }}
-          next={() => {
-            if (
-              editingSection ===
-              "scene-goals"
-            ) {
-              void returnToSummary({
-                sceneGoals,
-              });
-
-              return;
-            }
-
-            void saveAndMove(
-              "activities",
-              {
-                sceneGoals,
-              },
-            );
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "scene-goals"
-              ? () => {
-                  void returnToSummary({
-                    sceneGoals,
-                  });
-                }
-              : undefined
-          }
-        />
-      </>
-    );
+  function savePage(
+    nextPage: QuestionnairePage,
+  ) {
+    void saveAndMove(nextPage);
   }
 
-  if (page === "activities") {
-    return (
-      <>
-        {savingMessage}
+  switch (page) {
+    case "scene-goals":
+      return (
+        <SceneGoalsRouterPage
+          savingMessage={
+            savingMessage
+          }
+          sceneGoals={sceneGoals}
+          editingSection={
+            editingSection
+          }
+          updateSceneGoals={
+            updateSceneGoals
+          }
+          setHasStarted={
+            setHasStarted
+          }
+          setOnboardingStartPage={
+            setOnboardingStartPage
+          }
+          returnToSummary={
+            returnToSummary
+          }
+          saveAndMove={
+            saveAndMove
+          }
+        />
+      );
 
-        <Activities
-          initialResponses={
+    case "activities":
+      return (
+        <ActivitiesRouterPage
+          savingMessage={
+            savingMessage
+          }
+          activityResponses={
             activityResponses
           }
-          back={() => {
-            void saveAndMove(
-              "scene-goals",
-            );
-          }}
-          next={(responses) => {
-            saveActivitiesLocally(
-              responses,
-            );
-
-            if (
-              editingSection ===
-              "activities"
-            ) {
-              void returnToSummary({
-                activities: responses,
-              });
-
-              return;
-            }
-
-            void saveAndMove(
-              "health-safety",
-              {
-                activities: responses,
-              },
-            );
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "activities"
-              ? (responses) => {
-                  saveActivitiesLocally(
-                    responses,
-                  );
-
-                  void returnToSummary({
-                    activities:
-                      responses,
-                  });
-                }
-              : undefined
+          editingSection={
+            editingSection
           }
+          saveActivitiesLocally={
+            saveActivitiesLocally
+          }
+          returnToSummary={
+            returnToSummary
+          }
+          saveAndMove={
+            saveAndMove
+          }
+          savePage={savePage}
         />
-      </>
-    );
-  }
+      );
 
-  if (page === "health-safety") {
-    return (
-      <>
-        {savingMessage}
-
-        <HealthSafety
-          initialResponses={
+    case "health-safety":
+      return (
+        <HealthSafetyRouterPage
+          savingMessage={
+            savingMessage
+          }
+          healthSafetyResponses={
             healthSafetyResponses
           }
-          back={() => {
-            void saveAndMove(
-              "activities",
-            );
-          }}
-          next={(responses) => {
-            saveHealthSafetyLocally(
-              responses,
-            );
-
-            if (
-              editingSection ===
-              "health-safety"
-            ) {
-              void returnToSummary({
-                healthSafety: responses,
-                bodyMap:
-                  readBodyMap(),
-              });
-
-              return;
-            }
-
-            void saveAndMove(
-              "communication",
-              {
-                healthSafety: responses,
-                bodyMap:
-                  readBodyMap(),
-              },
-            );
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "health-safety"
-              ? (responses) => {
-                  saveHealthSafetyLocally(
-                    responses,
-                  );
-
-                  void returnToSummary({
-                    healthSafety:
-                      responses,
-                    bodyMap:
-                      readBodyMap(),
-                  });
-                }
-              : undefined
+          editingSection={
+            editingSection
+          }
+          saveHealthSafetyLocally={
+            saveHealthSafetyLocally
+          }
+          returnToSummary={
+            returnToSummary
+          }
+          saveAndMove={
+            saveAndMove
+          }
+          savePage={savePage}
+          readBodyMap={
+            readBodyMap
           }
         />
-      </>
-    );
-  }
+      );
 
-  if (page === "communication") {
-    return (
-      <>
-        {savingMessage}
-
-        <CommunicationPage
-          initialData={
+    case "communication":
+      return (
+        <CommunicationRouterPage
+          savingMessage={
+            savingMessage
+          }
+          communicationResponses={
             communicationResponses
           }
-          onBack={() => {
-            void saveAndMove(
-              "health-safety",
-            );
-          }}
-          onContinue={(responses) => {
-            saveCommunicationLocally(
-              responses,
-            );
-
-            if (
-              editingSection ===
-              "communication"
-            ) {
-              void returnToSummary({
-                communication:
-                  responses,
-              });
-
-              return;
-            }
-
-            void saveAndMove(
-              "aftercare",
-              {
-                communication:
-                  responses,
-              },
-            );
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "communication"
-              ? (responses) => {
-                  saveCommunicationLocally(
-                    responses,
-                  );
-
-                  void returnToSummary({
-                    communication:
-                      responses,
-                  });
-                }
-              : undefined
+          editingSection={
+            editingSection
           }
+          saveCommunicationLocally={
+            saveCommunicationLocally
+          }
+          returnToSummary={
+            returnToSummary
+          }
+          saveAndMove={
+            saveAndMove
+          }
+          savePage={savePage}
         />
-      </>
-    );
-  }
+      );
 
-  if (page === "aftercare") {
-    return (
-      <>
-        {savingMessage}
-
-        <AftercarePage
-          initialResponses={
+    case "aftercare":
+      return (
+        <AftercareRouterPage
+          savingMessage={
+            savingMessage
+          }
+          aftercareResponses={
             aftercareResponses
           }
-          onBack={() => {
-            void saveAndMove(
-              "communication",
-            );
-          }}
-          onContinue={(responses) => {
-            saveAftercareLocally(
-              responses,
-            );
-
-            void returnToSummary({
-              aftercare: responses,
-            });
-          }}
-          onSaveAndReturnToSummary={
-            editingSection ===
-            "aftercare"
-              ? (responses) => {
-                  saveAftercareLocally(
-                    responses,
-                  );
-
-                  void returnToSummary({
-                    aftercare:
-                      responses,
-                  });
-                }
-              : undefined
+          editingSection={
+            editingSection
           }
+          saveAftercareLocally={
+            saveAftercareLocally
+          }
+          returnToSummary={
+            returnToSummary
+          }
+          saveAndMove={
+            saveAndMove
+          }
+          savePage={savePage}
         />
-      </>
-    );
-  }
+      );
 
-  if (page === "comparison") {
-    return (
-      <ComparisonPage
-        recoveryToken={
-          recoveryCredential
-        }
-        onBackToSummary={() => {
-          displayPage("summary");
-        }}
-      />
-    );
-  }
-
-  if (page === "summary") {
-    return (
-      <>
-        {savingMessage}
-
-        <SummaryPage
+    case "summary":
+      return (
+        <SummaryRouterPage
+          savingMessage={
+            savingMessage
+          }
           onboardingData={
             onboardingData
           }
@@ -430,18 +208,30 @@ function QuestionnaireRouter({
           aftercareResponses={
             aftercareResponses
           }
-          onEditSection={
+          beginEditingSection={
             beginEditingSection
           }
           onViewComparison={() => {
             displayPage("comparison");
           }}
         />
-      </>
-    );
-  }
+      );
 
-  return null;
+    case "comparison":
+      return (
+        <ComparisonRouterPage
+          recoveryCredential={
+            recoveryCredential
+          }
+          onBackToSummary={() => {
+            displayPage("summary");
+          }}
+        />
+      );
+
+    default:
+      return null;
+  }
 }
 
 export default QuestionnaireRouter;

@@ -226,7 +226,7 @@ if (initiallyEditing) {
           ✣ Review the scene
         </p>
 
-        <h1>Scene Overview</h1>
+<h1>Scene Details</h1>
 
         <p className="overview-description">
           Review the information your scene partner provided before

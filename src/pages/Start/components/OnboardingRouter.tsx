@@ -10,7 +10,6 @@ import type {
 import type { NegotiationInfo } from "../startTypes";
 
 interface OnboardingRouterProps {
-  enabled: boolean;
 
   hasStarted: boolean;
   hasSeenWelcome: boolean;
@@ -68,8 +67,6 @@ interface OnboardingRouterProps {
 }
 
 function OnboardingRouter({
-  enabled,
-
   hasStarted,
   hasSeenWelcome,
   hasReviewedScene,
@@ -92,8 +89,44 @@ function OnboardingRouter({
   setEditingOnboardingSection,
   setOnboardingEditDraft,
 }: OnboardingRouterProps) {
-  if (!enabled) {
-    return null;
+  function updateOnboardingDraft(
+    updates: Partial<OnboardingData>,
+  ) {
+    setOnboardingEditDraft(
+      (current) =>
+        current
+          ? {
+              ...current,
+              ...updates,
+            }
+          : current,
+    );
+  }
+
+  function saveCurrentDraft() {
+    if (!onboardingEditDraft) {
+      return;
+    }
+
+    void saveOnboardingEdit(
+      onboardingEditDraft,
+    );
+  }
+
+  function cancelEditing() {
+    setOnboardingEditDraft(null);
+
+    setEditingOnboardingSection(
+      null,
+    );
+  }
+
+  function completeOnboarding(
+    data: OnboardingData,
+  ) {
+    void handleOnboardingComplete(
+      data,
+    );
   }
 
   if (
@@ -110,12 +143,10 @@ function OnboardingRouter({
         onBackToOverview={() => {
           window.location.assign("/open");
         }}
-        onComplete={(data) => {
-          void handleOnboardingComplete(
-            data,
-          );
-        }}
-      />
+        onComplete={
+          completeOnboarding
+        }
+              />
     );
   }
 
@@ -127,29 +158,11 @@ function OnboardingRouter({
     return (
       <AboutYou
         data={onboardingEditDraft}
-        updateData={(updates) => {
-          setOnboardingEditDraft(
-            (current) =>
-              current
-                ? {
-                    ...current,
-                    ...updates,
-                  }
-                : current,
-          );
-        }}
-        back={() => {
-          setOnboardingEditDraft(null);
-          setEditingOnboardingSection(
-            null,
-          );
-        }}
-        next={() => {
-          void saveOnboardingEdit(
-            onboardingEditDraft,
-          );
-        }}
-      />
+        updateData={updateOnboardingDraft}
+        
+        back={cancelEditing}
+        next={saveCurrentDraft}
+              />
     );
   }
 
@@ -161,29 +174,10 @@ function OnboardingRouter({
     return (
       <Experience
         data={onboardingEditDraft}
-        updateData={(updates) => {
-          setOnboardingEditDraft(
-            (current) =>
-              current
-                ? {
-                    ...current,
-                    ...updates,
-                  }
-                : current,
-          );
-        }}
-        back={() => {
-          setOnboardingEditDraft(null);
-          setEditingOnboardingSection(
-            null,
-          );
-        }}
-        next={() => {
-          void saveOnboardingEdit(
-            onboardingEditDraft,
-          );
-        }}
-      />
+        updateData={updateOnboardingDraft}
+        back={cancelEditing}
+        next={saveCurrentDraft}
+         />
     );
   }
 
@@ -264,12 +258,10 @@ function OnboardingRouter({
         onBackToOverview={() => {
           setHasReviewedScene(false);
         }}
-        onComplete={(data) => {
-          void handleOnboardingComplete(
-            data,
-          );
-        }}
-      />
+        onComplete={
+          completeOnboarding
+        }
+              />
     );
   }
 

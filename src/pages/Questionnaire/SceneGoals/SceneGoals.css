@@ -1,15 +1,7 @@
 .scene-goals-card {
   width: 100%;
-  max-width: 48rem;
-  margin: 0 auto;
-  padding: 1.5rem;
-  border: 1px solid
-    var(--border-color, #ddd6cc);
-  border-radius: 1.25rem;
-  background: var(--surface-color, #ffffff);
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 4%),
-    0 8px 24px rgb(0 0 0 / 5%);
+  margin: 0;
+  padding: 0;
 }
 
 .scene-goals-heading {
@@ -258,10 +250,7 @@
 }
 
 @media (max-width: 600px) {
-  .scene-goals-card {
-    padding: 1.15rem;
-    border-radius: 1rem;
-  }
+
 
   .scene-goal-chip {
     flex: 1 1 calc(50% - 0.75rem);

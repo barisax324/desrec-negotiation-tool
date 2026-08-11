@@ -5,7 +5,7 @@ import PageLayout from "../../../ui/PageLayout";
 
 import "./SceneGoals.css";
 
-export type ExperienceGoal =
+export type SceneGoal =
   | "emotional-connection"
   | "relaxed"
   | "skill-building"
@@ -25,7 +25,7 @@ export type ExperienceGoal =
   | "unsure";
 
 export interface SceneGoalsData {
-  goals: ExperienceGoal[];
+  goals: SceneGoal[];
   customGoals: string[];
   notes: string;
 }
@@ -44,7 +44,7 @@ interface SceneGoalsProps {
 }
 
 interface GoalOption {
-  value: ExperienceGoal;
+  value: SceneGoal;
   label: string;
 }
 
@@ -137,7 +137,7 @@ function SceneGoals({
     data.customGoals.length > 0;
 
   function toggleGoal(
-    goal: ExperienceGoal,
+    goal: SceneGoal,
   ) {
     const isSelected =
       data.goals.includes(goal);
@@ -196,11 +196,11 @@ function SceneGoals({
   }
 
   return (
-    <PageLayout
-      title="Experience Goals"
-      subtitle="Select all that apply."
-    >
-      <section className="scene-goals-card">
+<PageLayout
+  title="Scene Goals"
+  subtitle="What are your goals for this scene?"
+>
+        <section className="scene-goals-card">
         <div className="scene-goals-heading">
           <span className="scene-goals-eyebrow">
             Desired vibe and intentions
@@ -213,7 +213,7 @@ function SceneGoals({
 
           <p>
             Choose the words that best describe
-            how you would like the experience
+            how you would like the scene
             to feel.
           </p>
         </div>
@@ -232,9 +232,9 @@ function SceneGoals({
               <button
                 key={option.value}
                 type="button"
-                className={`experience-goal-chip${
+                className={`scene-goal-chip${
                   isSelected
-                    ? " experience-goal-chip--selected"
+                    ? " scene-goal-chip--selected"
                     : ""
                 }`}
                 aria-pressed={isSelected}
@@ -249,11 +249,11 @@ function SceneGoals({
         </div>
 
         {data.customGoals.length > 0 && (
-          <div className="experience-custom-goals">
+          <div className="scene-custom-goals">
             {data.customGoals.map(
               (goal) => (
                 <div
-                  className="experience-custom-goal"
+                  className="scene-custom-goal"
                   key={goal}
                 >
                   <span>{goal}</span>
@@ -276,7 +276,7 @@ function SceneGoals({
         {!showCustomGoal ? (
           <button
             type="button"
-            className="experience-add-goal"
+            className="scene-add-goal"
             onClick={() =>
               setShowCustomGoal(true)
             }
@@ -288,14 +288,14 @@ function SceneGoals({
             Add something else
           </button>
         ) : (
-          <div className="experience-custom-entry">
-            <label htmlFor="custom-experience-goal">
-              Add another experience goal
+          <div className="scene-custom-entry">
+            <label htmlFor="custom-scene-goal">
+              Add another scene goal
             </label>
 
-            <div className="experience-custom-entry__controls">
+            <div className="scene-custom-entry__controls">
               <input
-                id="custom-experience-goal"
+                id="custom-scene-goal"
                 type="text"
                 value={customGoalInput}
                 placeholder="Enter your own goal"
@@ -334,7 +334,7 @@ function SceneGoals({
 
             <button
               type="button"
-              className="experience-custom-cancel"
+              className="scene-custom-cancel"
               onClick={() => {
                 setCustomGoalInput("");
                 setShowCustomGoal(false);

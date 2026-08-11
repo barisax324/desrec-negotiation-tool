@@ -22,11 +22,11 @@
 .overview-card {
   width: min(100%, 680px);
   margin: 0 auto;
-  padding: 38px 28px 30px;
-  background: var(--overview-surface);
-  border: 1px solid var(--overview-border);
-  border-radius: 25px;
-  box-shadow: var(--overview-shadow);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .overview-step {
@@ -132,10 +132,9 @@
     padding: 36px 14px;
   }
 
-  .overview-card {
-    padding: 30px 20px 24px;
-    border-radius: 21px;
-  }
+.overview-card {
+  padding: 0;
+}
 
   .overview-section {
     padding: 18px 16px;
