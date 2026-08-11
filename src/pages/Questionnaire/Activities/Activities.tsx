@@ -22,6 +22,7 @@ interface ActivitiesProps {
   onSaveAndReturnToSummary?: (
     responses: ActivityResponses,
   ) => void;
+  showNavigation?: boolean;
 }
 
 function Activities({
@@ -29,8 +30,9 @@ function Activities({
   back,
   next,
   onSaveAndReturnToSummary,
+  showNavigation = true,
 }: ActivitiesProps) {
-  const [
+    const [
     expandedCategory,
     setExpandedCategory,
   ] = useState<ActivityCategoryId | null>(
@@ -135,28 +137,30 @@ function Activities({
           )}
         </div>
 
-        <div className="activities-navigation">
-          <Button onClick={back}>
-            Back
-          </Button>
-
-          {onSaveAndReturnToSummary && (
-            <Button
-              onClick={
-                handleSaveAndReturn
-              }
-            >
-              Return to Summary
+        {showNavigation && (
+          <div className="activities-navigation">
+            <Button onClick={back}>
+              Back
             </Button>
-          )}
 
-          <Button
-            onClick={handleContinue}
-          >
-            Continue
-          </Button>
-        </div>
-      </section>
+            {onSaveAndReturnToSummary && (
+              <Button
+                onClick={
+                  handleSaveAndReturn
+                }
+              >
+                Return to Summary
+              </Button>
+            )}
+
+            <Button
+              onClick={handleContinue}
+            >
+              Continue
+            </Button>
+          </div>
+        )}
+              </section>
     </PageLayout>
   );
 }

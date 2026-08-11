@@ -30,6 +30,8 @@ interface CommunicationPageProps {
   onSaveAndReturnToSummary?: (
     data: CommunicationFormData,
   ) => void;
+
+  showNavigation?: boolean;
 }
 
 export interface DiscussionFlag {
@@ -328,8 +330,9 @@ export default function CommunicationPage({
   onBack,
   onContinue,
   onSaveAndReturnToSummary,
+  showNavigation = true,
 }: CommunicationPageProps) {
-  const [
+    const [
     openSection,
     setOpenSection,
   ] =
@@ -1221,30 +1224,32 @@ export default function CommunicationPage({
           </AccordionSection>
         </section>
 
-        <div className="communication-page-actions">
-          {onBack && (
-            <button
-              type="button"
-              className="communication-back-button"
-              onClick={onBack}
-            >
-              ← Back
-            </button>
-          )}
+        {showNavigation && (
+          <div className="communication-page-actions">
+            {onBack && (
+              <button
+                type="button"
+                className="communication-back-button"
+                onClick={onBack}
+              >
+                ← Back
+              </button>
+            )}
 
-          {onSaveAndReturnToSummary && (
-            <button
-              type="button"
-              className="communication-summary-button"
-              onClick={
-                handleSaveAndReturn
-              }
-            >
-              Return to Summary
-            </button>
-          )}
-        </div>
-      </div>
+            {onSaveAndReturnToSummary && (
+              <button
+                type="button"
+                className="communication-summary-button"
+                onClick={
+                  handleSaveAndReturn
+                }
+              >
+                Return to Summary
+              </button>
+            )}
+          </div>
+        )}
+              </div>
     </main>
   );
 }

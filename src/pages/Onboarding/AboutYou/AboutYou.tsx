@@ -18,6 +18,7 @@ interface AboutYouProps {
   ) => void;
   next: () => void;
   back: () => void;
+showNavigation?: boolean;
 }
 
 function AboutYou({
@@ -25,8 +26,9 @@ function AboutYou({
   updateData,
   next,
   back,
+  showNavigation = true,
 }: AboutYouProps) {
-  const canContinue =
+      const canContinue =
     data.role !== null;
 
   function handleContinue() {
@@ -50,34 +52,36 @@ function AboutYou({
         updateData={updateData}
       />
 
-      <div className="about-you-actions">
-        <Button onClick={back}>
-          <span aria-hidden="true">
-            ←
-          </span>
-          Back
-        </Button>
-
-        <div className="about-you-continue-area">
-          <Button
-            onClick={handleContinue}
-            disabled={!canContinue}
-          >
-            Continue
+      {showNavigation && (
+                <div className="about-you-actions">
+          <Button onClick={back}>
             <span aria-hidden="true">
-              →
+              ←
             </span>
+            Back
           </Button>
 
-          {!canContinue && (
-            <p>
-              Choose your planned role to
-              continue.
-            </p>
-          )}
+          <div className="about-you-continue-area">
+            <Button
+              onClick={handleContinue}
+              disabled={!canContinue}
+            >
+              Continue
+              <span aria-hidden="true">
+                →
+              </span>
+            </Button>
+
+            {!canContinue && (
+              <p>
+                Choose your planned role to
+                continue.
+              </p>
+            )}
+          </div>
         </div>
-      </div>
-    </OnboardingLayout>
+      )}
+          </OnboardingLayout>
   );
 }
 

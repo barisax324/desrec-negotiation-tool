@@ -29,6 +29,8 @@ interface AftercarePageProps {
   onSaveAndReturnToSummary?: (
     responses: AftercareResponses,
   ) => void;
+
+  showNavigation?: boolean;
 }
 
 const INITIAL_RESPONSES: AftercareResponses = {
@@ -46,8 +48,9 @@ function AftercarePage({
   onBack,
   onContinue,
   onSaveAndReturnToSummary,
+  showNavigation = true,
 }: AftercarePageProps) {
-  const [responses, setResponses] =
+    const [responses, setResponses] =
     useState<AftercareResponses>(
       initialResponses ??
         INITIAL_RESPONSES,
@@ -461,36 +464,38 @@ function AftercarePage({
           </div>
         </section>
 
-        <footer className="aftercare-actions">
-          <button
-            type="button"
-            className="aftercare-back-button"
-            onClick={onBack}
-          >
-            ← Back
-          </button>
-
-          {onSaveAndReturnToSummary && (
+        {showNavigation && (
+          <footer className="aftercare-actions">
             <button
               type="button"
-              className="aftercare-summary-button"
-              onClick={
-                handleSaveAndReturn
-              }
+              className="aftercare-back-button"
+              onClick={onBack}
             >
-              Return to Summary
+              ← Back
             </button>
-          )}
 
-          <button
-            type="button"
-            className="aftercare-complete-button"
-            onClick={handleComplete}
-          >
-            Complete
-          </button>
-        </footer>
-      </div>
+            {onSaveAndReturnToSummary && (
+              <button
+                type="button"
+                className="aftercare-summary-button"
+                onClick={
+                  handleSaveAndReturn
+                }
+              >
+                Return to Summary
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="aftercare-complete-button"
+              onClick={handleComplete}
+            >
+              Complete
+            </button>
+          </footer>
+        )}
+              </div>
     </main>
   );
 }

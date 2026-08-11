@@ -13,6 +13,7 @@ interface ExperienceProps {
   ) => void;
   next: () => void;
   back: () => void;
+  showNavigation?: boolean;
 }
 
 interface ExperienceOption {
@@ -65,8 +66,9 @@ function Experience({
   updateData,
   next,
   back,
+  showNavigation = true,
 }: ExperienceProps) {
-  const selectExperience = (
+    const selectExperience = (
     experience: ExperienceLevel,
   ) => {
     updateData({ experience });
@@ -127,19 +129,21 @@ function Experience({
         today.
       </p>
 
-      <div className="experience-navigation">
-        <Button onClick={back}>
-          Back
-        </Button>
+      {showNavigation && (
+        <div className="experience-navigation">
+          <Button onClick={back}>
+            Back
+          </Button>
 
-        <Button
-          onClick={next}
-          disabled={!data.experience}
-        >
-          Continue
-        </Button>
-      </div>
-    </OnboardingLayout>
+          <Button
+            onClick={next}
+            disabled={!data.experience}
+          >
+            Continue
+          </Button>
+        </div>
+      )}
+          </OnboardingLayout>
   );
 }
 

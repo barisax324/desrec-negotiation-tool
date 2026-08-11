@@ -31,6 +31,8 @@ interface HealthSafetyProps {
   onSaveAndReturnToSummary?: (
     responses: HealthSafetyResponses,
   ) => void;
+
+  showNavigation?: boolean;
 }
 
 const EMPTY_MEDICAL_INFORMATION: MedicalInformation = {
@@ -52,8 +54,9 @@ function HealthSafety({
   back,
   next,
   onSaveAndReturnToSummary,
+  showNavigation = true,
 }: HealthSafetyProps) {
-  const [
+    const [
     medicalConsiderations,
     setMedicalConsiderations,
   ] = useState<SelectedOptionResponses>(
@@ -533,24 +536,26 @@ function HealthSafety({
           </p>
         </div>
 
-        <div className="health-navigation">
-          <Button onClick={back}>
-            Back
-          </Button>
-
-          {onSaveAndReturnToSummary && (
-            <Button
-              onClick={handleSaveAndReturn}
-            >
-              Return to Summary
+        {showNavigation && (
+          <div className="health-navigation">
+            <Button onClick={back}>
+              Back
             </Button>
-          )}
 
-          <Button onClick={handleContinue}>
-            Continue
-          </Button>
-        </div>
-      </section>
+            {onSaveAndReturnToSummary && (
+              <Button
+                onClick={handleSaveAndReturn}
+              >
+                Return to Summary
+              </Button>
+            )}
+
+            <Button onClick={handleContinue}>
+              Continue
+            </Button>
+          </div>
+        )}
+              </section>
     </PageLayout>
   );
 }

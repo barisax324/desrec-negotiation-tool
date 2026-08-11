@@ -41,6 +41,7 @@ interface SceneGoalsProps {
   back: () => void;
 
   onSaveAndReturnToSummary?: () => void;
+  showNavigation?: boolean;
 }
 
 interface GoalOption {
@@ -125,8 +126,9 @@ function SceneGoals({
   next,
   back,
   onSaveAndReturnToSummary,
+  showNavigation = true,
 }: SceneGoalsProps) {
-  const [showCustomGoal, setShowCustomGoal] =
+    const [showCustomGoal, setShowCustomGoal] =
     useState(false);
 
   const [customGoalInput, setCustomGoalInput] =
@@ -364,30 +366,32 @@ function SceneGoals({
           />
         </div>
 
-        <div className="scene-goals-navigation">
-          <Button onClick={back}>
-            Back
-          </Button>
+        {showNavigation && (
+          <div className="scene-goals-navigation">
+            <Button onClick={back}>
+              Back
+            </Button>
 
-          {onSaveAndReturnToSummary && (
+            {onSaveAndReturnToSummary && (
+              <Button
+                onClick={
+                  onSaveAndReturnToSummary
+                }
+                disabled={!hasSelection}
+              >
+                Return to Summary
+              </Button>
+            )}
+
             <Button
-              onClick={
-                onSaveAndReturnToSummary
-              }
+              onClick={next}
               disabled={!hasSelection}
             >
-              Return to Summary
+              Continue
             </Button>
-          )}
-
-          <Button
-            onClick={next}
-            disabled={!hasSelection}
-          >
-            Continue
-          </Button>
-        </div>
-      </section>
+          </div>
+        )}
+              </section>
     </PageLayout>
   );
 }
