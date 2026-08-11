@@ -5,7 +5,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 
-import { supabase } from "../../../lib/supabase";
+import { supabase } from "../../../shared/clients/supabase";
 
 import "./CreatePassword.css";
 

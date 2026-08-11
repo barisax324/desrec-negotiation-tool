@@ -1,4 +1,4 @@
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../shared/clients/supabase";
 
 import type {
   ParticipantProgressResponses,

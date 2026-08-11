@@ -1,5 +1,4 @@
-import { supabase } from "../../lib/supabase";
-
+import { supabase } from "../../shared/clients/supabase";
 export type RetentionPeriod =
   | "24-hours"
   | "7-days"

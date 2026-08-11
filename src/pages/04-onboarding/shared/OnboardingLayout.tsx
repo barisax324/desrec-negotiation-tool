@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import "./OnboardingLayout.css";
-import PageLayout from "../../../shared/ui/PageLayout";
-import ProgressBar from "../../../shared/ui/ProgressBar";
+import PageLayout from "../../../shared/ui/page-layout";
+import ProgressBar from "../../../shared/ui/progress-bar";
 
 interface OnboardingLayoutProps {
   title: string;

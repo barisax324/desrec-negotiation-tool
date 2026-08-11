@@ -3,7 +3,7 @@ import type {
   ReactNode,
 } from "react";
 
-import Badge from "../Badge";
+import Badge from "../badge";
 import "./PageLayout.css";
 
 type ParticipantRole = "A" | "B";
