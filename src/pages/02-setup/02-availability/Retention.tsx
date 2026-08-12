@@ -110,7 +110,6 @@ function Retention() {
           </span>
         </button>
 
-        <span className="retention-private-label">Private</span>
       </header>
 
       <section className="retention-content">
@@ -124,10 +123,6 @@ function Retention() {
             Cancel
           </button>
 
-          <p className="retention-step-label">
-            <span aria-hidden="true">✣</span>
-            Step 3 of 5
-          </p>
         </div>
 
         <div
@@ -139,7 +134,7 @@ function Retention() {
 
         <form className="retention-card" onSubmit={handleSubmit}>
           <p className="retention-card-step">
-            3. Availability
+            Access Duration
           </p>
 
           <h1>
@@ -261,3 +256,4 @@ function Retention() {
 }
 
 export default Retention;
+

@@ -9,3 +9,4 @@ function CheckboxGroupQuestion({ question }: CheckboxGroupQuestionProps) {
 }
 
 export default CheckboxGroupQuestion;
+

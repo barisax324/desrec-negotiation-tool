@@ -12,3 +12,4 @@ export const ACTIVITY_LOOKUP = Object.fromEntries(
     ]),
   ),
 );
+

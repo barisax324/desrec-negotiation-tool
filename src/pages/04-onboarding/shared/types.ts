@@ -41,3 +41,4 @@ export const ONBOARDING_PROGRESS = {
   experience: 6,
   ready: 8,
 } as const;
+

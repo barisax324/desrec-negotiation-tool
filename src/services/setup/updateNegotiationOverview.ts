@@ -1,5 +1,7 @@
 import { supabase } from "@/shared/clients/supabase";
 
+import { encryptSharedDetails, getStoredSharedKey,} from "@/shared/crypto/sharedDetailsCrypto";
+
 export interface UpdateNegotiationOverviewInput {
   recoveryToken: string;
   name: string;
@@ -16,10 +18,9 @@ export interface UpdateNegotiationOverviewResult {
 }
 
 interface UpdateNegotiationOverviewRpcRow {
-  negotiation_name: string | null;
-  scene_date: string | null;
-  scene_date_unknown: boolean;
-  planned_activities: string;
+  shared_details_ciphertext: string;
+  shared_details_iv: string;
+  shared_details_version: number;
 }
 
 function validate(
@@ -77,22 +78,51 @@ export async function updateNegotiationOverview(
 ): Promise<UpdateNegotiationOverviewResult> {
   validate(input);
 
-  const { data, error } = await supabase.rpc(
-    "update_negotiation_overview",
+const sharedKey =
+  getStoredSharedKey();
+
+if (!sharedKey) {
+  throw new Error(
+    "Your negotiation encryption key is missing.",
+  );
+}
+
+const encrypted =
+  await encryptSharedDetails(
     {
-      p_recovery_token:
-        input.recoveryToken.trim(),
-      p_name:
+      name:
         input.name.trim() || null,
-      p_scene_date:
+
+      sceneDate:
         input.sceneDateUnknown
           ? null
           : input.sceneDate,
-      p_scene_date_unknown:
+
+      sceneDateUnknown:
         input.sceneDateUnknown,
-      p_planned_activities:
+
+      plannedActivities:
         input.plannedActivities.trim(),
     },
+    sharedKey,
+  );
+
+const { data, error } =
+  await supabase.rpc(
+        "update_negotiation_overview",
+{
+  p_recovery_token:
+    input.recoveryToken.trim(),
+
+  p_shared_details_ciphertext:
+    encrypted.ciphertext,
+
+  p_shared_details_iv:
+    encrypted.iv,
+
+  p_shared_details_version:
+    encrypted.version,
+},
   );
 
   if (error) {
@@ -114,14 +144,20 @@ export async function updateNegotiationOverview(
     );
   }
 
-  return {
-    negotiationName:
-      row.negotiation_name ?? null,
-    sceneDate:
-      row.scene_date ?? null,
-    sceneDateUnknown:
-      Boolean(row.scene_date_unknown),
-    plannedActivities:
-      row.planned_activities,
-  };
+return {
+  negotiationName:
+    input.name.trim() || null,
+
+  sceneDate:
+    input.sceneDateUnknown
+      ? null
+      : input.sceneDate,
+
+  sceneDateUnknown:
+    input.sceneDateUnknown,
+
+  plannedActivities:
+    input.plannedActivities.trim(),
+};
 }
+

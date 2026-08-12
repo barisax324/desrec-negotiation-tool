@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { updateNegotiationOverview } from "@/services/negotiation/updateNegotiationOverview";
+import { updateNegotiationOverview } from "@/services/setup/updateNegotiationOverview";
 
 import type { NegotiationInfo } from "../types";
 
@@ -131,3 +131,4 @@ export function useNegotiationOverview(
     saveOverview,
   };
 }
+

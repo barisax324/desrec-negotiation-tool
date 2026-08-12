@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import {
   saveParticipantProgress,
-} from "@/services/negotiation/participantProgress";
+} from "@/services/responses/participantProgress";
 
 import {
   readBodyMap,
@@ -208,3 +208,4 @@ export function useParticipantProgress({
     returnToSummary,
   };
 }
+

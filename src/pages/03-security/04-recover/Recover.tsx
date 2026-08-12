@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import {
-  Link,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-
+import { Link, useNavigate, useSearchParams,} from "react-router-dom";
+import { hashReferenceId } from "@/services/recovery/hashReferenceId";
 import { supabase } from "@/shared/clients/supabase";
-import { joinNegotiation } from "@/services/negotiation/joinNegotiation";
+import { joinNegotiation } from "@/services/access/joinNegotiation";
+
+import {
+  extractSharedKeyFromUrl,
+  storeSharedKey,
+  unwrapSharedKey,
+} from "@/shared/crypto/sharedDetailsCrypto";
 
 import "./Recover.css";
 
@@ -16,12 +18,17 @@ const PASSWORD_PATTERN =
 
 type RecoverySessionResult = {
   recovery_token: string;
-  public_id: string;
+
   participant_role:
     | "a"
     | "b"
     | "A"
     | "B";
+
+  wrapped_shared_key: string;
+  wrapped_shared_key_iv: string;
+  wrapped_shared_key_salt: string;
+  wrapped_shared_key_version: number;
 };
 
 function extractInvitationToken(
@@ -46,6 +53,31 @@ function extractInvitationToken(
     );
   } catch {
     return trimmedValue;
+  }
+}
+
+function extractReferenceId(
+  enteredValue: string,
+): string {
+  const trimmedValue = enteredValue.trim();
+
+  if (!trimmedValue) {
+    return "";
+  }
+
+  try {
+    const invitationUrl = new URL(
+      trimmedValue,
+      window.location.origin,
+    );
+
+    return (
+      invitationUrl.searchParams
+        .get("ref")
+        ?.trim() ?? ""
+    );
+  } catch {
+    return "";
   }
 }
 
@@ -109,11 +141,28 @@ function Recover() {
     setInvitationError("");
     setReturnError("");
 
-    const invitationToken =
-      extractInvitationToken(invitationLink);
+const invitationToken =
+  extractInvitationToken(invitationLink);
 
-    if (!invitationToken) {
-      setInvitationError(
+const referenceId =
+  extractReferenceId(invitationLink);
+
+const sharedKey =
+  extractSharedKeyFromUrl(
+    invitationLink,
+  );
+
+if (!sharedKey) {
+  setInvitationError(
+    "This invitation link is missing its encryption key. Ask your partner for the complete invitation link.",
+  );
+  return;
+}
+
+storeSharedKey(sharedKey);
+
+if (!invitationToken) {
+        setInvitationError(
         "Enter the complete invitation link you were sent.",
       );
       return;
@@ -139,6 +188,17 @@ function Recover() {
         "desrec.pendingAccessToken",
         invitationToken,
       );
+
+      if (referenceId) {
+  sessionStorage.setItem(
+    "desrec.publicId",
+    referenceId,
+  );
+} else {
+  sessionStorage.removeItem(
+    "desrec.publicId",
+  );
+}
 
       sessionStorage.setItem(
         "desrec.currentParticipantRole",
@@ -173,15 +233,6 @@ function Recover() {
           result.expiresAt,
         );
       }
-
-      /*
-       * We will update joinNegotiation next so it also
-       * returns and saves the shared Reference ID.
-       */
-sessionStorage.setItem(
-  "desrec.publicId",
-  result.publicId,
-);
 
       navigate(
         "/create-password?participant=B",
@@ -230,16 +281,28 @@ sessionStorage.setItem(
     setIsOpeningExisting(true);
 
     try {
-      const {
-        data,
-        error: rpcError,
-      } = await supabase.rpc(
-        "create_recovery_session",
-        {
-          p_identifier: cleanedIdentifier,
-          p_password: password,
-        },
-      );
+const isPersonalLink =
+  /[?&](t|personal)=/i.test(
+    cleanedIdentifier,
+  );
+
+const identifierForRecovery =
+  isPersonalLink
+    ? cleanedIdentifier
+    : `refhash:${await hashReferenceId(
+        cleanedIdentifier,
+      )}`;
+
+const {
+  data,
+  error: rpcError,
+} = await supabase.rpc(
+  "create_recovery_session",
+  {
+    p_identifier: identifierForRecovery,
+    p_password: password,
+  },
+);
 
 if (rpcError) {
   console.error(
@@ -268,24 +331,58 @@ if (rpcError) {
       const participantRole =
         result.participant_role.toUpperCase();
 
-      if (
-        participantRole !== "A" &&
-        participantRole !== "B"
-      ) {
-        throw new Error(
-          "The participant could not be identified.",
-        );
-      }
+if (
+  participantRole !== "A" &&
+  participantRole !== "B"
+) {
+  throw new Error(
+    "The participant could not be identified.",
+  );
+}
 
-      sessionStorage.setItem(
-        "desrec.publicId",
-        result.public_id,
-      );
+if (
+  !result.wrapped_shared_key ||
+  !result.wrapped_shared_key_iv ||
+  !result.wrapped_shared_key_salt ||
+  !result.wrapped_shared_key_version
+) {
+  throw new Error(
+    "The encryption information for this negotiation could not be recovered.",
+  );
+}
 
-      sessionStorage.setItem(
-        "desrec.currentParticipantRole",
-        participantRole,
-      );
+let sharedKey: string;
+
+try {
+  sharedKey =
+    await unwrapSharedKey(
+      {
+        wrappedKey:
+          result.wrapped_shared_key,
+
+        iv:
+          result.wrapped_shared_key_iv,
+
+        salt:
+          result.wrapped_shared_key_salt,
+
+        version:
+          result.wrapped_shared_key_version,
+      },
+      password,
+    );
+} catch {
+  throw new Error(
+    "The encryption key could not be unlocked.",
+  );
+}
+
+storeSharedKey(sharedKey);
+
+sessionStorage.setItem(
+  "desrec.currentParticipantRole",
+  participantRole,
+);
 
       sessionStorage.setItem(
         "desrec.activeRecoveryToken",
@@ -555,3 +652,4 @@ if (rpcError) {
 }
 
 export default Recover;
+

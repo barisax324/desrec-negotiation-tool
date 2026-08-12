@@ -213,3 +213,4 @@ function Pin({ mode }: PinProps) {
 }
 
 export default Pin;
+

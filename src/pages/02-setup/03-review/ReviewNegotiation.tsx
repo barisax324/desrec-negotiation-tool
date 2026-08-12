@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { createNegotiation } from "@/services/negotiation/createNegotiation";
-
+import { createNegotiation } from "@/services/creation/createNegotiation";
+import { updateNegotiationSetup } from "@/services/setup/updateNegotiationSetup";
 import "./ReviewNegotiation.css";
 
 type RetentionPeriod = "24-hours" | "7-days" | "30-days";
@@ -164,12 +164,46 @@ function ReviewNegotiation() {
     setIsCreating(true);
 
     try {
+const existingCreatorToken =
+  sessionStorage.getItem("desrec.creatorToken");
+
+if (existingCreatorToken) {
+  const updated =
+    await updateNegotiationSetup({
+      accessToken: existingCreatorToken,
+      name:
+        negotiationName ||
+        "Untitled Negotiation",
+      sceneDate: sceneDateUndecided
+        ? null
+        : sceneDate || null,
+      sceneDateUnknown:
+        sceneDateUndecided,
+      plannedActivities,
+      retentionPeriod,
+    });
+
+  sessionStorage.setItem(
+    "desrec.expiresAt",
+    updated.expiresAt,
+  );
+
+  navigate(
+    "/create-password?participant=A",
+  );
+
+  return;
+}
+
 const result = await createNegotiation({
-  name: negotiationName || "Untitled Negotiation",
+  name:
+    negotiationName ||
+    "Untitled Negotiation",
   sceneDate: sceneDateUndecided
     ? null
     : sceneDate || null,
-  sceneDateUnknown: sceneDateUndecided,
+  sceneDateUnknown:
+    sceneDateUndecided,
   plannedActivities,
   retentionPeriod,
 });
@@ -511,3 +545,4 @@ navigate("/create-password?participant=A");
 }
 
 export default ReviewNegotiation;
+

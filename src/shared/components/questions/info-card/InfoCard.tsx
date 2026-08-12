@@ -17,3 +17,4 @@ function InfoCard({ question }: InfoCardProps) {
 }
 
 export default InfoCard;
+

@@ -9,3 +9,4 @@ function SingleSelectQuestion({ question }: SingleSelectQuestionProps) {
 }
 
 export default SingleSelectQuestion;
+

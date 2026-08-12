@@ -10,11 +10,16 @@ import type {
 
 import {
   openNegotiation,
-} from "@/services/negotiation/openNegotiation";
+} from "@/services/access/openNegotiation";
+
+import {
+  extractSharedKeyFromUrl,
+  storeSharedKey,
+} from "@/shared/crypto/sharedDetailsCrypto";
 
 import {
   getParticipantProgress,
-} from "@/services/negotiation/participantProgress";
+} from "@/services/responses/participantProgress";
 
 import {
   BODY_MAP_STORAGE_KEY,
@@ -137,13 +142,24 @@ export function useNegotiationLoader({
         return;
       }
 
-      try {
-        const negotiationResult =
-          await openNegotiation(
-            recoveryCredential,
-            "recovery",
-          );
+try {
+  const sharedKeyFromUrl =
+    extractSharedKeyFromUrl(
+      window.location.href,
+    );
 
+  if (sharedKeyFromUrl) {
+    storeSharedKey(
+      sharedKeyFromUrl,
+    );
+  }
+
+  const negotiationResult =
+    await openNegotiation(
+      recoveryCredential,
+      "recovery",
+    );
+    
         if (isCancelled) {
           return;
         }
@@ -328,3 +344,4 @@ export function useNegotiationLoader({
     loadError,
   };
 }
+

@@ -1,12 +1,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import {
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-
+import { useNavigate, useSearchParams,} from "react-router-dom";
 import { supabase } from "@/shared/clients/supabase";
-
+import { addSharedKeyToLink, extractSharedKeyFromUrl, getStoredSharedKey, storeSharedKey, wrapSharedKey,} from "@/shared/crypto/sharedDetailsCrypto";
 import "./CreatePassword.css";
 
 const PASSWORD_PATTERN =
@@ -15,7 +11,6 @@ const PASSWORD_PATTERN =
 type PasswordSetupResult = {
   recovery_token: string;
   personal_token: string;
-  public_id: string;
   participant_role:
     | "a"
     | "b"
@@ -178,14 +173,56 @@ function CreatePassword() {
     setIsSubmitting(true);
 
     try {
+const sharedKeyFromUrl =
+  extractSharedKeyFromUrl(
+    window.location.href,
+  );
+
+if (sharedKeyFromUrl) {
+  storeSharedKey(
+    sharedKeyFromUrl,
+  );
+}
+
+const sharedKey =
+  sharedKeyFromUrl ||
+  getStoredSharedKey();
+  
+if (!sharedKey) {
+  throw new Error(
+    "Your encryption key is missing. Please reopen your original access link.",
+  );
+}
+
+const wrappedKey =
+  await wrapSharedKey(
+    sharedKey,
+    password,
+  );
       const {
         data,
         error,
       } = await supabase.rpc(
         "set_participant_password",
         {
-          p_access_token: setupToken,
-          p_password: password,
+
+  p_access_token:
+    setupToken,
+
+  p_password:
+    password,
+
+  p_wrapped_shared_key:
+    wrappedKey.wrappedKey,
+
+  p_wrapped_shared_key_iv:
+    wrappedKey.iv,
+
+  p_wrapped_shared_key_salt:
+    wrappedKey.salt,
+
+  p_wrapped_shared_key_version:
+    wrappedKey.version,
         },
       );
 
@@ -205,15 +242,14 @@ function CreatePassword() {
               | undefined)
           : undefined;
 
-      if (
-        !result?.recovery_token ||
-        !result.personal_token ||
-        !result.public_id
-      ) {
-        throw new Error(
-          "Your password was saved, but your access information was not returned.",
-        );
-      }
+if (
+  !result?.recovery_token ||
+  !result.personal_token
+) {
+  throw new Error(
+    "Your password was saved, but your access information was not returned.",
+  );
+}
 
       const returnedRole =
         result.participant_role.toUpperCase();
@@ -232,21 +268,30 @@ function CreatePassword() {
           ? "/join"
           : "/start";
 
-      const personalLink =
-        `${window.location.origin}${personalPath}?t=` +
-        encodeURIComponent(
-          result.personal_token,
-        );
+const personalLink =
+  addSharedKeyToLink(
+    `${window.location.origin}${personalPath}?t=` +
+      encodeURIComponent(
+        result.personal_token,
+      ),
+    sharedKey,
+  );
 
       sessionStorage.setItem(
         "desrec.passwordCreated",
         "true",
       );
 
-      sessionStorage.setItem(
-        "desrec.publicId",
-        result.public_id,
-      );
+const existingPublicId =
+  sessionStorage.getItem(
+    "desrec.publicId",
+  );
+
+if (!existingPublicId) {
+  throw new Error(
+    "Your password was saved, but your Reference ID is missing.",
+  );
+}
 
       sessionStorage.setItem(
         "desrec.currentParticipantRole",
@@ -530,3 +575,4 @@ function CreatePassword() {
 }
 
 export default CreatePassword;
+

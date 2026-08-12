@@ -1,7 +1,12 @@
 import { supabase } from "@/shared/clients/supabase";
 
+import {
+  decryptJson,
+  decryptSharedDetails,
+  getStoredSharedKey,
+} from "@/shared/crypto/sharedDetailsCrypto";
+
 export interface JoinNegotiationResult {
-  publicId: string;
   participantRole: "A" | "B";
   negotiationName: string | null;
   sceneDate: string | null;
@@ -52,12 +57,57 @@ export async function joinNegotiation(
     );
   }
 
-  const row = data[0];
+const row = data[0];
 
-  const participantRole =
-    String(
-      row.participant_role,
-    ).toUpperCase();
+const sharedKey =
+  getStoredSharedKey();
+
+if (!sharedKey) {
+  throw new Error(
+    "The invitation encryption key is missing.",
+  );
+}
+
+const sharedDetails =
+  await decryptSharedDetails(
+    {
+      ciphertext:
+        row.shared_details_ciphertext,
+
+      iv:
+        row.shared_details_iv,
+
+      version:
+        row.shared_details_version,
+    },
+    sharedKey,
+  );
+
+const responses =
+  row.responses_ciphertext &&
+  row.responses_iv &&
+  row.responses_encryption_version
+    ? await decryptJson<
+        Record<string, unknown>
+      >(
+        {
+          ciphertext:
+            row.responses_ciphertext,
+
+          iv:
+            row.responses_iv,
+
+          version:
+            row.responses_encryption_version,
+        },
+        sharedKey,
+      )
+    : {};
+
+const participantRole =
+  String(
+    row.participant_role,
+  ).toUpperCase();
 
   if (participantRole !== "B") {
     throw new Error(
@@ -65,22 +115,15 @@ export async function joinNegotiation(
     );
   }
 
-  if (!row.public_id) {
-    throw new Error(
-      "The negotiation Reference ID was not returned.",
-    );
-  }
-
   return {
-    publicId: row.public_id,
     participantRole,
-    negotiationName:
-      row.negotiation_name ?? null,
-    sceneDate:
-      row.scene_date ?? null,
-    sceneDateUnknown:
-      Boolean(row.scene_date_unknown),
-    retentionPeriod:
+negotiationName:
+  sharedDetails.name,
+sceneDate:
+  sharedDetails.sceneDate,
+sceneDateUnknown:
+  sharedDetails.sceneDateUnknown,
+      retentionPeriod:
       row.retention_period,
     negotiationStatus:
       row.negotiation_status,
@@ -88,11 +131,11 @@ export async function joinNegotiation(
       row.activated_at ?? null,
     expiresAt:
       row.expires_at ?? null,
-    responses:
-      row.responses ?? {},
+    responses,
     responsesVersion:
       row.responses_version ?? 0,
     completedAt:
       row.completed_at ?? null,
   };
 }
+

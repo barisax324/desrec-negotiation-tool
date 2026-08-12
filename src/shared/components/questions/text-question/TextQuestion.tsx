@@ -9,3 +9,4 @@ function TextQuestion({ question }: TextQuestionProps) {
 }
 
 export default TextQuestion;
+

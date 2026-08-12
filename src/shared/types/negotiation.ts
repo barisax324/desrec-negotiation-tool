@@ -37,3 +37,4 @@ export interface NegotiationTemplate {
 }
 
 export type AnswerValue = string | string[] | null;
+

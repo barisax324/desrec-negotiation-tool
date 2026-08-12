@@ -295,3 +295,4 @@ export const ACTIVITY_CATEGORIES: ActivityCategoryDefinition[] =
   ],
 },
   ];
+

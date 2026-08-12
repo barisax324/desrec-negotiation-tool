@@ -7,7 +7,7 @@ import {
 import {
   getNegotiationComparison,
   type NegotiationComparisonResult,
-} from "@/services/negotiation/getNegotiationComparison";
+} from "@/services/results/getNegotiationComparison";
 
 import PrintComparison from "./PrintComparison";
 
@@ -117,8 +117,12 @@ export default function ComparisonPage({
   recoveryToken,
   onBackToSummary,
 }: ComparisonPageProps) {
+  const publicId =
+    sessionStorage.getItem(
+      "desrec.publicId",
+    ) ?? "";
   const [
-    comparison,
+        comparison,
     setComparison,
   ] =
     useState<NegotiationComparisonResult | null>(
@@ -457,7 +461,7 @@ export default function ComparisonPage({
             </span>
 
             <strong>
-              {comparison.publicId}
+              {publicId}
             </strong>
           </div>
 
@@ -625,7 +629,7 @@ export default function ComparisonPage({
         </div>
       </div>
 <PrintComparison
-  publicId={comparison.publicId}
+  publicId={publicId}
   negotiationName={
     comparison.negotiationName
   }
@@ -651,3 +655,4 @@ export default function ComparisonPage({
     </main>
   );
 }
+

@@ -131,7 +131,6 @@ function NegotiationSetup() {
           </span>
         </button>
 
-        <span className="setup-private-label">Private</span>
       </header>
 
       <section className="setup-content">
@@ -145,10 +144,6 @@ function NegotiationSetup() {
             Cancel
           </button>
 
-          <p className="setup-step-label">
-            <span aria-hidden="true">✣</span>
-            Step 2 of 5
-          </p>
         </div>
 
         <div
@@ -160,7 +155,7 @@ function NegotiationSetup() {
 
         <form className="setup-card" onSubmit={handleSubmit}>
           <p className="setup-card-step">
-            2. Negotiation details
+            Negotiation details
           </p>
 
           <h1>Name your negotiation</h1>
@@ -307,3 +302,4 @@ function NegotiationSetup() {
 }
 
 export default NegotiationSetup;
+

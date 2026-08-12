@@ -1,18 +1,12 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState,} from "react";
 
-import {
-  Link,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { Link, useNavigate,  useSearchParams,} from "react-router-dom";
 
 import NegotiationFlow from "@/app/negotiation-flow";
 
-import { joinNegotiation } from "@/services/negotiation/joinNegotiation";
+import { joinNegotiation } from "@/services/access/joinNegotiation";
+
+import { extractSharedKeyFromUrl, storeSharedKey,} from "@/shared/crypto/sharedDetailsCrypto";
 
 function Join() {
   const navigate = useNavigate();
@@ -20,8 +14,20 @@ function Join() {
   const [searchParams] =
     useSearchParams();
 
-  const invitationToken =
-    searchParams.get("t")?.trim() ?? "";
+const invitationToken =
+  searchParams.get("t")?.trim() ?? "";
+
+const referenceId =
+  searchParams.get("ref")?.trim() ?? "";
+
+const sharedKey =
+  extractSharedKeyFromUrl(
+    window.location.href,
+  );
+
+if (sharedKey) {
+  storeSharedKey(sharedKey);
+}
 
   const recoveryToken =
     searchParams.get("r")?.trim() ?? "";
@@ -106,10 +112,12 @@ async function openInvitation() {
       "B",
     );
 
-    sessionStorage.setItem(
-      "desrec.publicId",
-      result.publicId,
-    );
+if (referenceId) {
+  sessionStorage.setItem(
+    "desrec.publicId",
+    referenceId,
+  );
+}
 
     sessionStorage.setItem(
       "desrec.negotiationStatus",
@@ -189,10 +197,12 @@ async function openInvitation() {
     return () => {
       isCancelled = true;
     };
-  }, [
-    invitationToken,
-    navigate,
-  ]);
+  }, 
+[
+  invitationToken,
+  referenceId,
+  navigate,
+]);
 
   if (!invitationToken) {
     return (
@@ -265,3 +275,4 @@ async function openInvitation() {
 }
 
 export default Join;
+

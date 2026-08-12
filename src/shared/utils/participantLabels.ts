@@ -37,3 +37,4 @@ export function isCurrentParticipant(
 ): boolean {
   return recordRole === currentRole;
 }
+

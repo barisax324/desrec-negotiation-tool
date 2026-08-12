@@ -44,3 +44,4 @@ export const BODY_REGION_STATUS_OPTIONS: BodyRegionStatusOption[] = [
     color: "#e205f6",
   },
 ];
+

@@ -1,5 +1,11 @@
 import { supabase } from "@/shared/clients/supabase";
 
+import {
+  decryptJson,
+  decryptSharedDetails,
+  getStoredSharedKey,
+} from "@/shared/crypto/sharedDetailsCrypto";
+
 export interface OpenNegotiationResult {
   participantRole: "A" | "B";
   negotiationName: string | null;
@@ -68,9 +74,55 @@ const { data, error } =
     );
   }
 
-  const row = data[0];
+const row = data[0];
 
-  const participantRole = String(
+const sharedKey =
+  getStoredSharedKey();
+
+if (!sharedKey) {
+  throw new Error(
+    "Your negotiation encryption key is missing.",
+  );
+}
+
+const sharedDetails =
+  await decryptSharedDetails(
+    {
+      ciphertext:
+        row.shared_details_ciphertext,
+
+      iv:
+        row.shared_details_iv,
+
+      version:
+        row.shared_details_version,
+    },
+    sharedKey,
+  );
+
+const responses =
+  row.responses_ciphertext &&
+  row.responses_iv &&
+  row.responses_encryption_version
+    ? await decryptJson<
+        Record<string, unknown>
+      >(
+        {
+          ciphertext:
+            row.responses_ciphertext,
+
+          iv:
+            row.responses_iv,
+
+          version:
+            row.responses_encryption_version,
+        },
+        sharedKey,
+      )
+    : {};
+
+const participantRole =
+  String(
     row.participant_role,
   ).toUpperCase();
 
@@ -85,15 +137,15 @@ const { data, error } =
 
   return {
     participantRole,
-    negotiationName:
-      row.negotiation_name ?? null,
-    sceneDate:
-      row.scene_date ?? null,
-    sceneDateUnknown:
-      Boolean(row.scene_date_unknown),
-    plannedActivities:
-      row.planned_activities ?? null,
-    retentionPeriod:
+negotiationName:
+  sharedDetails.name,
+sceneDate:
+  sharedDetails.sceneDate,
+sceneDateUnknown:
+  sharedDetails.sceneDateUnknown,
+plannedActivities:
+  sharedDetails.plannedActivities,
+      retentionPeriod:
       row.retention_period,
     negotiationStatus:
       row.negotiation_status,
@@ -101,11 +153,11 @@ const { data, error } =
       row.activated_at ?? null,
     expiresAt:
       row.expires_at ?? null,
-    responses:
-      row.responses ?? {},
+    responses,
     responsesVersion:
       row.responses_version ?? 0,
     completedAt:
       row.completed_at ?? null,
   };
 }
+

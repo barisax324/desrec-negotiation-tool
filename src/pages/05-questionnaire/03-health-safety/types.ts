@@ -34,3 +34,4 @@ export interface HealthSafetyResponses {
   accessibilitySupport: SelectedOptionResponses;
   additionalSupportInformation: string;
 }
+

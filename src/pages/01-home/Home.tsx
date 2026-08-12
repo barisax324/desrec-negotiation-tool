@@ -19,22 +19,27 @@ function handleJoinNegotiation() {
           <span className="home-brand-mark">◇</span>
 
           <div>
-            <p className="home-brand-name">DESREC</p>
+            <p className="home-brand-name">DesREC</p>
             <p className="home-brand-tagline">
               Learn. Tie. Connect.
             </p>
           </div>
         </div>
 
-        <span className="home-status">Private</span>
+<a
+  className="home-status"
+  href="https://desrec.org"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+Learn More  
+</a>
       </header>
 
       <section className="home-hero">
         <div className="home-logo-mark" aria-hidden="true">
           ◈
         </div>
-
-        <p className="home-eyebrow">DESREC</p>
 
         <h1>Desert Rope Education Collective</h1>
 
@@ -104,42 +109,6 @@ function handleJoinNegotiation() {
             </div>
           </article>
         </section>
-
-        <article className="home-card home-actions-card">
-          <p className="home-card-eyebrow">Private and collaborative</p>
-
-          <h2>Ready to begin?</h2>
-
-          <p>
-            Create a new negotiation or use an invitation link to
-            join one that has already been started.
-          </p>
-
-          <div className="home-actions">
-            <button
-              type="button"
-              className="home-button home-button-primary"
-              onClick={handleCreateNegotiation}
-            >
-              Create New Negotiation
-              <span aria-hidden="true">→</span>
-            </button>
-
-            <button
-              type="button"
-              className="home-button home-button-secondary"
-              onClick={handleJoinNegotiation}
-            >
-              Join Existing Negotiation
-            </button>
-          </div>
-
-          <div className="home-secondary-links">
-            <button type="button">How it works</button>
-            <span aria-hidden="true">•</span>
-            <button type="button">Privacy</button>
-          </div>
-        </article>
 
         <section className="home-how-it-works">
           <p className="home-section-eyebrow">
@@ -223,6 +192,37 @@ function handleJoinNegotiation() {
         </article>
       </section>
 
+        <article className="home-card home-actions-card">
+          <p className="home-card-eyebrow">Private and collaborative</p>
+
+          <h2>Ready to begin?</h2>
+
+          <p>
+            Create a new negotiation or use an invitation link to
+            join one that has already been started.
+          </p>
+
+          <div className="home-actions">
+            <button
+              type="button"
+              className="home-button home-button-primary"
+              onClick={handleCreateNegotiation}
+            >
+              Create New Negotiation
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button
+              type="button"
+              className="home-button home-button-secondary"
+              onClick={handleJoinNegotiation}
+            >
+              Join Existing Negotiation
+            </button>
+          </div>
+
+        </article>
+
       <footer className="home-footer">
         <div className="home-footer-mark" aria-hidden="true">
           ◇
@@ -237,14 +237,10 @@ function handleJoinNegotiation() {
           and kink education in the Southwest.
         </p>
 
-        <div className="home-footer-links">
-          <button type="button">About DesREC</button>
-          <button type="button">Privacy</button>
-          <button type="button">Safety</button>
-        </div>
       </footer>
     </main>
   );
 }
 
 export default Home;
+
