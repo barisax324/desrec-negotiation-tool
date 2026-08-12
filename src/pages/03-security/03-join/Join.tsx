@@ -65,20 +65,10 @@ async function openInvitation() {
   setJoinError("");
 
   try {
-    console.log(
-      "Calling joinNegotiation...",
-      invitationToken,
-    );
-
-    const result =
-      await joinNegotiation(
-        invitationToken,
-      );
-
-    console.log(
-      "joinNegotiation returned:",
-      result,
-    );
+const result =
+  await joinNegotiation(
+    invitationToken,
+  );
 
     if (isCancelled) {
       return;
@@ -161,12 +151,8 @@ if (referenceId) {
       );
     }
 
-    console.log(
-      "Navigating to create-password",
-    );
-
-    navigate(
-      "/create-password?participant=B",
+navigate(
+        "/create-password?participant=B",
       {
         replace: true,
       },
