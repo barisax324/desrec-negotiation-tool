@@ -192,7 +192,54 @@ Guiding principles include:
 
 ---
 
-## Remaining Technical Debt
+## Client-Side Encryption and Privacy Architecture
+
+A major privacy migration was completed on 2026-08-12.
+
+The negotiation tool now encrypts sensitive negotiation content in the browser before it is sent to Supabase.
+
+### Encrypted Shared Negotiation Data
+
+The following shared fields are no longer stored as plaintext:
+
+- Negotiation name
+- Scene date
+- Scene date undecided status
+- Planned scene activities
+
+These values are serialized into a shared-details payload and encrypted client-side using AES-GCM.
+
+Supabase stores only:
+
+- `shared_details_ciphertext`
+- `shared_details_iv`
+- `shared_details_version`
+
+The previous plaintext columns were removed after the encrypted workflow passed end-to-end testing.
+
+### Encrypted Participant Responses
+
+Participant questionnaire responses are also encrypted client-side before persistence.
+
+Supabase stores only:
+
+- `responses_ciphertext`
+- `responses_iv`
+- `responses_encryption_version`
+- `responses_version`
+
+The old plaintext `participants.responses` JSONB column was removed after encrypted save, recovery, and comparison flows were verified.
+
+### Shared Encryption Key
+
+Each negotiation receives a randomly generated 256-bit AES-GCM shared key in the browser.
+
+The raw key is not stored in Supabase.
+
+The key is initially carried in the URL fragment:```text #k=...
+
+---
+
 
 ### High Priority
 

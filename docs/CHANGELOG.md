@@ -3,6 +3,52 @@
 All notable user facing changes to the DesREC Negotiation Tool will be documented in this file.
 
 ---
+## v1.1.0 - 2026-08-12
+
+### Security
+
+- Reworked negotiation storage so sensitive scene information is encrypted in the browser before being sent to Supabase.
+- Added AES-GCM encryption for shared negotiation details.
+- Added AES-GCM encryption for participant questionnaire responses.
+- Removed plaintext storage of negotiation name, scene date, scene date status, planned activities, and participant responses from the database.
+- Changed Reference IDs so only a SHA-256 hash is stored in Supabase.
+- Added password-wrapped recovery for the shared encryption key using PBKDF2 and AES-GCM.
+- Kept the raw shared encryption key client-side and out of Supabase.
+- Added encrypted shared-key recovery for both participants.
+- Added encrypted response loading for negotiation recovery and comparison.
+- Removed legacy database functions that exposed plaintext negotiation data.
+- Removed obsolete plaintext database columns after encrypted end-to-end testing.
+- Updated database RPCs to read and write encrypted payloads only.
+- Enabled encrypted comparison data for completed negotiations.
+- Added automatic removal of the encryption key fragment from the browser address bar after capture.
+- Removed debug logging that exposed invitation tokens and decrypted negotiation data in the browser console.
+- Verified Row Level Security is enabled on all sensitive negotiation tables with no direct client-access policies.
+- Verified `.env.local` and service-role secrets are not tracked by Git.
+- Verified automatic expired-negotiation deletion is active through the scheduled cleanup job.
+- Completed database function audits confirming no remaining plaintext negotiation or questionnaire response paths.
+
+### Improved
+
+- Preserved Reference ID + password recovery while moving negotiation content to client-side encryption.
+- Preserved Participant A and Participant B Personal Link workflows with encrypted key handling.
+- Preserved comparison, recovery, and questionnaire progress behavior after encryption changes.
+- Reorganized negotiation services into dedicated `access`, `creation`, `recovery`, `responses`, `results`, and `setup` folders.
+- Added shared browser cryptography utilities under `src/shared/crypto`.
+- Improved separation between security, persistence, recovery, and UI logic.
+
+### Verified
+
+- Verified new negotiations store shared details as ciphertext only.
+- Verified questionnaire answers are stored as ciphertext only.
+- Verified Participant A can save, close, recover, and decrypt previous questionnaire responses.
+- Verified Participant B invitation and password setup work with encrypted negotiation data.
+- Verified Reference ID + password recovery works from a fresh private browser session.
+- Verified both participants can complete a negotiation and view the decrypted comparison.
+- Verified encryption-key URL fragments are removed after being captured by the browser.
+- Verified the final database schema contains no plaintext scene-detail or questionnaire-response columns.
+- Verified the final RPC audit contains no remaining plaintext field references.
+
+---
 ## v1.1.0 - In Development
 
 ### Added
