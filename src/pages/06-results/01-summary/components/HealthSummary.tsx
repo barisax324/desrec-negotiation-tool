@@ -60,7 +60,7 @@ export default function HealthSummary({
     medicalConsiderations,
     accessibilitySupport,
     medicalInformation,
-    emergencyInformation,
+    emergencyContactAvailable,
     additionalSupportInformation,
   } = responses;
 
@@ -131,44 +131,17 @@ export default function HealthSummary({
         </div>
       )}
 
-      {(emergencyInformation.name ||
-        emergencyInformation.phone ||
-        emergencyInformation.instructions) && (
-        <div className="summary-response-block">
-          <h3>Emergency Information</h3>
+{emergencyContactAvailable && (
+  <div className="summary-response-block">
+    <h3>Emergency Contact</h3>
 
-          {emergencyInformation.name && (
-            <p>
-              <strong>Contact:</strong>{" "}
-              {emergencyInformation.name}
-            </p>
-          )}
-
-          {emergencyInformation.relationship && (
-            <p>
-              <strong>Relationship:</strong>{" "}
-              {emergencyInformation.relationship}
-            </p>
-          )}
-
-          {emergencyInformation.phone && (
-            <p>
-              <strong>Phone:</strong>{" "}
-              {emergencyInformation.phone}
-            </p>
-          )}
-
-          {emergencyInformation.instructions && (
-            <>
-              <strong>Instructions</strong>
-
-              <p>
-                {emergencyInformation.instructions}
-              </p>
-            </>
-          )}
-        </div>
-      )}
+    <p>
+      {emergencyContactAvailable === "yes"
+        ? "Has an emergency contact available."
+        : "Does not have an emergency contact available."}
+    </p>
+  </div>
+)}
     </div>
   );
 }

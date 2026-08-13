@@ -18,36 +18,36 @@ const REGION_LABELS: Record<string, string> = {
   "front-chest": "Chest",
   "front-abdomen": "Abdomen",
   "front-pelvis": "Pelvis",
-  "front-left-upper-arm": "Left Upper Arm",
-  "front-right-upper-arm": "Right Upper Arm",
   "front-left-forearm": "Left Forearm",
   "front-right-forearm": "Right Forearm",
   "front-left-hand": "Left Hand",
   "front-right-hand": "Right Hand",
   "front-left-thigh": "Left Thigh",
   "front-right-thigh": "Right Thigh",
-  "front-left-lower-leg": "Left Lower Leg",
-  "front-right-lower-leg": "Right Lower Leg",
   "front-left-foot": "Left Foot",
   "front-right-foot": "Right Foot",
+  "front-left-upper-arm": "Left Shoulder / Upper Arm",
+  "front-right-upper-arm": "Right Shoulder / Upper Arm",
+  "front-left-lower-leg": "Left Knee / Lower Leg",
+  "front-right-lower-leg": "Right Knee / Lower Leg",
 
   "back-head": "Back of Head",
   "back-neck": "Back of Neck",
   "back-upper-back": "Upper Back",
   "back-lower-back": "Lower Back",
   "back-pelvis": "Pelvis",
-  "back-left-upper-arm": "Left Upper Arm",
-  "back-right-upper-arm": "Right Upper Arm",
   "back-left-forearm": "Left Forearm",
   "back-right-forearm": "Right Forearm",
   "back-left-hand": "Left Hand",
   "back-right-hand": "Right Hand",
   "back-left-thigh": "Left Thigh",
   "back-right-thigh": "Right Thigh",
-  "back-left-lower-leg": "Left Lower Leg",
-  "back-right-lower-leg": "Right Lower Leg",
   "back-left-foot": "Left Foot",
   "back-right-foot": "Right Foot",
+  "back-left-upper-arm": "Left Shoulder / Upper Arm",
+  "back-right-upper-arm": "Right Shoulder / Upper Arm",
+  "back-left-lower-leg": "Left Knee / Lower Leg",
+  "back-right-lower-leg": "Right Knee / Lower Leg",
 };
 
 const STATUS_LABELS: Record<
@@ -205,8 +205,17 @@ export default function BodyMapComparison({
           regionId,
         ),
     )
+    .filter(
+      (regionId) =>
+        ![
+          "back-left-hand",
+          "back-right-hand",
+          "back-left-foot",
+          "back-right-foot",
+        ].includes(regionId),
+    )
     .sort((firstRegionId, secondRegionId) => {
-      const firstStatus =
+            const firstStatus =
         participantA?.statuses[
           firstRegionId
         ] ??

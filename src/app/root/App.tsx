@@ -21,7 +21,7 @@ import Retention from "@/pages/02-setup/02-availability";
 import ReviewNegotiation from "@/pages/02-setup/03-review";
 import SavePersonalLink from "@/pages/03-security/02-save-access";
 import NegotiationFlow from "../negotiation-flow";
-
+import HealthSafety from "@/pages/05-questionnaire/03-health-safety";
 
 function App() {
   const navigate = useNavigate();
@@ -109,6 +109,18 @@ return (
   element={<NegotiationFlow />}
 />
       <Route path="/join" element={<Join />} />
+
+{import.meta.env.DEV && (
+  <Route
+    path="/dev/health-safety"
+    element={
+      <HealthSafety
+        back={() => navigate("/")}
+        next={() => {}}
+      />
+    }
+  />
+)}
 
       {/* Information pages */}
       <Route path="/privacy" element={<Privacy />} />

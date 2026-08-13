@@ -20,18 +20,17 @@ export interface MedicalInformation {
   additionalInformation: string;
 }
 
-export interface EmergencyInformation {
-  name: string;
-  relationship: string;
-  phone: string;
-  instructions: string;
-}
+export type EmergencyContactAvailable =
+  | "yes"
+  | "no";
 
 export interface HealthSafetyResponses {
   medicalConsiderations: SelectedOptionResponses;
   medicalInformation: MedicalInformation;
-  emergencyInformation: EmergencyInformation;
-  accessibilitySupport: SelectedOptionResponses;
+emergencyContactAvailable:
+  | EmergencyContactAvailable
+  | null;
+    accessibilitySupport: SelectedOptionResponses;
   additionalSupportInformation: string;
 }
 

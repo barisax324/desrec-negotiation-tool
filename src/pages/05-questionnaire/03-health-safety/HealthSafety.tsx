@@ -8,9 +8,8 @@ import { MEDICAL_CONSIDERATIONS } from "./data/medicalOptions";
 
 import BodyMap from "./components/BodyMap/BodyMap";
 import SelectableOptionGroup from "./components/SelectableOptionGroup";
-
 import type {
-  EmergencyInformation,
+  EmergencyContactAvailable,
   HealthSafetyResponses,
   MedicalInformation,
   SelectedOptionResponse,
@@ -40,13 +39,6 @@ const EMPTY_MEDICAL_INFORMATION: MedicalInformation = {
   medications: "",
   conditions: "",
   additionalInformation: "",
-};
-
-const EMPTY_EMERGENCY_INFORMATION: EmergencyInformation = {
-  name: "",
-  relationship: "",
-  phone: "",
-  instructions: "",
 };
 
 function HealthSafety({
@@ -88,13 +80,15 @@ function HealthSafety({
       EMPTY_MEDICAL_INFORMATION,
   );
 
-  const [
-    emergencyInformation,
-    setEmergencyInformation,
-  ] = useState<EmergencyInformation>(
-    initialResponses?.emergencyInformation ??
-      EMPTY_EMERGENCY_INFORMATION,
-  );
+const [
+  emergencyContactAvailable,
+  setEmergencyContactAvailable,
+] = useState<
+  EmergencyContactAvailable | null
+>(
+  initialResponses?.emergencyContactAvailable ??
+    null,
+);
 
   const [
     whyThisMattersOpen,
@@ -126,27 +120,15 @@ function HealthSafety({
     );
   }
 
-  function updateEmergencyInformation(
-    field: keyof EmergencyInformation,
-    value: string,
-  ) {
-    setEmergencyInformation(
-      (currentInformation) => ({
-        ...currentInformation,
-        [field]: value,
-      }),
-    );
-  }
-
-  function createResponses(): HealthSafetyResponses {
-    return {
-      medicalConsiderations,
-      medicalInformation,
-      emergencyInformation,
-      accessibilitySupport,
-      additionalSupportInformation,
-    };
-  }
+function createResponses(): HealthSafetyResponses {
+  return {
+    medicalConsiderations,
+    medicalInformation,
+    emergencyContactAvailable,
+    accessibilitySupport,
+    additionalSupportInformation,
+  };
+}
 
   function handleContinue() {
     next(createResponses());
@@ -383,103 +365,62 @@ function HealthSafety({
           </div>
         </section>
 
-        <section className="health-section">
-          <div className="health-section-heading">
-            <div>
-              <h2>Emergency Information</h2>
+<section className="health-section">
+  <div className="health-section-heading">
+    <div>
+      <h2>Emergency Contact</h2>
 
-              <p>
-                Add a contact or instructions that may
-                be useful if something unexpected
-                happens.
-              </p>
-            </div>
+      <p>
+        Do you have an emergency contact your
+        partner could reach if needed?
+      </p>
+    </div>
 
-            <span className="health-optional-label">
-              Optional
-            </span>
-          </div>
+    <span className="health-optional-label">
+      Optional
+    </span>
+  </div>
 
-          <div className="health-emergency-grid">
-            <div className="health-input-field">
-              <label htmlFor="emergency-name">
-                Emergency Contact Name
-              </label>
+  <div className="health-emergency-choice">
+    <label className="health-emergency-option">
+      <input
+        type="radio"
+        name="emergency-contact-available"
+        value="yes"
+        checked={
+          emergencyContactAvailable === "yes"
+        }
+        onChange={() =>
+          setEmergencyContactAvailable("yes")
+        }
+      />
 
-              <input
-                id="emergency-name"
-                type="text"
-                value={emergencyInformation.name}
-                onChange={(event) =>
-                  updateEmergencyInformation(
-                    "name",
-                    event.target.value,
-                  )
-                }
-                autoComplete="name"
-              />
-            </div>
+      <span>Yes</span>
+    </label>
 
-            <div className="health-input-field">
-              <label htmlFor="emergency-relationship">
-                Relationship
-              </label>
+    <label className="health-emergency-option">
+      <input
+        type="radio"
+        name="emergency-contact-available"
+        value="no"
+        checked={
+          emergencyContactAvailable === "no"
+        }
+        onChange={() =>
+          setEmergencyContactAvailable("no")
+        }
+      />
 
-              <input
-                id="emergency-relationship"
-                type="text"
-                value={
-                  emergencyInformation.relationship
-                }
-                onChange={(event) =>
-                  updateEmergencyInformation(
-                    "relationship",
-                    event.target.value,
-                  )
-                }
-              />
-            </div>
+      <span>No</span>
+    </label>
+  </div>
 
-            <div className="health-input-field health-input-field--full">
-              <label htmlFor="emergency-phone">
-                Phone Number
-              </label>
-
-              <input
-                id="emergency-phone"
-                type="tel"
-                value={emergencyInformation.phone}
-                onChange={(event) =>
-                  updateEmergencyInformation(
-                    "phone",
-                    event.target.value,
-                  )
-                }
-                autoComplete="tel"
-              />
-            </div>
-
-            <div className="health-field health-input-field--full">
-              <label htmlFor="emergency-instructions">
-                Relevant Emergency Information
-              </label>
-
-              <textarea
-                id="emergency-instructions"
-                value={
-                  emergencyInformation.instructions
-                }
-                onChange={(event) =>
-                  updateEmergencyInformation(
-                    "instructions",
-                    event.target.value,
-                  )
-                }
-                placeholder="For example: rescue medication location, seizure response, emergency instructions, or other important information."
-              />
-            </div>
-          </div>
-        </section>
+  <p className="health-field-help">
+    Contact details are intentionally not collected
+    here. Share them directly with your partner if
+    appropriate.
+  </p>
+</section>
 
         <div className="health-why-card">
           <button

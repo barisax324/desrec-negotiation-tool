@@ -3,7 +3,38 @@
 Internal development notes for the DesREC Negotiation Tool.
 
 Unlike `CHANGELOG.md`, this document captures architectural decisions, design philosophy, refactoring milestones, technical debt, and long-term development plans. It is intended for developers and project maintainers rather than end users.
+---
+## 2026-08-13
 
+### Questionnaire / Results Data Audit
+
+Continued auditing questionnaire inputs to make sure the values collected from participants are represented correctly in Summary, Comparison, and printable Comparison results.
+
+#### Activities
+- Expanded the activity preference model.
+- Interest now uses a five-point scale.
+- Added a separate Experience scale.
+- Added Limits / Boundaries for activities that are generally allowed but have specific caveats.
+- Hard Limit remains separate and applies to the activity as a whole.
+- Updated Summary, Comparison, and print handling for the new response structure.
+
+#### Health & Safety
+- Removed collection of emergency contact identifying information from the negotiation.
+- Replaced emergency contact name, relationship, phone number, and instructions with a Yes / No question asking whether the participant has an emergency contact available.
+- Updated Summary, Comparison, and print output accordingly.
+
+#### Body Map
+- Repositioned the upper-arm markers to better include the shoulder area.
+- Repositioned the lower-leg markers to better include the knee area.
+- Updated displayed labels to Shoulder / Upper Arm and Knee / Lower Leg.
+- Linked the front and back representations of each hand and foot.
+- Selecting either side of a hand or foot now applies the same status to its corresponding front/back region.
+- Paired hand/foot regions share a single notes entry.
+- Removed duplicate hand/foot rows from Summary, Comparison, and printable Comparison while leaving other front/back body regions independent.
+
+### Verification
+- Confirmed Body Map interaction behaves correctly in the development UI.
+- Confirmed the project builds successfully after the Body Map and results changes.
 ---
 
 # 2026-08-11

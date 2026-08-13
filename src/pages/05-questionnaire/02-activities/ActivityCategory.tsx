@@ -89,15 +89,24 @@ function ActivityCategory({
         >
           <div className="activity-list">
             {activeActivities.map((activity) => {
-              const response =
-                responses[activity.id] ?? {
-                  activityId: activity.id,
-                  interest: null,
-                  discussFurther: false,
-                  hardLimit: false,
-                  notes: "",
-                };
+const response =
+  responses[activity.id] ?? {
+    activityId:
+      activity.id,
 
+    interest: null,
+
+    experience: null,
+
+    hasLimitsOrBoundaries: false,
+
+    limitsOrBoundariesNotes: "",
+
+    hardLimit: false,
+
+    notes: "",
+  };
+  
               return (
                 <ActivityItem
                   key={activity.id}

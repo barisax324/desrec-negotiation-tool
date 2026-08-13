@@ -9,16 +9,37 @@ interface ActivitiesSummaryProps {
   responses: ActivityResponses;
 }
 
-function interestLabel(level: 1 | 2 | 3 | 4) {
+function interestLabel(
+  level: 1 | 2 | 3 | 4 | 5,
+) {
   switch (level) {
     case 1:
-      return "Hard Limit";
+      return "No Interest";
     case 2:
-      return "Ask First";
+      return "Little Interest";
     case 3:
-      return "Interested";
+      return "Some Interest";
     case 4:
+      return "Interested";
+    case 5:
       return "Very Interested";
+  }
+}
+
+function experienceLabel(
+  level: 1 | 2 | 3 | 4 | 5,
+) {
+  switch (level) {
+    case 1:
+      return "No Experience";
+    case 2:
+      return "Little Experience";
+    case 3:
+      return "Some Experience";
+    case 4:
+      return "Experienced";
+    case 5:
+      return "Very Experienced";
   }
 }
 
@@ -83,19 +104,19 @@ export default function ActivitiesSummary({
                 const activity =
                   ACTIVITY_LOOKUP[response.activityId];
 
-                let preference = "Not specified";
+const interest =
+  response.interest
+    ? interestLabel(
+        response.interest,
+      )
+    : "Not specified";
 
-                if (response.hardLimit) {
-                  preference = "⛔ Hard Limit";
-                } else if (response.interest) {
-                  preference = interestLabel(
-                    response.interest,
-                  );
-                }
-
-                if (response.discussFurther) {
-                  preference += " • 💬 Discuss";
-                }
+const experience =
+  response.experience
+    ? experienceLabel(
+        response.experience,
+      )
+    : "Not specified";
 
                 return (
                   <tr key={response.activityId}>
@@ -103,7 +124,33 @@ export default function ActivitiesSummary({
                       <strong>{activity.label}</strong>
                     </td>
 
-                    <td>{preference}</td>
+<td>
+  {response.hardLimit ? (
+    <strong>✕ Hard Limit</strong>
+  ) : (
+    <>
+      <div>
+        <strong>Interest:</strong>{" "}
+        {interest}
+      </div>
+
+      <div>
+        <strong>Experience:</strong>{" "}
+        {experience}
+      </div>
+
+      {response.hasLimitsOrBoundaries && (
+        <div>
+          <strong>
+            Limits / Boundaries:
+          </strong>{" "}
+          {response.limitsOrBoundariesNotes?.trim() ||
+            "Specified"}
+        </div>
+      )}
+    </>
+  )}
+</td>
 
                     <td>
                       {response.notes?.trim() ? (

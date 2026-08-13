@@ -19,20 +19,44 @@ interface ActivityRow {
 }
 
 function interestLabel(
-  level: 1 | 2 | 3 | 4,
+  level: 1 | 2 | 3 | 4 | 5,
 ): string {
   switch (level) {
     case 1:
-      return "Hard Limit";
+      return "No Interest";
 
     case 2:
-      return "Ask First";
+      return "Little Interest";
 
     case 3:
-      return "Interested";
+      return "Some Interest";
 
     case 4:
+      return "Interested";
+
+    case 5:
       return "Very Interested";
+  }
+}
+
+function experienceLabel(
+  level: 1 | 2 | 3 | 4 | 5,
+): string {
+  switch (level) {
+    case 1:
+      return "No Experience";
+
+    case 2:
+      return "Little Experience";
+
+    case 3:
+      return "Some Experience";
+
+    case 4:
+      return "Experienced";
+
+    case 5:
+      return "Very Experienced";
   }
 }
 
@@ -45,34 +69,11 @@ function hasResponse(
 
   return (
     response.interest !== null ||
-    response.discussFurther ||
+    response.experience !== null ||
+    response.hasLimitsOrBoundaries ||
     response.hardLimit ||
     response.notes.trim().length > 0
   );
-}
-
-function getPreference(
-  response?: ActivityResponse,
-): string {
-  if (!hasResponse(response)) {
-    return "";
-  }
-
-  let preference = "Not specified";
-
-  if (response?.hardLimit) {
-    preference = "⛔ Hard Limit";
-  } else if (response?.interest) {
-    preference = interestLabel(
-      response.interest,
-    );
-  }
-
-  if (response?.discussFurther) {
-    preference += " • 💬 Discuss";
-  }
-
-  return preference;
 }
 
 function responsesMatch(
@@ -89,8 +90,12 @@ function responsesMatch(
   return (
     participantA?.interest ===
       participantB?.interest &&
-    participantA?.discussFurther ===
-      participantB?.discussFurther &&
+    participantA?.experience ===
+      participantB?.experience &&
+    participantA?.hasLimitsOrBoundaries ===
+      participantB?.hasLimitsOrBoundaries &&
+    participantA?.limitsOrBoundariesNotes.trim() ===
+      participantB?.limitsOrBoundariesNotes.trim() &&
     participantA?.hardLimit ===
       participantB?.hardLimit &&
     participantA?.notes.trim() ===
@@ -111,8 +116,33 @@ function ActivityAnswer({
     );
   }
 
-  const preference =
-    getPreference(response);
+  if (response?.hardLimit) {
+    return (
+      <div className="comparison-activity-answer">
+        <p className="comparison-activity-preference">
+          <strong>✕ Hard Limit</strong>
+        </p>
+      </div>
+    );
+  }
+
+  const interest =
+    response?.interest !== null &&
+    response?.interest !== undefined
+      ? interestLabel(response.interest)
+      : "Not specified";
+
+  const experience =
+    response?.experience !== null &&
+    response?.experience !== undefined
+      ? experienceLabel(
+          response.experience,
+        )
+      : "Not specified";
+
+  const limitsOrBoundaries =
+    response?.limitsOrBoundariesNotes.trim() ??
+    "";
 
   const notes =
     response?.notes.trim() ?? "";
@@ -120,8 +150,37 @@ function ActivityAnswer({
   return (
     <div className="comparison-activity-answer">
       <p className="comparison-activity-preference">
-        {preference}
+        <strong>Interest:</strong>{" "}
+        {interest}
       </p>
+
+      <p className="comparison-activity-preference">
+        <strong>Experience:</strong>{" "}
+        {experience}
+      </p>
+
+      {response?.hasLimitsOrBoundaries && (
+        <div className="comparison-activity-notes">
+          <strong>
+            Limits / Boundaries
+          </strong>
+
+          {limitsOrBoundaries ? (
+            limitsOrBoundaries
+              .split("\n")
+              .filter((line) =>
+                line.trim(),
+              )
+              .map((line, index) => (
+                <p key={index}>
+                  {line}
+                </p>
+              ))
+          ) : (
+            <p>Specified</p>
+          )}
+        </div>
+      )}
 
       {notes && (
         <div className="comparison-activity-notes">
@@ -129,7 +188,9 @@ function ActivityAnswer({
 
           {notes
             .split("\n")
-            .filter((line) => line.trim())
+            .filter((line) =>
+              line.trim(),
+            )
             .map((line, index) => (
               <p key={index}>
                 {line}
@@ -291,7 +352,6 @@ export default function ActivitiesComparison({
                         </div>
 
                         <section className="comparison-summary-column">
-
                           <ActivityAnswer
                             response={
                               row.participantA
@@ -300,7 +360,6 @@ export default function ActivitiesComparison({
                         </section>
 
                         <section className="comparison-summary-column">
-
                           <ActivityAnswer
                             response={
                               row.participantB
@@ -319,4 +378,3 @@ export default function ActivitiesComparison({
     </section>
   );
 }
-

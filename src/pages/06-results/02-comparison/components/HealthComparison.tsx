@@ -259,37 +259,27 @@ export default function HealthComparison({
     participantB?.medicalInformation.additionalInformation.trim() ??
     "";
 
-  const emergencyNameA =
-    participantA?.emergencyInformation.name.trim() ??
-    "";
+const emergencyContactA =
+  participantA?.emergencyContactAvailable ??
+  null;
 
-  const emergencyNameB =
-    participantB?.emergencyInformation.name.trim() ??
-    "";
+const emergencyContactB =
+  participantB?.emergencyContactAvailable ??
+  null;
 
-  const emergencyRelationshipA =
-    participantA?.emergencyInformation.relationship.trim() ??
-    "";
+const emergencyContactLabel = (
+  value: "yes" | "no" | null,
+): string => {
+  if (value === "yes") {
+    return "Has an emergency contact available.";
+  }
 
-  const emergencyRelationshipB =
-    participantB?.emergencyInformation.relationship.trim() ??
-    "";
+  if (value === "no") {
+    return "Does not have an emergency contact available.";
+  }
 
-  const emergencyPhoneA =
-    participantA?.emergencyInformation.phone.trim() ??
-    "";
-
-  const emergencyPhoneB =
-    participantB?.emergencyInformation.phone.trim() ??
-    "";
-
-  const emergencyInstructionsA =
-    participantA?.emergencyInformation.instructions.trim() ??
-    "";
-
-  const emergencyInstructionsB =
-    participantB?.emergencyInformation.instructions.trim() ??
-    "";
+  return "";
+};
 
   const hasAnyResponse =
     medicalA.length > 0 ||
@@ -306,14 +296,8 @@ export default function HealthComparison({
     conditionsB ||
     additionalMedicalA ||
     additionalMedicalB ||
-    emergencyNameA ||
-    emergencyNameB ||
-    emergencyRelationshipA ||
-    emergencyRelationshipB ||
-    emergencyPhoneA ||
-    emergencyPhoneB ||
-    emergencyInstructionsA ||
-    emergencyInstructionsB;
+    emergencyContactA !== null ||
+    emergencyContactB !== null;
 
   if (!hasAnyResponse) {
     return null;
@@ -399,60 +383,23 @@ export default function HealthComparison({
 
         <ComparisonRow
           label="Emergency Contact"
-          participantA={emergencyNameA}
-          participantB={emergencyNameB}
-          isMatch={
-            Boolean(emergencyNameA) &&
-            emergencyNameA ===
-              emergencyNameB
-          }
-        />
-
-        <ComparisonRow
-          label="Relationship"
           participantA={
-            emergencyRelationshipA
+            emergencyContactLabel(
+              emergencyContactA,
+            )
           }
           participantB={
-            emergencyRelationshipB
+            emergencyContactLabel(
+              emergencyContactB,
+            )
           }
           isMatch={
-            Boolean(
-              emergencyRelationshipA,
-            ) &&
-            emergencyRelationshipA ===
-              emergencyRelationshipB
+            emergencyContactA !== null &&
+            emergencyContactA ===
+              emergencyContactB
           }
         />
-
-        <ComparisonRow
-          label="Phone"
-          participantA={emergencyPhoneA}
-          participantB={emergencyPhoneB}
-          isMatch={
-            Boolean(emergencyPhoneA) &&
-            emergencyPhoneA ===
-              emergencyPhoneB
-          }
-        />
-
-        <ComparisonRow
-          label="Emergency Instructions"
-          participantA={
-            emergencyInstructionsA
-          }
-          participantB={
-            emergencyInstructionsB
-          }
-          isMatch={
-            Boolean(
-              emergencyInstructionsA,
-            ) &&
-            emergencyInstructionsA ===
-              emergencyInstructionsB
-          }
-        />
-      </div>
+              </div>
     </section>
   );
 }

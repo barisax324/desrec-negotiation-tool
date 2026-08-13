@@ -3,7 +3,7 @@ import HardLimitModal from "./HardLimitModal";
 import type {
   ActivityDefinition,
   ActivityResponse,
-  InterestLevel,
+  ActivityScaleLevel,
 } from "./types";
 
 interface ActivityItemProps {
@@ -15,13 +15,25 @@ interface ActivityItemProps {
 }
 
 const INTEREST_LABELS: Record<
-  InterestLevel,
+  ActivityScaleLevel,
   string
 > = {
-  1: "Not Interested",
-  2: "Curious",
-  3: "Interested",
-  4: "Love It",
+  1: "No Interest",
+  2: "Little Interest",
+  3: "Some Interest",
+  4: "Interested",
+  5: "Very Interested",
+};
+
+const EXPERIENCE_LABELS: Record<
+  ActivityScaleLevel,
+  string
+> = {
+  1: "No Experience",
+  2: "Little Experience",
+  3: "Some Experience",
+  4: "Experienced",
+  5: "Very Experienced",
 };
 
 function ActivityItem({
@@ -39,11 +51,13 @@ function ActivityItem({
    * Its thumb is hidden until an answer has
    * actually been selected.
    */
-  const sliderValue = response.interest ?? 1;
+const interestSliderValue =
+  response.interest ?? 1;
 
-  const shouldShowNotes =
-    response.discussFurther ||
-    activity.isOther === true;
+const experienceSliderValue =
+  response.experience ?? 1;
+
+const shouldShowNotes = true;
 
   function updateResponse(
     updates: Partial<ActivityResponse>,
@@ -54,10 +68,10 @@ function ActivityItem({
     });
   }
 
-  function selectInterest(
-    interest: InterestLevel,
-  ) {
-    if (response.hardLimit) {
+function selectInterest(
+  interest: ActivityScaleLevel,
+) {
+      if (response.hardLimit) {
       return;
     }
 
@@ -66,60 +80,112 @@ function ActivityItem({
     });
   }
 
-  function handleSliderChange(
-    value: number,
-  ) {
-    selectInterest(value as InterestLevel);
+function handleInterestSliderChange(
+  value: number,
+) {
+  selectInterest(
+    value as ActivityScaleLevel,
+  );
+}
+
+function selectExperience(
+  experience: ActivityScaleLevel,
+) {
+  if (response.hardLimit) {
+    return;
   }
+
+  updateResponse({
+    experience,
+  });
+}
+
+function handleExperienceSliderChange(
+  value: number,
+) {
+  selectExperience(
+    value as ActivityScaleLevel,
+  );
+}
 
   /*
    * This allows the first slider position to
    * be selected even while the hidden thumb is
    * already resting there.
    */
-  function handleSliderPointerDown(
-    event: React.PointerEvent<HTMLInputElement>,
+function handleInterestSliderPointerDown(
+  event: React.PointerEvent<HTMLInputElement>,
+) {
+  if (
+    response.hardLimit ||
+    response.interest !== null
   ) {
-    if (
-      response.hardLimit ||
-      response.interest !== null
-    ) {
-      return;
-    }
-
-    const slider =
-      event.currentTarget.getBoundingClientRect();
-
-    const pointerPosition =
-      event.clientX - slider.left;
-
-    const percentage =
-      pointerPosition / slider.width;
-
-    const calculatedValue = Math.round(
-      1 + percentage * 3,
-    );
-
-    const interest = Math.min(
-      4,
-      Math.max(1, calculatedValue),
-    ) as InterestLevel;
-
-    selectInterest(interest);
+    return;
   }
+
+  const slider =
+    event.currentTarget.getBoundingClientRect();
+
+  const pointerPosition =
+    event.clientX - slider.left;
+
+  const percentage =
+    pointerPosition / slider.width;
+
+  const calculatedValue = Math.round(
+    1 + percentage * 4,
+  );
+
+  const interest = Math.min(
+    5,
+    Math.max(1, calculatedValue),
+  ) as ActivityScaleLevel;
+
+  selectInterest(interest);
+}
+
+function handleExperienceSliderPointerDown(
+  event: React.PointerEvent<HTMLInputElement>,
+) {
+  if (
+    response.hardLimit ||
+    response.experience !== null
+  ) {
+    return;
+  }
+
+  const slider =
+    event.currentTarget.getBoundingClientRect();
+
+  const pointerPosition =
+    event.clientX - slider.left;
+
+  const percentage =
+    pointerPosition / slider.width;
+
+  const calculatedValue = Math.round(
+    1 + percentage * 4,
+  );
+
+  const experience = Math.min(
+    5,
+    Math.max(1, calculatedValue),
+  ) as ActivityScaleLevel;
+
+  selectExperience(experience);
+}
 
   function handleHardLimitCheckbox() {
     setShowHardLimitModal(true);
   }
 
-  function confirmHardLimitChange() {
-    updateResponse({
-      hardLimit: !response.hardLimit,
-      interest: null,
-    });
+function confirmHardLimitChange() {
+  updateResponse({
+    hardLimit: !response.hardLimit,
+  });
 
-    setShowHardLimitModal(false);
-  }
+  setShowHardLimitModal(false);
+}
 
   if (activity.id === "other-notes") {
     return (
@@ -184,6 +250,10 @@ function ActivityItem({
               : ""
           }`}
         >
+          <div className="activity-slider-heading">
+            Interest
+          </div>
+
           <div
             className="activity-slider-labels"
             aria-hidden="true"
@@ -213,9 +283,9 @@ function ActivityItem({
               className="activity-slider"
               type="range"
               min="1"
-              max="4"
+              max="5"
               step="1"
-              value={sliderValue}
+              value={interestSliderValue}
               disabled={response.hardLimit}
               aria-label={`${activity.label} interest level`}
               aria-valuetext={
@@ -226,10 +296,10 @@ function ActivityItem({
                     ]
               }
               onPointerDown={
-                handleSliderPointerDown
+                handleInterestSliderPointerDown
               }
               onChange={(event) =>
-                handleSliderChange(
+                handleInterestSliderChange(
                   Number(
                     event.target.value,
                   ),
@@ -241,6 +311,7 @@ function ActivityItem({
               className="activity-slider-ticks"
               aria-hidden="true"
             >
+              <span />
               <span />
               <span />
               <span />
@@ -273,20 +344,130 @@ function ActivityItem({
           </div>
         </div>
 
+        <div
+          className={`activity-slider-section${
+            response.hardLimit
+              ? " activity-slider-section--hard-limit"
+              : ""
+          }${
+            response.experience === null
+              ? " activity-slider-section--unselected"
+              : ""
+          }`}
+        >
+          <div className="activity-slider-heading">
+            Experience
+          </div>
+
+          <div
+            className="activity-slider-labels"
+            aria-hidden="true"
+          >
+            {(Object.entries(
+              EXPERIENCE_LABELS,
+            ) as [
+              string,
+              string,
+            ][]).map(([value, label]) => (
+              <span
+                key={value}
+                className={`activity-slider-label${
+                  response.experience ===
+                  Number(value)
+                    ? " activity-slider-label--selected"
+                    : ""
+                }`}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+
+          <div className="activity-slider-control">
+            <input
+              className="activity-slider"
+              type="range"
+              min="1"
+              max="5"
+              step="1"
+              value={experienceSliderValue}
+              disabled={response.hardLimit}
+              aria-label={`${activity.label} experience level`}
+              aria-valuetext={
+                response.experience === null
+                  ? "Not selected"
+                  : EXPERIENCE_LABELS[
+                      response.experience
+                    ]
+              }
+              onPointerDown={
+                handleExperienceSliderPointerDown
+              }
+              onChange={(event) =>
+                handleExperienceSliderChange(
+                  Number(
+                    event.target.value,
+                  ),
+                )
+              }
+            />
+
+            <div
+              className="activity-slider-ticks"
+              aria-hidden="true"
+            >
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+
+            {response.hardLimit && (
+              <span
+                className="activity-slider-red-x"
+                aria-hidden="true"
+              >
+                ✕
+              </span>
+            )}
+          </div>
+
+          <div
+            className="activity-slider-value"
+            aria-live="polite"
+          >
+            {response.hardLimit
+              ? "Hard Limit"
+              : response.experience === null
+                ? "Not selected"
+                : `Selected: ${
+                    EXPERIENCE_LABELS[
+                      response.experience
+                    ]
+                  }`}
+          </div>
+        </div>
+
         <div className="activity-options">
           <label className="activity-option">
             <input
               type="checkbox"
-              checked={response.discussFurther}
+              checked={
+                response.hasLimitsOrBoundaries
+              }
+              disabled={response.hardLimit}
               onChange={(event) =>
                 updateResponse({
-                  discussFurther:
+                  hasLimitsOrBoundaries:
                     event.target.checked,
                 })
               }
             />
 
-            <span>Discuss Further</span>
+            <span>
+              Limits / Boundaries
+            </span>
           </label>
 
           <label className="activity-option activity-option--hard-limit">
@@ -301,6 +482,38 @@ function ActivityItem({
             <span>Hard Limit</span>
           </label>
         </div>
+
+        {response.hasLimitsOrBoundaries &&
+          !response.hardLimit && (
+            <div className="activity-notes">
+              <label
+                htmlFor={`${activity.id}-limits`}
+              >
+                Limits / Boundaries
+              </label>
+
+              <p className="activity-notes-help">
+                Add any limits, boundaries,
+                conditions, or specific ways
+                you are comfortable approaching
+                this activity.
+              </p>
+
+              <textarea
+                id={`${activity.id}-limits`}
+                value={
+                  response.limitsOrBoundariesNotes
+                }
+                placeholder="Optional details..."
+                onChange={(event) =>
+                  updateResponse({
+                    limitsOrBoundariesNotes:
+                      event.target.value,
+                  })
+                }
+              />
+            </div>
+          )}
 
         {shouldShowNotes && (
           <div className="activity-notes">

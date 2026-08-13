@@ -12,7 +12,7 @@ import type {
 import type {
   ActivityResponse,
   ActivityResponses,
-  InterestLevel,
+ActivityScaleLevel,
 } from "../../05-questionnaire/02-activities";
 
 import {
@@ -178,10 +178,6 @@ const REGION_LABELS: Record<
   "front-chest": "Chest",
   "front-abdomen": "Abdomen",
   "front-pelvis": "Pelvis",
-  "front-left-upper-arm":
-    "Left Upper Arm",
-  "front-right-upper-arm":
-    "Right Upper Arm",
   "front-left-forearm":
     "Left Forearm",
   "front-right-forearm":
@@ -192,13 +188,13 @@ const REGION_LABELS: Record<
     "Left Thigh",
   "front-right-thigh":
     "Right Thigh",
-  "front-left-lower-leg":
-    "Left Lower Leg",
-  "front-right-lower-leg":
-    "Right Lower Leg",
   "front-left-foot": "Left Foot",
   "front-right-foot":
     "Right Foot",
+    "front-left-upper-arm": "Left Shoulder / Upper Arm",
+"front-right-upper-arm": "Right Shoulder / Upper Arm",
+"front-left-lower-leg": "Left Knee / Lower Leg",
+"front-right-lower-leg": "Right Knee / Lower Leg",
 
   "back-head": "Back of Head",
   "back-neck": "Back of Neck",
@@ -208,10 +204,6 @@ const REGION_LABELS: Record<
   "back-lower-back":
     "Lower Back",
   "back-pelvis": "Pelvis",
-  "back-left-upper-arm":
-    "Left Upper Arm",
-  "back-right-upper-arm":
-    "Right Upper Arm",
   "back-left-forearm":
     "Left Forearm",
   "back-right-forearm":
@@ -222,12 +214,12 @@ const REGION_LABELS: Record<
     "Left Thigh",
   "back-right-thigh":
     "Right Thigh",
-  "back-left-lower-leg":
-    "Left Lower Leg",
-  "back-right-lower-leg":
-    "Right Lower Leg",
   "back-left-foot": "Left Foot",
   "back-right-foot": "Right Foot",
+  "back-left-upper-arm": "Left Shoulder / Upper Arm",
+"back-right-upper-arm": "Right Shoulder / Upper Arm",
+"back-left-lower-leg": "Left Knee / Lower Leg",
+"back-right-lower-leg": "Right Knee / Lower Leg",
 };
 
 const STATUS_LABELS: Record<
@@ -344,20 +336,44 @@ function getGoals(
 }
 
 function interestLabel(
-  level: InterestLevel,
+  level: ActivityScaleLevel,
 ): string {
   switch (level) {
     case 1:
-      return "Hard Limit";
+      return "No Interest";
 
     case 2:
-      return "Ask First";
+      return "Little Interest";
 
     case 3:
-      return "Interested";
+      return "Some Interest";
 
     case 4:
+      return "Interested";
+
+    case 5:
       return "Very Interested";
+  }
+}
+
+function experienceLabel(
+  level: ActivityScaleLevel,
+): string {
+  switch (level) {
+    case 1:
+      return "No Experience";
+
+    case 2:
+      return "Little Experience";
+
+    case 3:
+      return "Some Experience";
+
+    case 4:
+      return "Experienced";
+
+    case 5:
+      return "Very Experienced";
   }
 }
 
@@ -370,19 +386,18 @@ function hasActivityResponse(
 
   return (
     response.interest !== null ||
-    response.discussFurther ||
+    response.experience !== null ||
+    response.hasLimitsOrBoundaries ||
     response.hardLimit ||
-    response.notes.trim().length >
-      0
+    response.limitsOrBoundariesNotes.trim().length > 0 ||
+    response.notes.trim().length > 0
   );
 }
 
 function formatActivityResponse(
   response?: ActivityResponse,
 ): string {
-  if (
-    !hasActivityResponse(response)
-  ) {
+  if (!hasActivityResponse(response)) {
     return "";
   }
 
@@ -390,22 +405,39 @@ function formatActivityResponse(
 
   if (response?.hardLimit) {
     parts.push("Hard Limit");
-  } else if (
+  }
+
+  if (
     response?.interest !== null &&
-    response?.interest !==
-      undefined
+    response?.interest !== undefined
   ) {
     parts.push(
-      interestLabel(
+      `Interest: ${interestLabel(
         response.interest,
-      ),
+      )}`,
     );
   }
 
   if (
-    response?.discussFurther
+    response?.experience !== null &&
+    response?.experience !== undefined
   ) {
-    parts.push("Discuss");
+    parts.push(
+      `Experience: ${experienceLabel(
+        response.experience,
+      )}`,
+    );
+  }
+
+  if (response?.hasLimitsOrBoundaries) {
+    const boundaryNotes =
+      response.limitsOrBoundariesNotes.trim();
+
+    parts.push(
+      boundaryNotes
+        ? `Limits / Boundaries: ${boundaryNotes}`
+        : "Limits / Boundaries",
+    );
   }
 
   if (response?.notes.trim()) {
@@ -707,19 +739,29 @@ export default function PrintComparison({
             ?.notes ?? {},
         ),
       ]),
-    ).filter((regionId) => {
-      return Boolean(
-        formatBodyMapResponse(
-          participantA.bodyMap,
-          regionId,
-        ) ||
+    )
+      .filter((regionId) => {
+        return Boolean(
           formatBodyMapResponse(
-            participantB.bodyMap,
+            participantA.bodyMap,
             regionId,
-          ),
+          ) ||
+            formatBodyMapResponse(
+              participantB.bodyMap,
+              regionId,
+            ),
+        );
+      })
+      .filter(
+        (regionId) =>
+          ![
+            "back-left-hand",
+            "back-right-hand",
+            "back-left-foot",
+            "back-right-foot",
+          ].includes(regionId),
       );
-    });
-
+      
   return (
     <article className="print-comparison">
       <header className="print-comparison-header">
@@ -983,58 +1025,24 @@ export default function PrintComparison({
           label="Emergency Contact"
           participantA={
             participantA.healthSafety
-              ?.emergencyInformation
-              .name ?? ""
+              ?.emergencyContactAvailable === "yes"
+              ? "Has an emergency contact available."
+              : participantA.healthSafety
+                    ?.emergencyContactAvailable === "no"
+                ? "Does not have an emergency contact available."
+                : ""
           }
           participantB={
             participantB.healthSafety
-              ?.emergencyInformation
-              .name ?? ""
+              ?.emergencyContactAvailable === "yes"
+              ? "Has an emergency contact available."
+              : participantB.healthSafety
+                    ?.emergencyContactAvailable === "no"
+                ? "Does not have an emergency contact available."
+                : ""
           }
         />
-
-        <PrintRow
-          label="Relationship"
-          participantA={
-            participantA.healthSafety
-              ?.emergencyInformation
-              .relationship ?? ""
-          }
-          participantB={
-            participantB.healthSafety
-              ?.emergencyInformation
-              .relationship ?? ""
-          }
-        />
-
-        <PrintRow
-          label="Emergency Phone"
-          participantA={
-            participantA.healthSafety
-              ?.emergencyInformation
-              .phone ?? ""
-          }
-          participantB={
-            participantB.healthSafety
-              ?.emergencyInformation
-              .phone ?? ""
-          }
-        />
-
-        <PrintRow
-          label="Emergency Instructions"
-          participantA={
-            participantA.healthSafety
-              ?.emergencyInformation
-              .instructions ?? ""
-          }
-          participantB={
-            participantB.healthSafety
-              ?.emergencyInformation
-              .instructions ?? ""
-          }
-        />
-      </section>
+              </section>
 
       {bodyRegionIds.length > 0 && (
         <section className="print-comparison-section">

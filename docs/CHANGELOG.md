@@ -3,6 +3,25 @@
 All notable user facing changes to the DesREC Negotiation Tool will be documented in this file.
 
 ---
+## v1.1.0 - 2026-08-13
+
+### Changed
+- Expanded activity responses with separate Interest and Experience scales.
+- Updated activity Interest to a five-point scale.
+- Added Limits / Boundaries for activities that are allowed with specific caveats.
+- Kept Hard Limit as a separate whole-activity restriction.
+- Replaced stored emergency contact details with a simple Yes / No emergency-contact availability response.
+- Updated body-map upper-arm areas to represent Shoulder / Upper Arm.
+- Updated body-map lower-leg areas to represent Knee / Lower Leg.
+- Linked front/back hand and foot selections so each physical hand or foot shares one status and note.
+- Updated Summary, Comparison, and printable Comparison output for the revised activity, health/safety, and body-map responses.
+
+### Fixed
+- Removed duplicate hand and foot entries from Body Map results.
+- Corrected activity labels shown in Summary and Comparison to match questionnaire wording.
+- Updated comparison and print handling for the revised activity response structure.
+- Removed obsolete emergency contact name, relationship, phone, and instruction output.
+---
 ## v1.1.0 - 2026-08-12
 
 ### Security

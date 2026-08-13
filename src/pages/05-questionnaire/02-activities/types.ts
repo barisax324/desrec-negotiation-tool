@@ -11,7 +11,12 @@ export type ActivityCategoryId =
   | "medical-play"
   | "other-notes";
 
-export type InterestLevel = 1 | 2 | 3 | 4;
+export type ActivityScaleLevel =
+  | 1
+  | 2
+  | 3
+  | 4
+  | 5;
 
 export interface ActivityDefinition {
   id: string;
@@ -33,9 +38,21 @@ export interface ActivityCategoryDefinition {
 
 export interface ActivityResponse {
   activityId: string;
-  interest: InterestLevel | null;
-  discussFurther: boolean;
+
+  interest:
+    | ActivityScaleLevel
+    | null;
+
+  experience:
+    | ActivityScaleLevel
+    | null;
+
+  hasLimitsOrBoundaries: boolean;
+
+  limitsOrBoundariesNotes: string;
+
   hardLimit: boolean;
+
   notes: string;
 }
 

@@ -84,6 +84,53 @@ const REGION_LABELS: Record<
   "back-right-foot": "Right Foot",
 };
 
+const PAIRED_BODY_REGIONS: Record<
+  string,
+  string
+> = {
+  "front-left-hand": "back-left-hand",
+  "back-left-hand": "front-left-hand",
+
+  "front-right-hand": "back-right-hand",
+  "back-right-hand": "front-right-hand",
+
+  "front-left-foot": "back-left-foot",
+  "back-left-foot": "front-left-foot",
+
+  "front-right-foot": "back-right-foot",
+  "back-right-foot": "front-right-foot",
+};
+
+function getPairedRegionId(
+  regionId: string,
+): string | null {
+  return (
+    PAIRED_BODY_REGIONS[regionId] ??
+    null
+  );
+}
+
+function getCanonicalRegionId(
+  regionId: string,
+): string {
+  switch (regionId) {
+    case "back-left-hand":
+      return "front-left-hand";
+
+    case "back-right-hand":
+      return "front-right-hand";
+
+    case "back-left-foot":
+      return "front-left-foot";
+
+    case "back-right-foot":
+      return "front-right-foot";
+
+    default:
+      return regionId;
+  }
+}
+
 function formatStatusLabel(
   status: BodyRegionStatus,
 ) {
@@ -190,68 +237,125 @@ export default function BodyMap() {
     setSelectedRegion(selection);
   }
 
-  function handleStatusSelect(
-    status?: BodyRegionStatus,
-  ) {
-    if (!selectedRegion) {
-      return;
+function handleStatusSelect(
+  status?: BodyRegionStatus,
+) {
+  if (!selectedRegion) {
+    return;
+  }
+
+  const regionId =
+    selectedRegion.id;
+
+  const pairedRegionId =
+    getPairedRegionId(regionId);
+
+  setStatuses((current) => {
+    const updated = {
+      ...current,
+    };
+
+    if (status) {
+      updated[regionId] = status;
+
+      if (pairedRegionId) {
+        updated[pairedRegionId] =
+          status;
+      }
+    } else {
+      delete updated[regionId];
+
+      if (pairedRegionId) {
+        delete updated[
+          pairedRegionId
+        ];
+      }
     }
 
-    const regionId =
-      selectedRegion.id;
+    return updated;
+  });
 
-    setStatuses((current) => {
+  if (
+    !status ||
+    status === "fine"
+  ) {
+    setNotes((current) => {
       const updated = {
         ...current,
       };
 
-      if (status) {
-        updated[regionId] = status;
-      } else {
-        delete updated[regionId];
+      delete updated[regionId];
+
+      if (pairedRegionId) {
+        delete updated[
+          pairedRegionId
+        ];
       }
 
       return updated;
     });
+  }
 
-    if (
-      !status ||
-      status === "fine"
-    ) {
-      setNotes((current) => {
-        const updated = {
-          ...current,
-        };
+  setSelectedRegion(null);
+}
 
-        delete updated[regionId];
+function handleNoteChange(
+  regionId: string,
+  value: string,
+) {
+  const canonicalRegionId =
+    getCanonicalRegionId(
+      regionId,
+    );
 
-        return updated;
-      });
+  const pairedRegionId =
+    getPairedRegionId(
+      canonicalRegionId,
+    );
+
+  setNotes((current) => {
+    const updated = {
+      ...current,
+      [canonicalRegionId]: value,
+    };
+
+    if (pairedRegionId) {
+      updated[pairedRegionId] =
+        value;
     }
 
-    setSelectedRegion(null);
-  }
-
-  function handleNoteChange(
-    regionId: string,
-    value: string,
-  ) {
-    setNotes((current) => ({
-      ...current,
-      [regionId]: value,
-    }));
-  }
+    return updated;
+  });
+}
 
   function closeOrbit() {
     setSelectedRegion(null);
   }
 
-  const markedRegions =
-    Object.entries(statuses).filter(
+const markedRegions =
+  Object.entries(statuses)
+    .filter(
       ([, status]) =>
         status !== "fine",
-    );
+    )
+    .filter(
+      ([regionId], index, entries) => {
+        const canonicalRegionId =
+          getCanonicalRegionId(
+            regionId,
+          );
 
+        return (
+          entries.findIndex(
+            ([candidateRegionId]) =>
+              getCanonicalRegionId(
+                candidateRegionId,
+              ) ===
+              canonicalRegionId,
+          ) === index
+        );
+      });
+      
   return (
     <section
       className={[
