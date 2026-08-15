@@ -156,23 +156,6 @@ export default function CommunicationSummary({
         />
       </div>
 
-      {responses.discussionFlags.length > 0 && (
-        <div className="summary-response-block">
-          <h3>Discuss in Person</h3>
-
-          <div className="summary-tag-list">
-            {responses.discussionFlags.map((flag) => (
-              <span
-                key={`${flag.sectionId}-${flag.optionId}`}
-                className="summary-tag"
-              >
-                {flag.sectionLabel}: {flag.optionLabel}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
       {responses.additionalNotes.trim() && (
         <div className="summary-response-block">
           <h3>Additional Communication Notes</h3>

@@ -4,6 +4,144 @@ Internal development notes for the DesREC Negotiation Tool.
 
 Unlike `CHANGELOG.md`, this document captures architectural decisions, design philosophy, refactoring milestones, technical debt, and long-term development plans. It is intended for developers and project maintainers rather than end users.
 ---
+## 2026-08-15
+
+### Completed Questionnaire-to-Results Audit
+
+Completed the full field-by-field audit of the participant questionnaire and all result views.
+
+The audit traced each user-facing response through:
+
+1. Questionnaire input
+2. Saved participant response object
+3. Summary
+4. Side-by-side Comparison
+5. Printable / PDF Comparison
+
+### Scene Goals
+
+Verified:
+
+- Standard scene goals
+- Custom scene goals
+- Additional notes
+
+All values are preserved and rendered correctly across Summary, Comparison, and print output.
+
+### Activities
+
+Reverified the revised activity data model introduced during the previous audit.
+
+Confirmed result handling for:
+
+- Five-point Interest scale
+- Five-point Experience scale
+- Limits / Boundaries
+- Limits / Boundaries notes
+- Whole-activity Hard Limit
+- General activity notes
+
+Summary, Comparison, and print output now use the same user-facing labels as the questionnaire.
+
+### Health & Safety
+
+Verified result handling for:
+
+- Medical considerations
+- Accessibility and support selections
+- Additional support information
+- Allergies
+- Medications
+- Medical conditions
+- Additional medical information
+- Emergency-contact availability
+
+No emergency contact identifying information is collected or displayed.
+
+### Body Map
+
+Reverified paired hand and foot behavior and result output.
+
+Confirmed:
+
+- Front/back hand selections remain synchronized.
+- Front/back foot selections remain synchronized.
+- Paired hand/foot regions share one note.
+- Summary, Comparison, and printable Comparison show only one result row per physical hand or foot.
+- Shoulder / Upper Arm and Knee / Lower Leg labels are used consistently.
+- Other front/back body regions remain independent.
+
+### Communication & Boundaries
+
+Verified:
+
+- Check-ins
+- Communication Style
+- If Something Feels Wrong
+- Safewords and Signals
+- Custom safeword
+- Communication Habits
+- Additional Communication Notes
+- Discussion-flag behavior
+
+Removed redundant standalone "Discuss in Person" output from Summary and printable Comparison.
+
+Options requiring in-person discussion now communicate that status inline with the relevant selected option.
+
+### Aftercare
+
+Verified:
+
+- Helpful Aftercare selections
+- Custom "Other" aftercare entry
+- Possible post-scene responses
+- What helps the participant feel cared for
+- Things to avoid
+- Preferred follow-up
+- Additional notes
+
+All fields are represented correctly in Summary, Comparison, and print output.
+
+### About You / General Experience
+
+Verified:
+
+- Nickname
+- Planned role
+- Custom role
+- General kink experience
+
+Nickname is used correctly in comparison participant headings and printable output.
+
+Updated About You helper text to accurately state that the participant's chosen name may appear in Summary, completed Comparison, and downloaded PDF.
+
+### Print / PDF Audit
+
+Completed a dedicated pass of `PrintComparison.tsx`.
+
+Verified printable output for:
+
+- About You
+- General Experience
+- Scene Goals
+- Activities
+- Health & Safety
+- Body Map
+- Communication & Boundaries
+- Aftercare
+
+Updated the printed section title from "Experience Goals" to "Scene Goals."
+
+### Verification
+
+- Full questionnaire-to-results data path reviewed.
+- Summary mapping reviewed.
+- Side-by-side Comparison mapping reviewed.
+- Printable / PDF mapping reviewed.
+- Project build completed successfully after the audit.
+
+---
+
 ## 2026-08-13
 
 ### Questionnaire / Results Data Audit

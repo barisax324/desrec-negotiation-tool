@@ -3,6 +3,33 @@
 All notable user facing changes to the DesREC Negotiation Tool will be documented in this file.
 
 ---
+## v1.1.0 - 2026-08-15
+
+### Fixed
+
+- Removed duplicate standalone "Discuss in Person" output from Communication Summary and printable Comparison because flagged communication options already show that status inline.
+- Updated printable Comparison heading from Experience Goals to Scene Goals.
+- Updated About You helper text so nickname visibility accurately reflects Summary, Comparison, and PDF behavior.
+
+### Verified
+
+- Completed a full questionnaire-to-results data audit covering:
+  - About You
+  - General Experience
+  - Scene Goals
+  - Activities
+  - Health & Safety
+  - Body Map
+  - Communication & Boundaries
+  - Aftercare
+- Verified questionnaire inputs are represented correctly in Summary.
+- Verified questionnaire inputs are represented correctly in side-by-side Comparison.
+- Verified questionnaire inputs are represented correctly in printable/PDF Comparison.
+- Verified custom role, custom scene goals, custom aftercare entries, communication notes, activity limits/boundaries, body-map notes, and other free-text responses are preserved in results.
+- Verified Participant A and Participant B comparison rendering uses the expected human-readable labels.
+- Confirmed the project builds successfully after the completed results-data audit.
+
+---
 ## v1.1.0 - 2026-08-13
 
 ### Changed

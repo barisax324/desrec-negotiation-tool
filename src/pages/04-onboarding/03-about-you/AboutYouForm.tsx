@@ -111,8 +111,7 @@ function AboutYouForm({
           </div>
 
           <p>
-            This name will only appear in the
-            completed comparison and downloaded PDF.
+           This name will appear in your summary, the completed comparison, and downloaded PDF.
           </p>
         </div>
 

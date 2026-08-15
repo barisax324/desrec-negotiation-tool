@@ -534,28 +534,6 @@ function getSafeword(
   );
 }
 
-function getDiscussionFlags(
-  responses:
-    | CommunicationFormData
-    | null
-    | undefined,
-): string {
-  if (
-    !responses ||
-    responses.discussionFlags
-      .length === 0
-  ) {
-    return "";
-  }
-
-  return responses.discussionFlags
-    .map(
-      (flag) =>
-        `${flag.sectionLabel}: ${flag.optionLabel}`,
-    )
-    .join(" • ");
-}
-
 function getHelpfulAftercare(
   responses:
     | AftercareResponses
@@ -848,7 +826,7 @@ export default function PrintComparison({
 
       <section className="print-comparison-section">
         <h2>
-          Experience Goals
+          Scene Goals
         </h2>
 
         <PrintRow
@@ -1143,16 +1121,6 @@ export default function PrintComparison({
             participantB.communication
               ?.communicationHabits,
             COMMUNICATION_HABIT_OPTIONS,
-          )}
-        />
-
-        <PrintRow
-          label="Discuss in Person"
-          participantA={getDiscussionFlags(
-            participantA.communication,
-          )}
-          participantB={getDiscussionFlags(
-            participantB.communication,
           )}
         />
 
